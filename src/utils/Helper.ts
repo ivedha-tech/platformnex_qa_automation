@@ -1,5 +1,4 @@
-export class Helper {
-    static generateRandomEmail(): string {
-      return `user_${Date.now()}@example.com`;
-    }
-  }
+export const credentials = {
+  username: 'platformnex@ivedha.com',
+  password: 'Admin@123'
+};
