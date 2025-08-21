@@ -1,29 +1,28 @@
+// src/pages/QuickstartPage.ts
 import { Page } from '@playwright/test';
 
 export class QuickstartPage {
-  constructor(private page: Page) {}
+  readonly page: Page;
 
-  async gotoQuickstart() {
-    await this.page.locator('text=Quickstart').click();
-    await this.page.locator('h1:has-text("Quickstart")').waitFor({ timeout: 10000 });
+  constructor(page: Page) {
+    this.page = page;
   }
 
-  async chooseThreeTierApp() {
-    await this.page.locator('button:has-text("3-Tier App")').click();
+  async navigateToQuickstartPage() {
+    await this.page.goto('https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/quickstart');
   }
-
-  async fillBasicInfo(appName: string, description: string) {
-    await this.page.fill('input[name="appName"]', appName);
-    await this.page.fill('textarea[name="description"]', description);
+  async clickQuickstart() {
+    await this.page.click('text=Quickstart');
   }
-
-  async proceedNextSteps() {
-    await this.page.locator('button:has-text("Next")').click();
-    await this.page.waitForTimeout(1000); // tweak as needed
+  async selectThreeTier() {
+    await this.page.click('//*[@id="root"]/div[2]/div/div/div/div[4]/div[3]/div/div[3]/button');
   }
-
-  async runApp() {
-    await this.page.locator('button:has-text("Run")').click();
-    await this.page.locator('text=Success').waitFor({ timeout: 20000 });
+  async ThreeTierQuickstart() {
+    await this.navigateToQuickstartPage();
+    await this.clickQuickstart();
+    await this.selectThreeTier();
+  }
+  async startThreeTierQuickstart() {
+    await this.page.click('text=Start 3-Tier Quickstart');
   }
 }
