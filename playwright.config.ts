@@ -7,7 +7,7 @@ export default defineConfig({
   reporter: [['html', { outputFolder: 'reports' }]],
   use: {
     headless: true,
-    baseURL: 'https://platformnex.example.com', // Base URL for your application
+    baseURL: 'https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app', // Base URL for your application
     screenshot: 'on',
     video: 'retain-on-failure',
   },

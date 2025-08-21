@@ -1,0 +1,41 @@
+login:
+  valid:
+    email: "platformnex@ivedha.com"
+    password: "Admin@123"
+  invalid:
+    invalidusername: "invaliduser@email.com"
+    invalidpassword: "wrong_password"
+  empty:
+    emptyusername: ""
+    emptypassword: ""
+  error:
+    expectedErrorMessageWrongMail: "Invalid email address."
+    expectedErrorMessageWrongPassword: "Invalid login. Please try again."
+    expectedErrorMessageEmpty: "Required field"
+
+  application:
+  MyApp:
+    name: "MyApp"
+    description: "This is the description of MyApp"
+    tags:
+      - "tag1"
+      - "tag2"
+    owner: "Owner1"
+
+component:
+  MyComponent:
+    name: "MyComponent"
+    description: "This is the description of MyComponent"
+    tags:
+      - "compTag1"
+      - "compTag2"
+    owner: "Owner1"
+
+api:
+  MyAPI:
+    name: "MyAPI"
+    description: "This is the description of MyAPI"
+    annotations:
+      - "annotation1"
+      - "annotation2"
+    owner: "Owner1"
