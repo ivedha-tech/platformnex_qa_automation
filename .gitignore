@@ -6,6 +6,9 @@ dist/
 out/
 build/
 
+# test results
+test-results/
+
 # TypeScript
 *.tsbuildinfo
 
