@@ -22,5 +22,22 @@ export class MainPage {
     this.signinButtonMain.click()
   ]);
   return this.page;
+
+  }
+  //navigate to the dashboard page
+  async isDashboardLoaded(): Promise<boolean> {
+    try {
+      await this.page.waitForLoadState('domcontentloaded', { timeout: 120000 });
+      return true;
+    } catch {
+      return false;
+    }
+
+  }
 }
-}
+//verify 3- tier choose button is clicked 
+// async is3TierButtonClicked(): Promise<boolean> {
+//   try {
+//     await this.page.waitForSelector('xpath=//*[@id="root"]/div[2 ]/div/div/div[2]/div[2]/div[1]/div[2]/button', { timeout: 10000 });
+//     return true;
+//   } catch {
