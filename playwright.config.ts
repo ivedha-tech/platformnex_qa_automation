@@ -6,7 +6,7 @@ export default defineConfig({
   retries: 2,
   reporter: [['html', { outputFolder: 'reports' }]],
   use: {
-    headless: true,
+    headless: false,
     baseURL: 'https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app', // Base URL for your application
     screenshot: 'on',
     video: 'retain-on-failure',
