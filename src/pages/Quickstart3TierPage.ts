@@ -1,13 +1,8 @@
-import { Page } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 
 export class Quickstart3TierPage {
   readonly page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
-  }
-
-  // ---------- Actions ----------
+   // ---------- Actions ----------
 
   // Click 3-Tier button and wait for navigation/modal
   async click3TierButton(): Promise<boolean> {
@@ -19,99 +14,131 @@ export class Quickstart3TierPage {
       await button.click();
   
       // Wait for first input in 3-Tier form to appear
-      await this.page.waitForSelector(this.nameInput, { state: "visible", timeout: 10000 });
+      await this.nameInput.waitFor({ state: "visible", timeout: 10000 });
       return true;
     } catch (error) {
       console.error("Failed to click 3-Tier button:", error);
       return false;
     }
   }
+
+
   // ---------- Locators ----------
-  readonly nameInput = '//*[@id="component_id"]';
-  readonly descriptionInput = '//*[@id="description"]';
-  readonly ownerInput = '//*[@id="owner"]';
-  readonly systemInput = '//*[@id="system"]';
-  readonly basicNextButton = '//*[@id="radix-:rl:"]/div[4]/div/button';
+  // Basic Info
+  readonly nameInput: Locator;
+  readonly descriptionInput: Locator;
+  readonly ownerInput: Locator;
+  readonly systemInput: Locator;
+  readonly basicNextButton: Locator;
 
-  readonly repoOwnerInput = '//*[@id="radix-:rl:"]/div[3]/div/div/div[2]/div[5]/div/div[2]/input';
-  readonly repoNameInput = '//*[@id="radix-:rl:"]/div[3]/div/div/div[2]/div[5]/div/div[3]/input';
-  readonly serviceNameInput = '//*[@id="frontend_service_name"]'
-  readonly serviceDescInput = '//*[@id="frontend_service_description"]';
-  readonly frontendNextButton = '//*[@id="radix-:rl:"]/div[4]/div/button[2]';
+  // Frontend
+  readonly repoOwnerInput: Locator;
+  readonly repoNameInput: Locator;
+  readonly serviceNameInput: Locator;
+  readonly serviceDescInput: Locator;
+  readonly frontendNextButton: Locator;
 
-  readonly backendRepoOwnerInput = '//*[@id="radix-:rl:"]/div[3]/div/div/div[3]/div[3]/div/div[2]/input';
-  readonly backendRepoNameInput = '//*[@id="radix-:rl:"]/div[3]/div/div/div[3]/div[3]/div/div[3]/input';
-  readonly backendServiceNameInput = '//*[@id="backend_service_name"]';
-  readonly backendServiceDescInput = '//*[@id="backend_service_description"]';
-  readonly dependOnServiceInput = '//*[@id="backend_service_depend_on"]';
-  readonly dbServiceNameInput = '//*[@id="database_service_name"]';
-  readonly dbNameInput = '//*[@id="database_name"]';
-  readonly dbPasswordInput =  "#database_password";
-  readonly backendNextButton = '//*[@id="radix-:rl:"]/div[4]/div/button[2]';
+  // Backend
+  readonly backendRepoOwnerInput: Locator;
+  readonly backendRepoNameInput: Locator;
+  readonly backendServiceNameInput: Locator;
+  readonly backendServiceDescInput: Locator;
+  readonly dependOnServiceInput: Locator;
+  readonly dbServiceNameInput: Locator;
+  readonly dbNameInput: Locator;
+  readonly dbPasswordInput: Locator;
+  readonly backendNextButton: Locator;
 
-  readonly projectInput = '//*[@id="project"]';
-  readonly infraNextButton = '//*[@id="radix-:rl:"]/div[4]/div/button[2]';
+  // Infra & submit
+  readonly projectInput: Locator;
+  readonly infraNextButton: Locator;
+  readonly submitButton: Locator;
+  readonly successMsg: Locator;
 
-  readonly submitButton = '//*[@id="radix-:rl:"]/div[4]/div/button[2]';
-  readonly successMsg = "text=Log streaming completed";
+  constructor(page: Page) {
+    this.page = page;
 
-  // ---------- Form Fill Methods ----------
+    // Basic Info
+    this.nameInput = page.getByPlaceholder('Unique name of the component');
+    this.descriptionInput = page.getByPlaceholder('Help others understand what');
+    this.ownerInput = page.getByLabel('Owner*');
+    this.systemInput = page.getByLabel('System*');
+    this.basicNextButton = page.getByRole('button', { name: 'Next' });
 
+    // Frontend
+    this.repoOwnerInput = page.getByRole('textbox', { name: 'Enter GitHub username or' });
+    this.repoNameInput = page.getByRole('textbox', { name: 'Enter repository name' });
+    this.serviceNameInput = page.getByRole('textbox', { name: 'Service Name*' });
+    this.serviceDescInput = page.getByRole('textbox', { name: 'Service Description' });
+    this.frontendNextButton = page.getByRole('button', { name: 'Next' });
+
+    // Backend
+    this.backendRepoOwnerInput = page.getByRole('textbox', { name: 'Enter GitHub username or' });
+    this.backendRepoNameInput = page.getByRole('textbox', { name: 'Enter repository name' });
+    this.backendServiceNameInput = page.getByRole('textbox', { name: 'Service Name*', exact: true });
+    this.backendServiceDescInput = page.getByRole('textbox', { name: 'Service Description' });
+    this.dependOnServiceInput = page.getByPlaceholder('Depend On Service Name for');
+    this.dbServiceNameInput = page.getByPlaceholder('Service Name for the database');
+    this.dbNameInput = page.getByPlaceholder('Name of the database (default');
+    this.dbPasswordInput = page.getByPlaceholder('Password for the database');
+    this.backendNextButton = page.getByRole('button', { name: 'Next' });
+
+    // Infra & submit
+    this.projectInput = page.getByPlaceholder('Project for deployments');
+    this.infraNextButton = page.getByRole('button', { name: 'Next' });
+    this.submitButton = page.getByRole('button', { name: 'Create' });
+    this.successMsg = page.getByText('Log streaming completed');
+  }
+
+  // ---------- Actions ----------
   async fillBasicInfo(data: { name: string; description: string; owner: string; system: string }) {
-    await this.page.fill(this.nameInput, data.name);
-    await this.page.fill(this.descriptionInput, data.description);
-  // Owner Dropdown
-  const ownerDropdown = this.page.locator(this.ownerInput);
-   await ownerDropdown.click(); // open dropdown
-   await this.page.locator("role=option[name='guests']").click(); // direct click using accessible role
+    await this.nameInput.fill(data.name);
+    await this.descriptionInput.fill(data.description);
 
-// System Dropdown
-   const systemDropdown = this.page.locator(this.systemInput);
-   await systemDropdown.click(); // open dropdown
-   await this.page.locator("role=option[name='Platformnex']").click(); // direct click using role
-
-    await this.page.click(this.basicNextButton);
-    await this.page.waitForSelector(this.repoOwnerInput, { timeout: 30000 });
+   // Owner Dropdown
+  const ownerDropdown = this.ownerInput;
+    await ownerDropdown.click();
+    await this.page.getByText(data.owner, { exact: true }).click();
+    // System Dropdown
+    const systemDropdown = this.systemInput;
+    await systemDropdown.click();
+    await this.page.getByText(data.system, { exact: true }).click();                                  
+    await this.basicNextButton.click();
   }
 
   async fillFrontendConfig(data: { repoOwner: string; repoName: string; serviceName: string; serviceDescription: string }) {
-    await this.page.fill(this.repoOwnerInput, data.repoOwner);
-    await this.page.fill(this.repoNameInput, data.repoName);
-    await this.page.fill(this.serviceNameInput, data.serviceName);
-    await this.page.fill(this.serviceDescInput, data.serviceDescription);
-    await this.page.click(this.frontendNextButton);
-    await this.page.waitForSelector(this.backendRepoOwnerInput, { timeout: 50000 });
+    await this.repoOwnerInput.fill(data.repoOwner);
+    await this.repoNameInput.fill(data.repoName);
+    await this.serviceNameInput.fill(data.serviceName);
+    await this.serviceDescInput.fill(data.serviceDescription);
+    await this.frontendNextButton.click();
   }
-  
-  
 
   async fillBackendConfig(data: { repoOwner: string; repoName: string; serviceName: string; serviceDescription: string; dependOnService: string; dbServiceName: string; dbName: string; dbPassword: string }) {
-    await this.page.fill(this.backendRepoOwnerInput, data.repoOwner);
-    await this.page.fill(this.backendRepoNameInput, data.repoName);
-    await this.page.fill(this.backendServiceNameInput, data.serviceName);
-    await this.page.fill(this.backendServiceDescInput, data.serviceDescription);
-    await this.page.fill(this.dependOnServiceInput, data.dependOnService);
-    await this.page.fill(this.dbServiceNameInput, data.dbServiceName);
-    await this.page.fill(this.dbNameInput, data.dbName);
-    await this.page.fill(this.dbPasswordInput, data.dbPassword);
-    await this.page.click(this.backendNextButton);
-    await this.page.waitForSelector(this.projectInput, { timeout: 30000 });
+    await this.backendRepoOwnerInput.fill(data.repoOwner);
+    await this.backendRepoNameInput.fill(data.repoName);
+    await this.backendServiceNameInput.fill(data.serviceName);
+    await this.backendServiceDescInput.fill(data.serviceDescription);
+    await this.dependOnServiceInput.fill(data.dependOnService);
+    await this.dbServiceNameInput.fill(data.dbServiceName);
+    await this.dbNameInput.fill(data.dbName);
+    await this.dbPasswordInput.fill(data.dbPassword);
+    await this.backendNextButton.click();
   }
 
   async fillInfrastructureConfig(data: { project: string }) {
-    await this.page.fill(this.projectInput, data.project);
-    await this.page.click(this.infraNextButton);
-    await this.page.waitForSelector(this.submitButton, { timeout: 50000 });
+    await this.projectInput.fill(data.project);
+    await this.infraNextButton.click();
   }
+
   async reviewAndSubmit() {
-    // Click Submit
-    await this.page.click(this.submitButton);
+    // Click Submit button
+    await this.submitButton.click();
 
-    // Wait for the Pulumi success message up to 10 minutes
-    await this.page.locator(this.successMsg).waitFor({ timeout: 600_000 });
+    // Wait for the Pulumi success message
+    await this.successMsg.waitFor({ timeout: 600_000 });
 
-    // Optional: log that deployment is complete
+    // Optional log
     console.log("Log streaming completed");
 }
-
 }

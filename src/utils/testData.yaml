@@ -41,25 +41,25 @@ api:
     owner: "Owner1"
 quickstart:
   basicinfo:
-    name: "anyone4523app"
+    name: "anyone556"
     description: "Anything"
     owner: "guests"
     system: "Platformnex"
 
   frontend:
     repoOwner: "ivedha-tech"
-    repoName: "reponamefrontend4523"
-    serviceName: "cloudrunservicefrontend4523"
+    repoName: "anyonefrontend4523"
+    serviceName: "anyoneservicefrontend4523"
     serviceDescription: "anything"
 
   backend:
     repoOwner: "ivedha-tech"
-    repoName: "reponamebackend4523"
-    serviceName: "cloud4523runservicebackend"
+    repoName: "anyone556"
+    serviceName: "anyonerunservicebackend"
     serviceDescription: "Anything"
     dependOnService: "xdvsdv"
-    dbServiceName: "anydb45name"
-    dbName: "different4523namebackend"
+    dbServiceName: "anyone556name"
+    dbName: "anyone556namebackend"
     dbPassword: "Pass@123"
 
   infrastructure:

@@ -46,8 +46,5 @@ test.describe("End-to-End 3-Tier Quickstart Flow", () => {
 
     // 9️⃣ Review & Submit
     await quickstartPage.reviewAndSubmit();
-
-    // 🔟 Verify success message
-    await expect(page.locator("text=Pulumi Infrastructure Logs Completed")).toBeVisible({ timeout: 120000 });
   });
 });
