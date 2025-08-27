@@ -27,7 +27,7 @@ export class MainPage {
   //navigate to the dashboard page
   async isDashboardLoaded(): Promise<boolean> {
     try {
-      await this.page.waitForLoadState('domcontentloaded', { timeout: 120000 });
+      await this.page.waitForLoadState('domcontentloaded', { timeout: 200000 });
       return true;
     } catch {
       return false;

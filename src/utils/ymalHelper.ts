@@ -54,7 +54,34 @@ export interface TestData {
       project: string;
     };
   };
-} // ✅ Close the interface here
+
+  jira: {
+    search: {
+      byId: string;
+      bySummary: string;
+    };
+    filters: {
+      project: string;
+      epic: string;
+      sprint: string;
+      status: string;
+    };
+  };
+  cloudops: {
+    resource: {
+        name: string;
+    };
+    database?: {
+        instanceName: string;
+        version: string;
+        dbName: string;
+        username: string;
+        password: string;
+    };
+}
+}   
+
+ // ✅ Close the interface here
 
 // Function to load YAML data from a file
 export function loadYamlData(filePath: string): TestData {
