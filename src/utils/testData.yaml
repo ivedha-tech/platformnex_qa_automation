@@ -126,3 +126,25 @@ quickstart:
     dbPassword: "Pass@123"
   infrastructure:
     project: "prj-dev-platform-next"
+
+devops:
+  componentName: "devops-auto-test-component"
+  description: "DevOps QA component"
+  owner: "guests"
+  type: "website"
+  environment: "development"
+  providerOption: "Github"
+  repoUrl: "https://github.com/ivedha-tech/platformnex_qa_automation"
+  gcpProjectID: "prj-dev-platform-next"
+
+  expected:
+    sonarMissingHeading: "Missing Plugin SonarQube"
+    sonarSetupInProgressHeading: "SonarQube Setup in Progress"
+    prTitlePrefix: "Onboard SonarQube:"
+    codeQualityCards:
+      - "Reliability"
+      - "Security"
+      - "Maintainability"
+      - "Hotspots Reviewed"
+      - "Coverage"
+      - "Duplications"

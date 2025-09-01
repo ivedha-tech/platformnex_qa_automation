@@ -111,4 +111,17 @@ static async validateText(locator: Locator, expectedText: string): Promise<void>
     throw error;
   }
 }
+
+/** Validate locator visible and its text contains expected snippet */
+  static async validateTextContains(locator: Locator, expectedSubstring: string): Promise<void> {
+    await locator.waitFor({ state: "visible", timeout: 60000 });
+    const text = (await locator.textContent())?.trim() || "";
+    expect(text.toLowerCase()).toContain(expectedSubstring.toLowerCase());
+  }
+
+  /** Validate a locator is visible (no text assertion) */
+  static async validateLocatorVisible(locator: Locator): Promise<void> {
+    await locator.waitFor({ state: "visible", timeout: 60000 });
+    expect(await locator.isVisible()).toBe(true);
+  }
 }
