@@ -13,23 +13,55 @@ login:
     expectedErrorMessageWrongPassword: "Invalid login. Please try again."
     expectedErrorMessageEmpty: "Required field"
 
-  application:
-  MyApp:
-    name: "MyApp"
-    description: "This is the description of MyApp"
-    tags:
-      - "tag1"
-      - "tag2"
-    owner: "Owner1"
+application:
+  valid:
+    appName: "TestApp1"
+    description: "Sample App"
+    owner: "guests"
+  edit:
+    updatedAppName: "Edited-Application"
+    updatedDescription: "Edited App Description"
+    updatedOwner: "admins"
+  successMessage: 
+    expectedMessage: "System Edited Successfully!" 
 
 component:
-  MyComponent:
-    name: "MyComponent"
-    description: "This is the description of MyComponent"
-    tags:
-      - "compTag1"
-      - "compTag2"
-    owner: "Owner1"
+  comp:
+    valid:
+      kind: "component"
+      compName: "TestComponentAuto1"
+      description: "Sample Component"
+      owner: "guests"
+      type: "website"
+      environment: "development"
+      scOption: "Github"
+      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedDescription: "Edited Comp Description"
+      updatedType: "service"
+      updateEnvironment: "production"
+    successMessage: 
+      expectedMessage: "Component Updated Successfully!" 
+
+  api:
+    valid:
+      kind: "api"
+      apiName: "TestAPI"
+      description: "Sample API"
+      owner: "guests"
+      type: "openapi"
+      environment: "development"
+      scOption: "Github"
+      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      apiDefinition: "Defining the api"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedDescription: "Edited API Description"
+      updatedType: "graphql"
+      updatedApiDefinition: "Edited API definition"
+    successMessage: 
+      expectedMessage: "API Updated Successfully!"   
 
 api:
   MyAPI:
@@ -39,6 +71,7 @@ api:
       - "annotation1"
       - "annotation2"
     owner: "Owner1"
+
 quickstart:
   basicinfo:
     name: "anyone556"
@@ -64,3 +97,21 @@ quickstart:
 
   infrastructure:
     project: "prj-dev-platform-next"
+
+resource:
+  valid:
+    kind: "resource"
+    resourceName: "TestRes"
+    description: "Sample Resource"
+    owner: "guests"
+    type: "Database"
+    environment: "development"
+    gcpProjectID: "prj-dev-platform-next"
+  edit:
+    updatedResourceName: "EditedRes"
+    updatedDescription: "Edited Resource Description"
+    updatedOwner: "admins"
+    updatedType: "Cache"
+    updatedTags: "ResTag1,ResTag2,ResTag3"
+  successMessage: 
+    expectedMessage: "Resource Updated Successfully!"
