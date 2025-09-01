@@ -98,6 +98,29 @@ quickstart:
   infrastructure:
     project: "prj-dev-platform-next"
 
+
+jira:
+  search:
+    byId: "PEJ"
+    bySummary: "Start sending emails"
+  filters:
+    project: "PEJ"
+    epic: "DevOps UI"
+    sprint: "Today"
+    status: "To Do"
+
+cloudops:
+  resource:
+    name: "testing4"
+    type: "storage"
+
+  database:
+    instanceName: "testing42"
+    version: "PostgreSQL 15"
+    dbName: "testdb42"
+    username: "dbuser42"
+    password: "Admin@42"
+
 resource:
   valid:
     kind: "resource"
@@ -115,3 +138,4 @@ resource:
     updatedTags: "ResTag1,ResTag2,ResTag3"
   successMessage: 
     expectedMessage: "Resource Updated Successfully!"
+
