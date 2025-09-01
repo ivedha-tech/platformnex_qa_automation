@@ -55,9 +55,9 @@ const {
   environment: apiEnv,
   scOption: apiSCOption,
   repoLink: apiRepoLink,
-} = testData.component.api.valid;
+} = testData.api.comp.valid;
 const { updatedDescription: apiUpdatedDesc, annotations: apiAnnotationsEdit } =
-  testData.component.api.edit;
+  testData.api.comp.edit;
 
 // Resource
 const {
@@ -68,9 +68,9 @@ const {
   type: resType,
   environment: resourceEnv,
   gcpProjectID: resourceGcp,
-} = testData.component.resource.valid;
+} = testData.resource.comp.valid;
 const { updatedDescription: resUpdatedDesc, tags: resTagsEdit } =
-  testData.component.resource.edit;
+  testData.resource.comp.edit;
 
 test.beforeEach(async ({ page }, testInfo) => {
   onboardingPage = new OnboardingPage(page);
