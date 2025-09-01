@@ -53,3 +53,8 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+# Images
+*.png
+*.jpg
+*.webm

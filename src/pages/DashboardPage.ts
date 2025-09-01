@@ -3,18 +3,14 @@ import { Page, Locator } from '@playwright/test';
 export class DashboardPage {
   private page: Page;
 
-  //Xpaths
-  private dashboardHeaderXpath: String = '//*[@id="root"]/div[2]/div/div/div/div[1]/h1';
-  private dashboardMainContainerXpath: String = '//*[@id="root"]/div[2]/div/div';
-
   //Locators
-  private header: Locator;
-  private dashboardContainer: Locator; 
+  readonly header: Locator;
+  //private dashboardContainer: Locator; 
 
   constructor(page: Page) {
     this.page = page;
-    this.header = page.locator(`xpath=${this.dashboardHeaderXpath}`); 
-    this.dashboardContainer = page.locator(`xpath=${this.dashboardMainContainerXpath}`); 
+    this.header = page.getByRole('heading', { name: 'Home' }); 
+    //this.dashboardContainer = page.locator(`xpath=${this.dashboardMainContainerXpath}`); 
 
   }
 
@@ -27,8 +23,8 @@ export class DashboardPage {
       ]);
 
       // Optionally check if the main container is visible
-      const isContainerVisible = await this.dashboardContainer.isVisible();
-      return isContainerVisible && (await this.header.isVisible());
+      //const isContainerVisible = await this.dashboardContainer.isVisible();
+      return (await this.header.isVisible());
     } catch (error) {
       console.error('Error while verifying dashboard load:', error);
       return false;

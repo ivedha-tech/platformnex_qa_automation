@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
 export interface TestData {
+  resource: any;
   api: any;
   application: any;
   component: any;
