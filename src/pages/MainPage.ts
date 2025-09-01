@@ -25,7 +25,7 @@ export class MainPage {
     this.page.waitForLoadState('domcontentloaded', { timeout: 120000 }),
     this.signinButtonMain.click()
   ]);
-    return this.page;
+  return this.page;
   }
 
   // Navigate to the Application tab from sidebar
@@ -35,4 +35,26 @@ export class MainPage {
     await this.page.waitForLoadState('networkidle'); 
   }
 
+  // Navigate to the dashboard page and verify it’s loaded
+  async isDashboardLoaded(): Promise<boolean> {
+    try {
+      await this.page.waitForLoadState('domcontentloaded', { timeout: 120000 });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  // (Optional) Verify 3-tier choose button is clicked
+  // async is3TierButtonClicked(): Promise<boolean> {
+  //   try {
+  //     await this.page.waitForSelector(
+  //       'xpath=//*[@id="root"]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/button',
+  //       { timeout: 10000 }
+  //     );
+  //     return true;
+  //   } catch {
+  //     return false;
+  //   }
+  // }
 }

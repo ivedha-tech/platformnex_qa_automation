@@ -63,20 +63,55 @@ component:
     successMessage: 
       expectedMessage: "API Updated Successfully!"   
 
-  resource:
-    valid:
-      kind: "resource"
-      resourceName: "TestRes"
-      description: "Sample Resource"
-      owner: "guests"
-      type: "Database"
-      environment: "development"
-      gcpProjectID: "prj-dev-platform-next"
-    edit:
-      updatedResourceName: "EditedRes"
-      updatedDescription: "Edited Resource Description"
-      updatedOwner: "admins"
-      updatedType: "Cache"
-      updatedTags: "ResTag1,ResTag2,ResTag3"
-    successMessage: 
-      expectedMessage: "Resource Updated Successfully!" 
+api:
+  MyAPI:
+    name: "MyAPI"
+    description: "This is the description of MyAPI"
+    annotations:
+      - "annotation1"
+      - "annotation2"
+    owner: "Owner1"
+
+quickstart:
+  basicinfo:
+    name: "anyone556"
+    description: "Anything"
+    owner: "guests"
+    system: "Platformnex"
+
+  frontend:
+    repoOwner: "ivedha-tech"
+    repoName: "anyonefrontend4523"
+    serviceName: "anyoneservicefrontend4523"
+    serviceDescription: "anything"
+
+  backend:
+    repoOwner: "ivedha-tech"
+    repoName: "anyone556"
+    serviceName: "anyonerunservicebackend"
+    serviceDescription: "Anything"
+    dependOnService: "xdvsdv"
+    dbServiceName: "anyone556name"
+    dbName: "anyone556namebackend"
+    dbPassword: "Pass@123"
+
+  infrastructure:
+    project: "prj-dev-platform-next"
+
+resource:
+  valid:
+    kind: "resource"
+    resourceName: "TestRes"
+    description: "Sample Resource"
+    owner: "guests"
+    type: "Database"
+    environment: "development"
+    gcpProjectID: "prj-dev-platform-next"
+  edit:
+    updatedResourceName: "EditedRes"
+    updatedDescription: "Edited Resource Description"
+    updatedOwner: "admins"
+    updatedType: "Cache"
+    updatedTags: "ResTag1,ResTag2,ResTag3"
+  successMessage: 
+    expectedMessage: "Resource Updated Successfully!"
