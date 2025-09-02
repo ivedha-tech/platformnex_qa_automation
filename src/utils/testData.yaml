@@ -12,8 +12,18 @@ login:
     expectedErrorMessageWrongMail: "Invalid email address."
     expectedErrorMessageWrongPassword: "Invalid login. Please try again."
     expectedErrorMessageEmpty: "Required field"
-
-  application:
+ 
+application:
+  valid:
+    appName: "TestApp1"
+    description: "Sample App"
+    owner: "guests"
+  edit:
+    updatedAppName: "Edited-Application"
+    updatedDescription: "Edited App Description"
+    updatedOwner: "admins"
+  successMessage:
+    expectedMessage: "System Edited Successfully!"
   MyApp:
     name: "MyApp"
     description: "This is the description of MyApp"
@@ -21,8 +31,25 @@ login:
       - "tag1"
       - "tag2"
     owner: "Owner1"
-
+ 
 component:
+  comp:
+    valid:
+      kind: "component"
+      compName: "TestComponentAuto1"
+      description: "Sample Component"
+      owner: "guests"
+      type: "website"
+      environment: "development"
+      scOption: "Github"
+      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedDescription: "Edited Comp Description"
+      updatedType: "service"
+      updateEnvironment: "production"
+    successMessage:
+      expectedMessage: "Component Updated Successfully!"
   MyComponent:
     name: "MyComponent"
     description: "This is the description of MyComponent"
@@ -30,8 +57,26 @@ component:
       - "compTag1"
       - "compTag2"
     owner: "Owner1"
-
+ 
 api:
+  comp:
+    valid:
+      kind: "api"
+      apiName: "TestAPI"
+      description: "Sample API"
+      owner: "guests"
+      type: "openapi"
+      environment: "development"
+      scOption: "Github"
+      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      apiDefinition: "Defining the api"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedDescription: "Edited API Description"
+      updatedType: "graphql"
+      updatedApiDefinition: "Edited API definition"
+    successMessage:
+      expectedMessage: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -39,3 +84,72 @@ api:
       - "annotation1"
       - "annotation2"
     owner: "Owner1"
+ 
+resource:
+  comp:
+    valid:
+      kind: "resource"
+      resourceName: "TestRes"
+      description: "Sample Resource"
+      owner: "guests"
+      type: "Database"
+      environment: "development"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedResourceName: "EditedRes"
+      updatedDescription: "Edited Resource Description"
+      updatedOwner: "admins"
+      updatedType: "Cache"
+      updatedTags: "ResTag1,ResTag2,ResTag3"
+    successMessage:
+      expectedMessage: "Resource Updated Successfully!"
+ 
+quickstart:
+  basicinfo:
+    name: "anyone556"
+    description: "Anything"
+    owner: "guests"
+    system: "Platformnex"
+  frontend:
+    repoOwner: "ivedha-tech"
+    repoName: "anyonefrontend4523"
+    serviceName: "anyoneservicefrontend4523"
+    serviceDescription: "anything"
+  backend:
+    repoOwner: "ivedha-tech"
+    repoName: "anyone556"
+    serviceName: "anyonerunservicebackend"
+    serviceDescription: "Anything"
+    dependOnService: "xdvsdv"
+    dbServiceName: "anyone556name"
+    dbName: "anyone556namebackend"
+    dbPassword: "Pass@123"
+  infrastructure:
+    project: "prj-dev-platform-next"
+
+jira:
+  search:
+    byId: "PEJ"
+    bySummary: "Start sending emails"
+  filters:
+    project: "PEJ"
+    epic: "DevOps UI"
+    sprint: "Today"
+    status: "To Do"
+ 
+cloudops:
+  resource:
+    name: "testing4"
+    type: "storage"
+ 
+  database:
+    instanceName: "testing42"
+    version: "PostgreSQL 15"
+    dbName: "testdb42"
+    username: "dbuser42"
+    password: "Admin@42"
+    
+finops:
+  gcp-projectid: "demo-project-123"
+  gcp-dataset-id: "demo_dataset"
+  gcp-table-id: "demo_table"

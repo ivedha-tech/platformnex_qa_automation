@@ -25,6 +25,11 @@ export interface TestData {
 
     }
   };
+  finops: {
+    "gcp-projectid": string;
+    "gcp-dataset-id": string;
+    "gcp-table-id": string;
+  };
 }
 
 export const loadYamlData = (filePath: string): TestData => {
