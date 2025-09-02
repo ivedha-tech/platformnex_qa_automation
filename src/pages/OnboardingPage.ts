@@ -138,7 +138,7 @@ export class OnboardingPage extends BasePage {
     description: string,
     owner: string
   ): Promise<void> {
-    await this.handleTour();
+    //await this.handleTour();
     await this.onboardApplicationButton.click();
 
     await this.newAppName.waitFor({ state: "visible" });
@@ -219,7 +219,7 @@ export class OnboardingPage extends BasePage {
   apiDefinitionPath: string,
   gcpProjectID: string,
 ): Promise<void> {
-  await this.handleTour();
+  
 
   //select the application
   await this.selectApplicationByName(applicationName);
@@ -286,10 +286,14 @@ export class OnboardingPage extends BasePage {
     await this.apiDefinitionField.fill(apiDefinitionPath);
   }
 
-  // Fill GCP project name
-  await this.gcpProjectField.waitFor({ state: 'visible' });
-  await this.gcpProjectField.fill(gcpProjectID);
-
+  // -----------------------------------------
+  // GCP Project id (only if type === "API" or "RESOURCE")
+  // -----------------------------------------
+  if (kind.toLowerCase() === "resource" || kind.toLowerCase() === "api")  {
+    // Fill GCP project name
+    await this.gcpProjectField.waitFor({ state: 'visible' });
+    await this.gcpProjectField.fill(gcpProjectID);
+  }
   // Click Next 
   await this.nextButton.waitFor({ state: 'visible' });
   await this.nextButton.click();

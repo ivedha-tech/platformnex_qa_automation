@@ -76,6 +76,7 @@ export class BasePage {
   }
 
   async handleTour(): Promise<void> {
+    await this.page.mouse.click(0, 0);
     await this.page.waitForLoadState("domcontentloaded");
     await this.page.mouse.click(0, 0);
     await this.completeTour();

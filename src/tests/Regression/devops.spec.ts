@@ -48,7 +48,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Precondition: Login
   await loginAsUser(page, email, password);
   await mainPage.navigateToApplication();
-  await basePage.handleTour();
+  
 });
 
 test.describe("DevOps Gateway Flow", () => {
