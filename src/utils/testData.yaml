@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "platformnex@ivedha.com"
-    password: "Admin@123"
+    email: "sanduni.gunawardhana@ivedha.com"
+    password: "Sandu@123"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -15,7 +15,7 @@ login:
 
 application:
   valid:
-    appName: "TestApp1"
+    appName: "Test-App-Automation"
     description: "Sample App"
     owner: "guests"
   edit:
@@ -23,7 +23,8 @@ application:
     updatedDescription: "Edited App Description"
     updatedOwner: "admins"
   successMessage:
-    expectedMessage: "System Edited Successfully!"
+    expectedMessageOnboarded: "System Onboarded Successfully!"
+    expectedMessageUpdated: "System Updated Successfully!"
   MyApp:
     name: "MyApp"
     description: "This is the description of MyApp"
@@ -36,7 +37,7 @@ component:
   comp:
     valid:
       kind: "component"
-      compName: "TestComponentAuto1"
+      compName: "TestComponentAuto"
       description: "Sample Component"
       owner: "guests"
       type: "website"
@@ -49,7 +50,8 @@ component:
       updatedType: "service"
       updateEnvironment: "production"
     successMessage:
-      expectedMessage: "Component Updated Successfully!"
+      expectedMessageOnboarded: "Component Onboarded Successfully!"
+      expectedMessageUpdated: "Component Updated Successfully!"
   MyComponent:
     name: "MyComponent"
     description: "This is the description of MyComponent"
@@ -76,7 +78,8 @@ api:
       updatedType: "graphql"
       updatedApiDefinition: "Edited API definition"
     successMessage:
-      expectedMessage: "API Updated Successfully!"
+      expectedMessageOnboarded: "API Onboarded Successfully!"
+      expectedMessageUpdated: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -102,7 +105,8 @@ resource:
       updatedType: "Cache"
       updatedTags: "ResTag1,ResTag2,ResTag3"
     successMessage:
-      expectedMessage: "Resource Updated Successfully!"
+      expectedMessageOnboarded: "Resource Onboarded Successfully!"
+      expectedMessageUpdated: "Resource Updated Successfully!"
 
 quickstart:
   basicinfo:
@@ -128,6 +132,7 @@ quickstart:
     project: "prj-dev-platform-next"
 
 devops:
+  compKind: "Component"
   componentName: "devops-auto-test-component"
   description: "DevOps QA component"
   owner: "guests"

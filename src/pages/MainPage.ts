@@ -33,7 +33,7 @@ export class MainPage extends BasePage {
     await this.page.waitForLoadState('domcontentloaded'); 
     
     //Call BasePage function after navigating
-    await this.handleTour();
+    
   }
 
   // Navigate to the dashboard page and verify it’s loaded

@@ -12,30 +12,30 @@ export class DevopsPage extends BasePage {
   readonly componentOptionByName: (name: string) => Locator;
 
   // SonarQube missing/setup locators
-  readonly missingPluginHeading: Locator;                 // "Missing Plugin SonarQube"
-  readonly setupNewButton: Locator;                       // "Set Up New"
-  readonly onboardingConfirmTitle: Locator;               // "Confirm Onboarding"
-  readonly onboardingConfirmBody: Locator;                // text "Do you want to confirm"
-  readonly onboardingConfirmButton: Locator;              // "Confirm"
-  readonly onboardingModalCloseButton: Locator;           // "Close"
-  readonly setupInProgressHeading: Locator;               // "SonarQube Setup in Progress"
+  readonly missingPluginHeading: Locator; // "Missing Plugin SonarQube"
+  readonly setupNewButton: Locator; // "Set Up New"
+  readonly onboardingConfirmTitle: Locator; // "Confirm Onboarding"
+  readonly onboardingConfirmBody: Locator; // text "Do you want to confirm"
+  readonly onboardingConfirmButton: Locator; // "Confirm"
+  readonly onboardingModalCloseButton: Locator; // "Close"
+  readonly setupInProgressHeading: Locator; // "SonarQube Setup in Progress"
 
   // Pull Requests section
-  readonly pullRequestsSectionTitle: Locator;             // "Pull Requests"
+  readonly pullRequestsSectionTitle: Locator; // "Pull Requests"
   readonly onboardSonarPRRowByPrefix: (prefix: string) => Locator;
 
   // PR details page
-  readonly prTitlePrefixHeading: Locator;                 // "Onboard SonarQube:"
-  readonly mergeButton: Locator;                          // "Merge"
-  public mergingBlockedBanner: Locator;                 // "Merging is blocked"
-  public bypassRuleCheckbox: Locator;                   // "Merge without waiting for requirement..."
-  public mergeAnywayButton: Locator;                    // "Merge anyway"
-  public confirmMergeDialogTitle: Locator;              // "Confirm Merge"
-  public confirmMergeButton: Locator;                   // "Confirm"
+  readonly prTitlePrefixHeading: Locator; // "Onboard SonarQube:"
+  readonly mergeButton: Locator; // "Merge"
+  public mergingBlockedBanner: Locator; // "Merging is blocked"
+  public bypassRuleCheckbox: Locator; // "Merge without waiting for requirement..."
+  public mergeAnywayButton: Locator; // "Merge anyway"
+  public confirmMergeDialogTitle: Locator; // "Confirm Merge"
+  public confirmMergeButton: Locator; // "Confirm"
 
   // Code Quality cards after refresh
-  readonly codeQualityHeading: Locator;                   // "Code Quality"
-  readonly qualityCardByName: (name: string) => Locator;  // reliability/security/etc.
+  readonly codeQualityHeading: Locator; // "Code Quality"
+  readonly qualityCardByName: (name: string) => Locator; // reliability/security/etc.
 
   constructor(page: Page) {
     super(page);
@@ -44,18 +44,30 @@ export class DevopsPage extends BasePage {
     this.devopsTab = page.getByRole("tab", { name: "DevOps" });
 
     // component selector (button shows current selection), option by visible text
-    this.componentSelectorButton = page.locator('button').filter({ hasText: /web_asset/i });
+    this.componentSelectorButton = page
+      .locator("button")
+      .filter({ hasText: /web_asset/i });
     this.componentOptionByName = (name: string) =>
-      page.getByRole("option", { name: new RegExp(`web_asset\\s+${name}$`, "i") });
+      page.getByRole("option", {
+        name: new RegExp(`web_asset\\s+${name}$`, "i"),
+      });
 
     // SonarQube missing/setup
-    this.missingPluginHeading = page.getByRole("heading", { name: /Missing Plugin SonarQube/i });
+    this.missingPluginHeading = page.getByRole("heading", {
+      name: /Missing Plugin SonarQube/i,
+    });
     this.setupNewButton = page.getByRole("button", { name: /Set Up New/i });
-    this.onboardingConfirmTitle = page.getByRole("heading", { name: /Confirm Onboarding/i });
+    this.onboardingConfirmTitle = page.getByRole("heading", {
+      name: /Confirm Onboarding/i,
+    });
     this.onboardingConfirmBody = page.getByText(/Do you want to confirm/i);
-    this.onboardingConfirmButton = page.getByRole("button", { name: /^Confirm$/i });
-    this.onboardingModalCloseButton = page.getByRole("button", { name: /^Close$/i });
-    this.setupInProgressHeading = page.getByRole("heading", { name: /SonarQube Setup in Progress/i });
+    this.onboardingConfirmButton = page.getByRole("button", {
+      name: /^Confirm$/i,
+    });
+    this.onboardingModalCloseButton = page.getByRole("button", {
+      name: /^Close$/i,
+    });
+    this.setupInProgressHeading = page.getByRole('heading', { name: 'SonarQube Setup in Progress' });
 
     // Pull Requests
     this.pullRequestsSectionTitle = page.getByText(/Pull Requests/i);
@@ -64,11 +76,15 @@ export class DevopsPage extends BasePage {
       page.getByRole("row", { name: new RegExp(`${prefix}\\s*`, "i") });
 
     // PR details
-    this.prTitlePrefixHeading = page.getByRole("heading", { name: /Onboard SonarQube:/i });
+    this.prTitlePrefixHeading = page.getByText(/^Onboard SonarQube:/);
     this.mergeButton = page.getByRole("button", { name: /^Merge$/i });
     this.mergingBlockedBanner = page.getByLabel(/Merging is blocked/i);
-    this.bypassRuleCheckbox = page.getByLabel(/Merge without waiting for.*bypass rule/i);
-    this.mergeAnywayButton = page.getByRole("button", { name: /Merge anyway/i });
+    this.bypassRuleCheckbox = page.getByLabel(
+      /Merge without waiting for.*bypass rule/i
+    );
+    this.mergeAnywayButton = page.getByRole("button", {
+      name: /Merge anyway/i,
+    });
     this.confirmMergeDialogTitle = page.getByLabel(/Confirm Merge/i);
     this.confirmMergeButton = page.getByRole("button", { name: /^Confirm$/i });
 
@@ -93,26 +109,36 @@ export class DevopsPage extends BasePage {
     await this.componentSelectorButton.waitFor({ state: "visible" });
     await this.componentSelectorButton.click();
 
-    // Choose option
-    const opt = this.componentOptionByName(name);
-    await opt.waitFor({ state: "visible" });
-    await opt.click();
+    // Type in the search input (it should be auto-focused when dropdown opens)
+    await this.page.keyboard.type(name);
 
-    // Wait for page to render for selected component
+    // Press Enter to select the first matching option
+    await this.page.keyboard.press("Enter");
+
+    // Wait for page to render after selection
     await this.page.waitForLoadState("domcontentloaded");
   }
 
   async setupNewSonarQube(): Promise<void> {
-    await this.missingPluginHeading.waitFor({ state: "visible", timeout: 30000 });
+    await this.missingPluginHeading.waitFor({
+      state: "visible",
+      timeout: 30000,
+    });
     await this.setupNewButton.click();
 
     // Confirm onboarding
-    await this.onboardingConfirmTitle.waitFor({ state: "visible", timeout: 15000 });
+    await this.onboardingConfirmTitle.waitFor({
+      state: "visible",
+      timeout: 15000,
+    });
     await this.onboardingConfirmBody.waitFor({ state: "visible" });
     await this.onboardingConfirmButton.click();
 
     // Wait for modal content to stabilize then close
-    await this.setupInProgressHeading.waitFor({ state: "visible", timeout: 60000 });
+    await this.setupInProgressHeading.waitFor({
+      state: "visible",
+      timeout: 60000,
+    });
     await this.onboardingModalCloseButton.click();
   }
 
@@ -121,14 +147,20 @@ export class DevopsPage extends BasePage {
     const prRow = this.onboardSonarPRRowByPrefix(prefix);
     await prRow.waitFor({ state: "visible", timeout: 60000 });
     await prRow.click();
-    await this.prTitlePrefixHeading.waitFor({ state: "visible", timeout: 30000 });
+    await this.prTitlePrefixHeading.waitFor({
+      state: "visible",
+      timeout: 30000,
+    });
   }
 
   async bypassAndMergePR(): Promise<void> {
     await this.mergeButton.waitFor({ state: "visible" });
     await this.mergeButton.click();
 
-    await this.mergingBlockedBanner.waitFor({ state: "visible", timeout: 15000 });
+    await this.mergingBlockedBanner.waitFor({
+      state: "visible",
+      timeout: 15000,
+    });
     await this.bypassRuleCheckbox.check();
 
     await this.mergeAnywayButton.waitFor({ state: "visible" });

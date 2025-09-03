@@ -20,6 +20,10 @@ const { email, password } = testData.login.valid;
 // application
 const { appName } = testData.application.valid;
 
+//component
+const { expectedMessageOnboarded: compExpectedMessageOnboarded, expectedMessageUpdated: compExpectedMessageUpdated } =
+  testData.component.comp.successMessage;
+
 // devops (component + devops flow inputs)
 const {
   componentName,
@@ -42,6 +46,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   onboardingPage = new OnboardingPage(page);
   mainPage = new MainPage(page);
   basePage = new BasePage(page);
+  devopsPage = new DevopsPage(page);
 
   testInfo.setTimeout(testInfo.timeout + 30_000);
 
@@ -54,31 +59,38 @@ test.beforeEach(async ({ page }, testInfo) => {
 test.describe("DevOps Gateway Flow", () => {
   test("Onboard component and complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({ page }, testInfo) => {
     
-    devopsPage = new DevopsPage(page);
-
-    testInfo.setTimeout(testInfo.timeout + 60_000);
+    // 1) select application 
+    //await onboardingPage.selectApplicationByName("TestApp1");
+    await page.goto('https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Test-App')
 
     // 2) Onboard a new component (re-use your OnboardingPage API)
+    const newCompName = `${componentName}-${Date.now()}`
     await onboardingPage.onboardNewComponent(
-      "component",             // kind
-      appName,                 // applicationName
-      componentName,           // name
-      description,             // description
-      owner,                   // owner (kept in step 1 of your flow)
-      type,                    // type (e.g., "website")
-      environment,             // environment (e.g., "development")
-      providerOption,          // dropdown option in provider (e.g., "Github")
-      repoUrl,                 // repository link
-      "",                      // apiDefinitionPath (not used for "component")
-      gcpProjectID             // GCP project
+      "Component",             
+      appName,                 
+      newCompName,           
+      description,             
+      owner,                   
+      type,                    
+      environment,             
+      providerOption,          
+      repoUrl,                 
+      "",                      
+      gcpProjectID             
     );
+
+    await Asserts.validateSuccessMessage(
+          onboardingPage.componentOnboardedSuccess,
+          compExpectedMessageOnboarded
+        );
 
     // Land back on Application Overview and open DevOps tab
     await onboardingPage.viewApplication();
+
     await devopsPage.openDevOpsTab();
 
     // 3) Select our component in DevOps
-    await devopsPage.selectComponentByName(componentName);
+    await devopsPage.selectComponentByName(newCompName);
 
     // Verify we see "Missing Plugin SonarQube"
     await Asserts.validateTextContains(devopsPage.missingPluginHeading, sonarMissingHeading);
