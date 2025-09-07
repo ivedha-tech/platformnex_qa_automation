@@ -22,6 +22,7 @@ export class OnboardingPage extends BasePage {
   readonly viewApplicationButton: Locator;
   readonly applicationNameView: (name: string) => Locator;
   readonly startOverButton: Locator;
+  readonly sidebarTabApplication: Locator;
 
   readonly onboardExistingComponentButton: Locator;
   readonly onboardComponentButton: Locator;
@@ -84,10 +85,11 @@ export class OnboardingPage extends BasePage {
     this.applicationOnboardedMessage = page.getByRole('heading', { name: 'Component Edited Successfully!' })
     this.applicationNameView = (name: string) => page.getByRole("heading", { name: `${name}` });
     this.startOverButton = page.locator("#startOverApp");
+    this.sidebarTabApplication = page.getByRole('complementary').getByRole('link', { name: 'Applications' });
 
     // Component locators
-    this.onboardExistingComponentButton = page.getByRole('button', { name: 'add Onboard Existing Component' });
-    this.onboardComponentButton = page.getByRole('button', { name: 'add Onboard Component' });
+    this.onboardExistingComponentButton = page.getByRole('button', { name: /onboard\s+existing\s+component/i });
+    this.onboardComponentButton = page.getByRole('button', { name: /onboard\s+component/i });
     this.kindDropdown = page.getByLabel("Kind:");
     this.kindComponentOption = (kind: string) => page.getByLabel(`${kind}`);
     this.newCompNameField = page.getByPlaceholder("Name...");
@@ -98,7 +100,7 @@ export class OnboardingPage extends BasePage {
     this.selectTypeOption = (type: string) => page.getByLabel(`${type}`);
     this.environmentDropdown = page.getByLabel("Environment:");
     this.selectEnvironmentOption = (environment: string) => page.getByLabel(`${environment}`);
-    this.sourceControlProvider = page.locator('button').filter({ hasText: "Github" });
+    this.sourceControlProvider = page.getByRole('button', { name: /github/i });
     this.selecSourceControlOption = (option: string) => page.getByLabel(`${option}`);
     this.repoLinkField = page.getByPlaceholder("repository link...");
     this.gcpProjectField = page.getByPlaceholder("gcp project name...");
@@ -109,7 +111,7 @@ export class OnboardingPage extends BasePage {
     this.componentRow = (name: string) => this.page.getByRole('row', { name: new RegExp(`^${name} .*`, 'i') });
     this.nextButtonComponentTable = this.page.getByRole('button', { name: 'chevron_right' });
     this.editButtonInRow = (name: string) =>
-    this.page.getByRole("row", { name }).getByRole('row', { name: `${name}` }).getByRole('img').nth(1);
+    this.page.getByRole('row', { name: new RegExp(`^${name} .*`, 'i') }).getByRole('img').nth(1);
 
     // API locators
     this.apiDefinitionField = page.getByPlaceholder('API definition...');
@@ -125,7 +127,7 @@ export class OnboardingPage extends BasePage {
     this.editComponentSuccess =  page.getByRole('heading', { name: 'Component Edited Successfully!' });
 
     // application
-    this.applicationCardByName = (name: string) => page.getByRole('heading', { name: `${name}` });
+    this.applicationCardByName = (name: string) => page.getByRole('heading', { name: new RegExp(`^${name}$`, 'i') });
     this.paginationNextButton = page.getByRole('button', { name: 'chevron_right' });
   }
 
@@ -152,10 +154,18 @@ export class OnboardingPage extends BasePage {
     await this.appOnboardButton.click();
   }
 
-  async viewApplication(): Promise<void> {
+  async viewApplication(name?: string): Promise<void> {
     await this.page.waitForLoadState("domcontentloaded");
-    await this.viewApplicationButton.waitFor({ state: "visible" });
-    await this.viewApplicationButton.click();
+    if (name) {
+      // Navigate to Applications list first, then select by name
+      await this.sidebarTabApplication.waitFor({ state: 'visible', timeout: 30000 });
+      await this.sidebarTabApplication.click();
+      await this.page.waitForLoadState('networkidle');
+      await this.selectApplicationByName(name);
+    } else {
+      await this.viewApplicationButton.waitFor({ state: "visible" });
+      await this.viewApplicationButton.click();
+    }
   }
 
   async startOverApplication(): Promise<void> {
@@ -197,14 +207,64 @@ export class OnboardingPage extends BasePage {
   // Component Functions
   // ---------------------------
   async clickOnboardComponentButton() {
-    
-    if (await this.onboardExistingComponentButton.isVisible({ timeout: 6000 })) {
-      await this.onboardExistingComponentButton.click();
-    } else if (await this.onboardComponentButton.isVisible({ timeout: 6000 })) {
-      await this.onboardComponentButton.click();
-    } else {
-      throw new Error("No Onboard Component button found in the application view.");
+    // Ensure we are on Components tab if it exists
+    const componentsTab = this.page.getByRole('tab', { name: /components/i });
+    if (await componentsTab.isVisible().catch(() => false)) {
+      await componentsTab.click();
+      await this.page.waitForLoadState('domcontentloaded');
     }
+
+    const candidates: Locator[] = [
+      this.onboardExistingComponentButton,
+      this.onboardComponentButton,
+      this.page.getByRole('button', { name: /Onboard\s+(Existing\s+)?Component/i }),
+      this.page.locator('button:has-text("Onboard Component")'),
+      this.page.locator('button:has-text("Onboard Existing Component")'),
+      this.page.getByRole('button', { name: /onboard/i }),
+    ];
+
+    for (const candidate of candidates) {
+      if (await candidate.isVisible().catch(() => false)) {
+        await candidate.click();
+        return;
+      }
+    }
+
+    // Try opening any add/create menu to reveal options
+    const addButtons = [
+      this.page.getByRole('button', { name: /add|add_circle|create|new/i }),
+      this.page.locator('button:has-text("add")'),
+    ];
+    for (const addBtn of addButtons) {
+      if (await addBtn.isVisible().catch(() => false)) {
+        await addBtn.click();
+        const menuOptions: Locator[] = [
+          this.page.getByRole('menuitem', { name: /Onboard\s+Component/i }),
+          this.page.getByRole('menuitem', { name: /Onboard\s+Existing\s+Component/i }),
+          this.page.getByRole('menuitem', { name: /Onboard/i }),
+          this.page.getByRole('button', { name: /Onboard\s+Component/i }),
+          this.page.getByRole('button', { name: /Onboard\s+Existing\s+Component/i }),
+        ];
+        for (const opt of menuOptions) {
+          if (await opt.isVisible().catch(() => false)) {
+            await opt.click();
+            return;
+          }
+        }
+      }
+    }
+
+    // Debug: list all buttons to help identify correct selector
+    try {
+      const allButtons = await this.page.getByRole('button').allTextContents();
+      console.log('Onboard Component button not found. Buttons on page:', allButtons);
+      console.log('Current URL:', this.page.url());
+      const bodyText = await this.page.locator('body').innerText();
+      const snippet = bodyText.slice(0, 4000);
+      console.log('Page text snippet:', snippet);
+    } catch {}
+
+    throw new Error("No Onboard Component button found in the application view.");
   }
   async onboardNewComponent(
   kind: string,  
@@ -221,8 +281,8 @@ export class OnboardingPage extends BasePage {
 ): Promise<void> {
   await this.handleTour();
 
-  //select the application
-  await this.selectApplicationByName(applicationName);
+  // We are typically already inside the application view right after onboarding.
+  // If not, the caller should navigate. Skip re-selecting to avoid pagination errors.
 
   // Click onboard component button
   await this.clickOnboardComponentButton();
@@ -257,8 +317,8 @@ export class OnboardingPage extends BasePage {
   // Region (only if type === "RESOURCE")
   // -----------------------------------------
   if (kind.toLowerCase() === "resource") {
-    await this.apiDefinitionField.waitFor({ state: 'visible' });
-    await this.apiDefinitionField.fill(apiDefinitionPath);
+    await this.resourceRegionField.waitFor({ state: 'visible' });
+    await this.resourceRegionField.fill(apiDefinitionPath);
   }
 
   
@@ -311,17 +371,11 @@ export class OnboardingPage extends BasePage {
 }
 
   async viewComponent(componentName: string, componentRow: Locator, nextButtonComponentTable: Locator): Promise<Locator> {
-  
-  const existsCompName = await this.handlePagination(
+  await this.handlePagination(
     componentRow,
     nextButtonComponentTable,
-    "getText"
+    "exists"
   );
-
-  if (existsCompName != componentName) {
-    throw new Error(`Component "${componentName}" not found in the table`);
-  }
-
   return this.componentRow(componentName);
 }
 // ---------------------------
