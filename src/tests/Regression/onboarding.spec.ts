@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, Page, TestInfo } from "@playwright/test";
 import { LoginPage } from "../../pages/LoginPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
 import { MainPage } from "../../pages/MainPage";
@@ -87,7 +87,7 @@ const {
   expectedMessageUpdated: recExpectedMessageUpdated,
 } = testData.resource.comp.successMessage;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
   onboardingPage = new OnboardingPage(page);
   mainPage = new MainPage(page);
 
@@ -119,17 +119,17 @@ test.describe("Onboarding and Editing Tests", () => {
     ) {
       await Asserts.validateText(
         onboardingPage.applicationNameView(newAppName),
-        appName
+        newAppName
       );
     }
 
     // ---------------------------
-    // Component Onboarding + View
+    // Component Onboarding + View (disabled)
     // ---------------------------
-    const newCompName = `${compName}-${Date.now()}`
+    const newCompName = `${compName}-${Date.now()}`;
     await onboardingPage.onboardNewComponent(
       componentKind,
-      appName,
+      newAppName,
       newCompName,
       compDesc,
       compOwner,
@@ -146,24 +146,23 @@ test.describe("Onboarding and Editing Tests", () => {
     );
 
     await onboardingPage.viewApplication();
-    await Asserts.validateText(
-      onboardingPage.applicationNameView(appName),
-      appName
+    
+    await Asserts.validateSectionVisible(
+      await onboardingPage.viewComponent(
+        newCompName,
+        onboardingPage.componentRow(newCompName),
+        onboardingPage.nextButtonComponentTable
+      )
     );
 
-    // await Asserts.validateSectionVisible(
-    //   await onboardingPage.viewComponent(
-    //     newCompName
-    //   )
-    // );
-
     // ---------------------------
-    // API Onboarding + View
+    // API Onboarding + View (disabled)
     // ---------------------------
+    const newApiName = `${apiName}-${Date.now()}`;
     await onboardingPage.onboardNewComponent(
       apiKind,
-      appName,
-      apiName,
+      newAppName,
+      newApiName,
       apiDesc,
       apiOwner,
       apiType,
@@ -184,26 +183,29 @@ test.describe("Onboarding and Editing Tests", () => {
       newAppName
     );
 
-    // await Asserts.validateSectionVisible(
-    //   await onboardingPage.viewComponent(
-    //     compName
-    //   )
-    // );
+    await Asserts.validateSectionVisible(
+      await onboardingPage.viewComponent(
+        newApiName,
+        onboardingPage.componentRow(newApiName),
+        onboardingPage.nextButtonComponentTable
+      )
+    );
 
     // ---------------------------
-    // Resource Onboarding + View
+    // Resource Onboarding + View (disabled)
     // ---------------------------
+    const newResourceName = `${resourceName}-${Date.now()}`;
     await onboardingPage.onboardNewComponent(
-      apiKind,
-      appName,
-      resourceName,
+      resourceKind,
+      newAppName,
+      newResourceName,
       resDesc,
       resOwner,
       resType,
       resourceEnv,
       compSCOption,
-      repoLink,
-      apiDefinition,
+      '',
+      '',
       gcpProjectID
     );
     await Asserts.validateSuccessMessage(
@@ -217,11 +219,13 @@ test.describe("Onboarding and Editing Tests", () => {
       newAppName
     );
 
-    // await Asserts.validateSectionVisible(
-    //   await onboardingPage.viewComponent(
-    //     compName
-    //   )
-    // );
+    await Asserts.validateSectionVisible(
+      await onboardingPage.viewComponent(
+        newResourceName,
+        onboardingPage.componentRow(newResourceName),
+        onboardingPage.nextButtonComponentTable
+      )
+    );
 
     // ----------------------------------------------
     // Edit component
@@ -229,7 +233,7 @@ test.describe("Onboarding and Editing Tests", () => {
 
     await onboardingPage.editComponentByName(
       componentKind,
-      compName,
+      newCompName,
       compUpdatedDesc,
       compUpdatedType,
       compUpdatedEnv,
@@ -245,6 +249,6 @@ test.describe("Onboarding and Editing Tests", () => {
 
     // Verify updated description
     await onboardingPage.viewApplication();
-    await Asserts.validateSectionVisible(onboardingPage.componentRow(compName));
+    await Asserts.validateSectionVisible(onboardingPage.componentRow(newCompName));
   });
 });
