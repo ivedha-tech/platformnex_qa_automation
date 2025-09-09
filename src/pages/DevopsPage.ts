@@ -37,6 +37,13 @@ export class DevopsPage extends BasePage {
   readonly codeQualityHeading: Locator; // "Code Quality"
   readonly qualityCardByName: (name: string) => Locator; // reliability/security/etc.
 
+  //Devops Ui
+  readonly commitInsightsSection: Locator;
+  readonly libraryCheckerSection: Locator;
+  readonly viewMoreButton: Locator;
+  readonly recentCommits: Locator;
+
+
   constructor(page: Page) {
     super(page);
 
@@ -45,8 +52,9 @@ export class DevopsPage extends BasePage {
 
     // component selector (button shows current selection), option by visible text
     this.componentSelectorButton = page
-      .locator("button")
-      .filter({ hasText: /web_asset/i });
+      .locator("button").filter({
+  hasText: /web_asset.+/i,
+});
     this.componentOptionByName = (name: string) =>
       page.getByRole("option", {
         name: new RegExp(`web_asset\\s+${name}$`, "i"),
@@ -92,6 +100,13 @@ export class DevopsPage extends BasePage {
     this.codeQualityHeading = page.getByText(/Code Quality/i);
     this.qualityCardByName = (name: string) =>
       page.getByRole("button", { name: new RegExp(`${name}`, "i") });
+
+    //Devops UI
+    this.devopsTab = page.getByRole("tab", { name: "DevOps" });
+    this.commitInsightsSection = page.getByText("Commit Insights");
+    this.libraryCheckerSection = page.getByText("Library Checker");
+    this.viewMoreButton = page.getByRole("button", { name: "View more" });
+    this.recentCommits = page.getByText(/Recent Commits/i);
   }
 
   // ---------------------------
@@ -105,19 +120,21 @@ export class DevopsPage extends BasePage {
   }
 
   async selectComponentByName(name: string): Promise<void> {
-    // Open dropdown
-    await this.componentSelectorButton.waitFor({ state: "visible" });
-    await this.componentSelectorButton.click();
+  // Open dropdown
+  await this.componentSelectorButton.waitFor({ state: "visible" });
+  await this.componentSelectorButton.click();
 
-    // Type in the search input (it should be auto-focused when dropdown opens)
-    await this.page.keyboard.type(name);
+  // Wait for the option with the given name to be visible
+  const option = this.componentOptionByName(name);
+  await option.waitFor({ state: "visible", timeout: 10000 });
 
-    // Press Enter to select the first matching option
-    await this.page.keyboard.press("Enter");
+  // Scroll into view (to be safe) and click it
+  await option.scrollIntoViewIfNeeded();
+  await option.click();
 
-    // Wait for page to render after selection
-    await this.page.waitForLoadState("domcontentloaded");
-  }
+  // Wait for page to render after selection
+  await this.page.waitForLoadState("domcontentloaded");
+}
 
   async setupNewSonarQube(): Promise<void> {
     await this.missingPluginHeading.waitFor({
@@ -153,6 +170,12 @@ export class DevopsPage extends BasePage {
     });
   }
 
+  private async scrollAndWait(locator: Locator, timeout = 30000) {
+  await locator.waitFor({ state: "attached", timeout });
+  await locator.scrollIntoViewIfNeeded();
+  await locator.waitFor({ state: "visible", timeout });
+}
+
   async bypassAndMergePR(): Promise<void> {
     await this.mergeButton.waitFor({ state: "visible" });
     await this.mergeButton.click();
@@ -182,4 +205,38 @@ export class DevopsPage extends BasePage {
       await this.selectComponentByName(componentName);
     }
   }
+
+  async selectFilter(filterName: string) {
+    await this.page.getByRole("button", { name: "This Month" }).click();
+    await this.page.getByText(filterName).click();
+  }
+
+  async selectBranchDropdown(branchRegex: RegExp, optionRegex: RegExp) {
+    await this.page.getByRole("combobox", { name: branchRegex }).click();
+    await this.page.getByText(optionRegex).click();
+  }
+
+  async verifyCommitInsights() {
+  await this.scrollAndWait(this.commitInsightsSection);
+  await expect(this.commitInsightsSection).toBeVisible();
+}
+
+async verifyLibraryChecker() {
+  await this.scrollAndWait(this.libraryCheckerSection);
+  await expect(this.libraryCheckerSection).toBeVisible();
+  await this.scrollAndWait(this.page.getByText(/All dependencies are secure/i));
+  await expect(this.page.getByText(/All dependencies are secure/i)).toBeVisible();
+}
+
+async expandLibraryDependencies() {
+  await this.scrollAndWait(this.viewMoreButton);
+  await this.viewMoreButton.click();
+  await this.scrollAndWait(this.page.getByText("Library Dependencies"));
+  await expect(this.page.getByText("Library Dependencies")).toBeVisible();
+}
+
+async verifyRecentCommits() {
+  await this.scrollAndWait(this.recentCommits);
+  await expect(this.recentCommits).toBeVisible();
+}
 }

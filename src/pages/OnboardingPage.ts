@@ -102,7 +102,7 @@ export class OnboardingPage extends BasePage {
     this.selectTypeOption = (type: string) => page.getByLabel(`${type}`);
     this.environmentDropdown = page.getByLabel('Environment:');
     this.selectEnvironmentOption = (environment: string) => page.getByLabel(`${environment}`);
-    this.sourceControlProvider = page.getByRole('button', { name: /github/i });
+    this.sourceControlProvider = page.locator('button').filter({ hasText: 'Github' });
     this.selecSourceControlOption = (option: string) => page.getByLabel(`${option}`);
     this.repoLinkField = page.getByPlaceholder("repository link...");
     this.gcpProjectField = page.getByPlaceholder("gcp project name...");
@@ -171,18 +171,10 @@ export class OnboardingPage extends BasePage {
     await this.page.waitForLoadState("domcontentloaded");
   }
 
-  async viewApplication(name?: string): Promise<void> {
-    await this.page.waitForLoadState('domcontentloaded');
-    if (name) {
-      // Navigate to Applications list first, then select by name
-      await this.sidebarTabApplication.waitFor({ state: 'visible', timeout: 30000 });
-      await this.sidebarTabApplication.click();
-      await this.page.waitForLoadState('networkidle');
-      await this.selectApplicationByName(name);
-    } else {
-      await this.viewApplicationButton.waitFor({ state: 'visible' });
-      await this.viewApplicationButton.click();
-    }
+  async viewApplication(): Promise<void> {
+    await this.page.waitForLoadState("domcontentloaded");
+    await this.viewApplicationButton.waitFor({ state: "visible" });
+    await this.viewApplicationButton.click();
   }
 
   async startOverApplication(): Promise<void> {
@@ -211,6 +203,7 @@ export class OnboardingPage extends BasePage {
       timeout: 60000,
     });
   }
+  
   async selectApplicationByName(name: string): Promise<void> {
     await this.page.waitForLoadState("domcontentloaded");
     await this.handlePagination(
@@ -220,69 +213,66 @@ export class OnboardingPage extends BasePage {
     );
   }
 
+  getCurrentUrl(): string {
+    return this.page.url();
+  }
+
+  async waitForPageLoad(): Promise<void> {
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(2000);
+  }
+
   // ---------------------------
   // Component Functions
   // ---------------------------
   async clickOnboardComponentButton() {
-    // Ensure we are on Components tab if it exists
-    const componentsTab = this.page.getByRole('tab', { name: /components/i });
-    if (await componentsTab.isVisible().catch(() => false)) {
-      await componentsTab.click();
-      await this.page.waitForLoadState('domcontentloaded');
-    }
-
-    const candidates: Locator[] = [
-      this.onboardExistingComponentButton,
-      this.onboardComponentButton,
-      this.page.getByRole('button', { name: /Onboard\s+(Existing\s+)?Component/i }),
-      this.page.locator('button:has-text("Onboard Component")'),
-      this.page.locator('button:has-text("Onboard Existing Component")'),
-      this.page.getByRole('button', { name: /onboard/i }),
-    ];
-
-    for (const candidate of candidates) {
-      if (await candidate.isVisible().catch(() => false)) {
-        await candidate.click();
-        return;
+    await this.page.waitForLoadState("domcontentloaded");
+    try {
+      // Try onboardExistingComponentButton first
+      await this.onboardExistingComponentButton.waitFor({
+        state: "visible",
+        timeout: 6000,
+      });
+      await this.onboardExistingComponentButton.click();
+    } catch {
+      try {
+        // If not found, try onboardComponentButton
+        await this.onboardComponentButton.waitFor({
+          state: "visible",
+          timeout: 6000,
+        });
+        await this.onboardComponentButton.click();
+      } catch {
+        throw new Error(
+          "No Onboard Component button found in the application view."
+        );
       }
     }
+  }
 
-    // Try opening any add/create menu to reveal options
-    const addButtons = [
-      this.page.getByRole('button', { name: /add|add_circle|create|new/i }),
-      this.page.locator('button:has-text("add")'),
-    ];
-    for (const addBtn of addButtons) {
-      if (await addBtn.isVisible().catch(() => false)) {
-        await addBtn.click();
-        const menuOptions: Locator[] = [
-          this.page.getByRole('menuitem', { name: /Onboard\s+Component/i }),
-          this.page.getByRole('menuitem', { name: /Onboard\s+Existing\s+Component/i }),
-          this.page.getByRole('menuitem', { name: /Onboard/i }),
-          this.page.getByRole('button', { name: /Onboard\s+Component/i }),
-          this.page.getByRole('button', { name: /Onboard\s+Existing\s+Component/i }),
-        ];
-        for (const opt of menuOptions) {
-          if (await opt.isVisible().catch(() => false)) {
-            await opt.click();
-            return;
+  // New helper method for safe next button clicking
+  async clickNextSafely(waitForLocator: () => Locator, timeout = 60000) {
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+      try {
+        const nextBtn = this.page.getByRole("button", { name: "Next" });
+        if (await nextBtn.isVisible() && await nextBtn.isEnabled()) {
+          await nextBtn.scrollIntoViewIfNeeded();
+          await nextBtn.click({ force: true });
+          
+          // Wait for the next step to load
+          for (let i = 0; i < 5; i++) {
+            if (await waitForLocator().isVisible()) return;
+            await this.page.waitForTimeout(300);
+            await nextBtn.click({ force: true });
           }
         }
-      }
+      } catch {}
+      await this.page.waitForTimeout(500);
     }
-
-    // Debug: list all buttons to help identify correct selector
-    try {
-      const allButtons = await this.page.getByRole('button').allTextContents();
-      console.log('Onboard Component button not found. Buttons on page:', allButtons);
-      console.log('Current URL:', this.page.url());
-      const bodyText = await this.page.locator('body').innerText();
-      const snippet = bodyText.slice(0, 4000);
-      console.log('Page text snippet:', snippet);
-    } catch {}
-
-    throw new Error("No Onboard Component button found in the application view.");
+    throw new Error("Next button not clickable or next step not visible in timeout");
   }
+
   async onboardNewComponent(
     kind: string,
     applicationName: string,
@@ -312,8 +302,8 @@ export class OnboardingPage extends BasePage {
     await this.compDescription.waitFor({ state: "visible" });
     await this.compDescription.fill(description);
 
-    // Click Next
-    await this.nextButton.click();
+    // Click Next with safe handling
+    await this.clickNextSafely(() => this.typeDropdown);
 
     // Select Type
     await this.typeDropdown.waitFor({ state: "visible" });
@@ -344,7 +334,6 @@ export class OnboardingPage extends BasePage {
 
       // Fill repository
       await this.repoLinkField.waitFor({ state: "visible" });
-      await this.repoLinkField.click();
       await this.repoLinkField.fill(repoLink);
     }
     
@@ -357,26 +346,20 @@ export class OnboardingPage extends BasePage {
     }
 
     // Fill GCP project name
+    if (kind.toLowerCase() === "api" || kind.toLowerCase() === "resource") {
     await this.gcpProjectField.waitFor({ state: "visible" });
     await this.gcpProjectField.fill(gcpProjectID);
+    }
 
-    // Click Next 
-    await this.nextButton.waitFor({ state: "visible" });
-    await this.nextButton.click();
-    await this.page.waitForLoadState("domcontentloaded");
-
-    // -----------------------------------------
-    // TODO: check preview with entered values
-    // -----------------------------------------
-
-    // Click Next 
-    await this.page.waitForLoadState("domcontentloaded");
-    await this.nextButton.waitFor({ state: "visible" });
-    await this.nextButton.click();
+    // Click Next with safe handling
+    await this.clickNextSafely(() => this.compOnboardButton);
 
     // Click Onboard
     await this.compOnboardButton.waitFor({ state: "visible" });
     await this.compOnboardButton.click();
+    
+    // Wait for success and view application button
+    await this.viewApplicationButton.waitFor({ state: "visible", timeout: 60000 });
     await this.page.waitForLoadState("domcontentloaded");
   }
 

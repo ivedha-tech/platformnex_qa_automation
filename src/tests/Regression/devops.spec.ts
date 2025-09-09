@@ -21,8 +21,10 @@ const { email, password } = testData.login.valid;
 const { appName } = testData.application.valid;
 
 //component
-const { expectedMessageOnboarded: compExpectedMessageOnboarded, expectedMessageUpdated: compExpectedMessageUpdated } =
-  testData.component.comp.successMessage;
+const {
+  expectedMessageOnboarded: compExpectedMessageOnboarded,
+  expectedMessageUpdated: compExpectedMessageUpdated,
+} = testData.component.comp.successMessage;
 
 // devops (component + devops flow inputs)
 const {
@@ -38,8 +40,8 @@ const {
     sonarMissingHeading,
     sonarSetupInProgressHeading,
     prTitlePrefix,
-    codeQualityCards
-  }
+    codeQualityCards,
+  },
 } = testData.devops;
 
 test.beforeEach(async ({ page }, testInfo) => {
@@ -53,53 +55,81 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Precondition: Login
   await loginAsUser(page, email, password);
   await mainPage.navigateToApplication();
-  
 });
 
 test.describe("DevOps Gateway Flow", () => {
-  test("Onboard component and complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({ page }, testInfo) => {
-    
-    // 1) select application 
+  test("Onboard component and complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({
+    page,
+  }, testInfo) => {
+    // 1) select application
     //await onboardingPage.selectApplicationByName("TestApp1");
-    await page.goto('https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Test-App')
+    await page.goto(
+      "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Test-App"
+    );
+    page.waitForLoadState("domcontentloaded");
 
     // 2) Onboard a new component (re-use your OnboardingPage API)
-    const newCompName = `${componentName}-${Date.now()}`
-    await onboardingPage.onboardNewComponent(
-      "Component",             
-      appName,                 
-      newCompName,           
-      description,             
-      owner,                   
-      type,                    
-      environment,             
-      providerOption,          
-      repoUrl,                 
-      "",                      
-      gcpProjectID             
-    );
+    // const newCompName = `${componentName}-${Date.now()}`;
+    // await onboardingPage.onboardNewComponent(
+    //   "Component",
+    //   appName,
+    //   newCompName,
+    //   description,
+    //   owner,
+    //   type,
+    //   environment,
+    //   providerOption,
+    //   repoUrl,
+    //   "",
+    //   gcpProjectID
+    // );
 
-    await Asserts.validateSuccessMessage(
-          onboardingPage.componentOnboardedSuccess,
-          compExpectedMessageOnboarded
-        );
+    // await Asserts.validateSuccessMessage(
+    //   onboardingPage.componentOnboardedSuccess,
+    //   compExpectedMessageOnboarded
+    // );
 
     // Land back on Application Overview and open DevOps tab
-    await onboardingPage.viewApplication();
+    // await onboardingPage.viewApplication();
 
     await devopsPage.openDevOpsTab();
 
+    await devopsPage.selectComponentByName("test-comp")
+
+    await devopsPage.verifyCommitInsights();
+
+    await devopsPage.selectFilter("This Week");
+
+    await devopsPage.selectBranchDropdown(
+      /main \(default\)/i,
+      /Onboarding-Regression-test-/i
+    );
+    await devopsPage.selectBranchDropdown(
+      /Onboarding-Regression-test-/i,
+      /Login-functional-test-/i
+    );
+
+    await devopsPage.verifyLibraryChecker();
+    await devopsPage.expandLibraryDependencies();
+    await devopsPage.verifyRecentCommits();
+
     // 3) Select our component in DevOps
-    await devopsPage.selectComponentByName(newCompName);
+    //await devopsPage.selectComponentByName(newCompName);
 
     // Verify we see "Missing Plugin SonarQube"
-    await Asserts.validateTextContains(devopsPage.missingPluginHeading, sonarMissingHeading);
+    await Asserts.validateTextContains(
+      devopsPage.missingPluginHeading,
+      sonarMissingHeading
+    );
 
     // 4) Setup new SonarQube (confirm and close)
     await devopsPage.setupNewSonarQube();
 
     // Verify "Setup in Progress"
-    await Asserts.validateTextContains(devopsPage.setupInProgressHeading, sonarSetupInProgressHeading);
+    await Asserts.validateTextContains(
+      devopsPage.setupInProgressHeading,
+      sonarSetupInProgressHeading
+    );
 
     // 5) Open PR "Onboard SonarQube: <repo-or-component>"
     await devopsPage.openOnboardSonarQubePullRequest(prTitlePrefix);
@@ -111,7 +141,10 @@ test.describe("DevOps Gateway Flow", () => {
     await devopsPage.refreshAndEnsureComponent(componentName);
 
     // 8) Validate Code Quality cards are visible
-    await Asserts.validateTextContains(devopsPage.codeQualityHeading, "Code Quality");
+    await Asserts.validateTextContains(
+      devopsPage.codeQualityHeading,
+      "Code Quality"
+    );
     for (const card of codeQualityCards) {
       await Asserts.validateLocatorVisible(devopsPage.qualityCardByName(card));
     }

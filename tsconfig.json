@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "ignoreDeprecations": "6.0",
     "resolveJsonModule": true,
-    "types": [],
+    "types": ["node"],
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src/**/*.ts"],

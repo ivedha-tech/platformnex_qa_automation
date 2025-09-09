@@ -9,6 +9,9 @@ build/
 # test results
 test-results/
 
+# test reports
+reports/
+
 # TypeScript
 *.tsbuildinfo
 
