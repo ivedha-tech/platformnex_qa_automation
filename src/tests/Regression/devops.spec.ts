@@ -61,12 +61,35 @@ test.describe("DevOps Gateway Flow", () => {
   test("Onboard component and complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({
     page,
   }, testInfo) => {
-    // 1) select application
-    //await onboardingPage.selectApplicationByName("TestApp1");
+    
     await page.goto(
       "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Test-App"
     );
     page.waitForLoadState("domcontentloaded");
+
+    await devopsPage.openDevOpsTab();
+
+    await devopsPage.selectComponentByName("test-comp")
+
+    await devopsPage.verifyCommitInsights();
+
+    // await devopsPage.selectFilter("This Week");
+
+    // await devopsPage.selectBranchDropdown(
+    //   /main \(default\)/i,
+    //   /Onboarding-Regression-test-/i
+    // );
+    // await devopsPage.selectBranchDropdown(
+    //   /Onboarding-Regression-test-/i,
+    //   /Login-functional-test-/i
+    // );
+
+    await devopsPage.verifyLibraryChecker();
+    await devopsPage.expandLibraryDependencies();
+    await devopsPage.verifyRecentCommits();
+
+    // 1) select application
+    //await onboardingPage.selectApplicationByName("TestApp1");
 
     // 2) Onboard a new component (re-use your OnboardingPage API)
     // const newCompName = `${componentName}-${Date.now()}`;
@@ -92,29 +115,11 @@ test.describe("DevOps Gateway Flow", () => {
     // Land back on Application Overview and open DevOps tab
     // await onboardingPage.viewApplication();
 
-    await devopsPage.openDevOpsTab();
-
-    await devopsPage.selectComponentByName("test-comp")
-
-    await devopsPage.verifyCommitInsights();
-
-    await devopsPage.selectFilter("This Week");
-
-    await devopsPage.selectBranchDropdown(
-      /main \(default\)/i,
-      /Onboarding-Regression-test-/i
-    );
-    await devopsPage.selectBranchDropdown(
-      /Onboarding-Regression-test-/i,
-      /Login-functional-test-/i
-    );
-
-    await devopsPage.verifyLibraryChecker();
-    await devopsPage.expandLibraryDependencies();
-    await devopsPage.verifyRecentCommits();
 
     // 3) Select our component in DevOps
     //await devopsPage.selectComponentByName(newCompName);
+
+    await devopsPage.selectComponentByName("test-auto")
 
     // Verify we see "Missing Plugin SonarQube"
     await Asserts.validateTextContains(
@@ -138,7 +143,7 @@ test.describe("DevOps Gateway Flow", () => {
     await devopsPage.bypassAndMergePR();
 
     // 7) Return to DevOps dashboard and refresh + ensure component is selected
-    await devopsPage.refreshAndEnsureComponent(componentName);
+    await devopsPage.refreshAndEnsureComponent("test-auto");
 
     // 8) Validate Code Quality cards are visible
     await Asserts.validateTextContains(

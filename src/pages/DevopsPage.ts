@@ -41,6 +41,7 @@ export class DevopsPage extends BasePage {
   readonly commitInsightsSection: Locator;
   readonly libraryCheckerSection: Locator;
   readonly viewMoreButton: Locator;
+  readonly backArrowButton: Locator;
   readonly recentCommits: Locator;
 
 
@@ -106,6 +107,7 @@ export class DevopsPage extends BasePage {
     this.commitInsightsSection = page.getByText("Commit Insights");
     this.libraryCheckerSection = page.getByText("Library Checker");
     this.viewMoreButton = page.getByRole("button", { name: "View more" });
+    this.backArrowButton = page.getByLabel('DevOps').getByRole('button');
     this.recentCommits = page.getByText(/Recent Commits/i);
   }
 
@@ -124,15 +126,15 @@ export class DevopsPage extends BasePage {
   await this.componentSelectorButton.waitFor({ state: "visible" });
   await this.componentSelectorButton.click();
 
-  // Wait for the option with the given name to be visible
+  // Locator for option inside dropdown
   const option = this.componentOptionByName(name);
-  await option.waitFor({ state: "visible", timeout: 10000 });
 
-  // Scroll into view (to be safe) and click it
+  // Wait until visible & click
+  await option.waitFor({ state: "visible", timeout: 10000 });
   await option.scrollIntoViewIfNeeded();
   await option.click();
 
-  // Wait for page to render after selection
+  // Wait for selection to apply
   await this.page.waitForLoadState("domcontentloaded");
 }
 
@@ -150,13 +152,14 @@ export class DevopsPage extends BasePage {
     });
     await this.onboardingConfirmBody.waitFor({ state: "visible" });
     await this.onboardingConfirmButton.click();
+    await this.onboardingModalCloseButton.click();
 
     // Wait for modal content to stabilize then close
     await this.setupInProgressHeading.waitFor({
       state: "visible",
       timeout: 60000,
     });
-    await this.onboardingModalCloseButton.click();
+    
   }
 
   async openOnboardSonarQubePullRequest(prefix: string): Promise<void> {
@@ -169,6 +172,32 @@ export class DevopsPage extends BasePage {
       timeout: 30000,
     });
   }
+
+  private async ensureDevOpsLoaded(): Promise<void> {
+  const mustHaveSections: Locator[] = [
+    this.commitInsightsSection,
+    this.libraryCheckerSection,
+  ];
+
+  for (const section of mustHaveSections) {
+    await this.scrollAndWait(section, 15000); // more time, scrolling included
+  }
+
+  // Optional sections fallback (don’t fail if missing)
+  const optionalSections: Locator[] = [
+    this.pullRequestsSectionTitle,
+    this.codeQualityHeading,
+    this.recentCommits,
+  ];
+  for (const section of optionalSections) {
+    try {
+      await this.scrollAndWait(section, 8000);
+    } catch {
+      // log instead of failing
+      console.log(`⚠️ Optional DevOps section not found: ${await section.toString()}`);
+    }
+  }
+}
 
   private async scrollAndWait(locator: Locator, timeout = 30000) {
   await locator.waitFor({ state: "attached", timeout });
@@ -203,6 +232,7 @@ export class DevopsPage extends BasePage {
     const selected = (dropdownText || "").includes(componentName);
     if (!selected) {
       await this.selectComponentByName(componentName);
+      await this.page.mouse.click(0, 0);
     }
   }
 
@@ -233,6 +263,7 @@ async expandLibraryDependencies() {
   await this.viewMoreButton.click();
   await this.scrollAndWait(this.page.getByText("Library Dependencies"));
   await expect(this.page.getByText("Library Dependencies")).toBeVisible();
+  await this.backArrowButton.click()
 }
 
 async verifyRecentCommits() {
