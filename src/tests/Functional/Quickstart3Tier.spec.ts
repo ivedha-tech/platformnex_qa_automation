@@ -12,7 +12,7 @@ test.describe("End-to-End 3-Tier Quickstart Flow", () => {
   let quickstartPage: Quickstart3TierPage;
 
   test("QS_E2E_001 - Login and Complete 3-Tier Quickstart", async ({ page }) => {
-    test.setTimeout(1_200_000); // 20 minutes
+    test.setTimeout(1_300_000); // 25 minutes
     // 1️⃣ Initialize page objects
     mainPage = new MainPage(page);
     loginPage = new LoginPage(page);

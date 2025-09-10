@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "platformnex@ivedha.com"
-    password: "Admin@123"
+    email: "subas.thayananthan@ivedha.com"
+    password: "@Subas2306"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -28,17 +28,17 @@ application:
 component:
   comp:
     valid:
-      kind: "component"
-      compName: "TestComponentAuto1"
+      kind: "cursor"
+      compName: "cursor1"
       description: "Sample Component"
       owner: "guests"
       type: "website"
       environment: "development"
       scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      repoLink: "https://github.com/ivedha-tech/inforntf"
       gcpProjectID: "prj-dev-platform-next"
     edit:
-      updatedDescription: "Edited Comp Description"
+      updatedDescription: "Edited Comn Description"
       updatedType: "service"
       updateEnvironment: "production"
     successMessage: 
@@ -53,7 +53,7 @@ component:
       type: "openapi"
       environment: "development"
       scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/platformnex-frontend"
+      repoLink: "https://github.com/ivedha-tech/inforntf"
       apiDefinition: "Defining the api"
       gcpProjectID: "prj-dev-platform-next"
     edit:
@@ -74,25 +74,25 @@ api:
 
 quickstart:
   basicinfo:
-    name: "anyone556"
+    name: "aut23t"
     description: "Anything"
     owner: "guests"
     system: "Platformnex"
 
   frontend:
     repoOwner: "ivedha-tech"
-    repoName: "anyonefrontend4523"
-    serviceName: "anyoneservicefrontend4523"
+    repoName: "aut23repofront23"
+    serviceName: "autservice23"
     serviceDescription: "anything"
 
   backend:
     repoOwner: "ivedha-tech"
-    repoName: "anyone556"
-    serviceName: "anyonerunservicebackend"
+    repoName: "autb23"
+    serviceName: "aut23servicebackend"
     serviceDescription: "Anything"
-    dependOnService: "xdvsdv"
-    dbServiceName: "anyone556name"
-    dbName: "anyone556namebackend"
+    dependOnService: "xdvsrepo"
+    dbServiceName: "aut23dbname"
+    dbName: "autdbnamebackend"
     dbPassword: "Pass@123"
 
   infrastructure:
@@ -101,24 +101,24 @@ quickstart:
 
 jira:
   search:
-    byId: "PEJ"
+    byId: "SEN"
     bySummary: "Start sending emails"
   filters:
-    project: "PEJ"
-    epic: "DevOps UI"
+    project: "SEN"
+    epic: "All Epics"
     sprint: "Today"
     status: "To Do"
 
 cloudops:
   resource:
-    name: "testing4"
+    name: "aimic"
     type: "storage"
 
   database:
-    instanceName: "testing42"
+    instanceName: "aicloudops"
     version: "PostgreSQL 15"
-    dbName: "testdb42"
-    username: "dbuser42"
+    dbName: "tey230db"
+    username: "dbtey230"
     password: "Admin@42"
 
 resource:
@@ -139,3 +139,7 @@ resource:
   successMessage: 
     expectedMessage: "Resource Updated Successfully!"
 
+finops:
+  gcpprojectid: "prj-dev-platform-next"
+  gcpdatasetid: "ds_billing"
+  gcptableid: "gcp_billing_export_resource_v1_01E9B5_60A8A4_E1FE52"

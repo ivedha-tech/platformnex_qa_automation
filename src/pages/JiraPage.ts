@@ -5,7 +5,7 @@ export class JiraPage {
   readonly searchBox: Locator;
   readonly projectDropdown: Locator;
 readonly epicDropdown: Locator;
-readonly sprintDropdown: Locator;
+//readonly sprintDropdown: Locator;
 readonly statusDropdown: Locator;
 
   constructor(page: Page) {
@@ -15,7 +15,7 @@ readonly statusDropdown: Locator;
     // Dropdown buttons (just keep Locators, no .toString(), no .click())
     this.projectDropdown = page.locator('button').filter({ hasText: 'All Projects' });
     this.epicDropdown = page.locator('button').filter({ hasText: 'All Epics' });
-    this.sprintDropdown = page.locator('button').filter({ hasText: /^All$/ }); // exact "All"
+    //this.sprintDropdown = page.locator('button').filter({ hasText: /^All$/ }); // exact "All"
     this.statusDropdown = page.locator('button').filter({ hasText: 'All Status' });
   
   }
@@ -36,10 +36,10 @@ readonly statusDropdown: Locator;
     await this.page.locator('[role="option"]', { hasText: epicName }).click();
   }  
   
-  async selectSprint(sprintName: string) {
-    await this.sprintDropdown.click();
-    await this.page.getByText(sprintName, { exact: true }).click();
-  }
+  //async selectSprint(sprintName: string) {
+   // await this.sprintDropdown.click();
+    //await this.page.getByText(sprintName, { exact: true }).click();
+  //}
   
   async selectStatus(status: string) {
     await this.statusDropdown.click();
