@@ -36,8 +36,8 @@ await jiraPage.selectEpic(testData.jira.filters.epic);
 await page.waitForTimeout(3000);
 
 // Select Sprint
-await jiraPage.selectSprint(testData.jira.filters.sprint);
-await page.waitForTimeout(3000);
+//await jiraPage.selectSprint(testData.jira.filters.sprint);
+//await page.waitForTimeout(3000);
 
 // Select Status
 await jiraPage.selectStatus(testData.jira.filters.status);

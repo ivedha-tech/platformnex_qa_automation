@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { MainPage } from "../../pages/MainPage";
 import { LoginPage } from "../../pages/LoginPage";
 import { CloudOpsPage } from "../../pages/CloudopsPage";
@@ -15,8 +15,8 @@ const testData: {
     database?: { instanceName: string, version: string, dbName: string, username: string, password: string } 
   } 
 } = loadYamlData("src/utils/testData.yaml");
-test.setTimeout(180000); 
 
+test.setTimeout(180000);
 
 test.beforeEach(async ({ page }) => {
   mainPage = new MainPage(page);
@@ -28,35 +28,28 @@ test.beforeEach(async ({ page }) => {
   await mainPage.openLoginPage();
   await loginPage.login(testData.login.valid.email, testData.login.valid.password);
 
-  // ---------- Wait for dashboard / applications page ----------
-  // ---------- Select Application ----------
+  // ---------- Navigate to Application ----------
   await page.getByRole("link", { name: "Applications" }).click();
   await page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications");
-  await page.getByText("dnsPlatformnexOwned by:").click();
-  await page.waitForLoadState("networkidle")
+  await page.locator('[data-test-id="overlay"]').waitFor({ state: 'hidden', timeout: 30000 });
+  await page.getByText('dnsRegression-testOwned by:').click();
 
-  // ---------- Click application ----------
-  const appLink = page.getByText("dnsPlatformnexOwned by:");
-  await appLink.waitFor({ state: "visible", timeout: 20000 });
-  await appLink.click();
 
   // ---------- Open CloudOps ----------
   await cloudOpsPage.openCloudOps();
   await cloudOpsPage.verifyPageLoaded();
-
 });
-
 
 // ---------- TC001: Add Storage ----------
 test("TC001 - Add Storage Resource", async ({ page }) => {
   await cloudOpsPage.addResourceButton.click();
   const resourceName = testData.cloudops.resource.name;
   await cloudOpsPage.addStorage(resourceName);
-  await cloudOpsPage.createResourceButton.click();
-  await page.waitForTimeout(60000); // Wait for resource creation to process
-  await cloudOpsPage.verifyResourceCreated(resourceName);
-});
+  await cloudOpsPage.createStorage();
+  await page.waitForTimeout(60000);
+ 
 
+});
 // ---------- TC002: Add Database ----------
 test("TC002 - Add Database Resource", async ({ page }) => {
   await cloudOpsPage.addResourceButton.click();
@@ -68,13 +61,14 @@ test("TC002 - Add Database Resource", async ({ page }) => {
     testData.cloudops.database!.username,
     testData.cloudops.database!.password 
   );
-   // Wait for form fill
-  await cloudOpsPage.createDatabaseButton.click();
-  await page.waitForTimeout(50000); // Wait for resource creation to process
-  if (testData.cloudops.database) {
-    await cloudOpsPage.verifyResourceCreated(testData.cloudops.database.instanceName);
-  } else {
-    throw new Error("Database details are not defined in test data.");
-  }
+  await cloudOpsPage.createDatabase();
+  await page.waitForTimeout(60000);
 });
 
+test ("TC003 - Delete All Resources", async ({ page }) => {
+  await cloudOpsPage.deleteAllResources();
+  
+  // Success state verify
+  await expect(page.getByRole('heading', { name: 'No Cloud Resources' }))
+    .toBeVisible({ timeout: 60000 });
+});

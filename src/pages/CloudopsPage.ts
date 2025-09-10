@@ -11,7 +11,7 @@ export class CloudOpsPage {
   readonly stackHealth: Locator;
   readonly workspaceStatus: Locator;
   readonly deleteAllResourcesButton: Locator;
-  // Removed duplicate declaration of createDatabaseButton
+  readonly confirmDeleteButton: Locator;
 
   // --- Storage Locators ---
   readonly storageNameInput: Locator;
@@ -23,33 +23,31 @@ export class CloudOpsPage {
   readonly databaseUsernameInput: Locator;
   readonly databasePasswordInput: Locator;
   readonly createDatabaseButton: Locator;
-  
 
   constructor(page: Page) {
     this.page = page;
 
     // --- Common ---
     this.cloudOpsTab = page.getByRole("tab", { name: "CloudOps" });
-    this.addResourceButton = page.getByRole("button", { name: "add Add Resource" });;
+    this.addResourceButton = page.getByRole("button", { name: "add Add Resource" });
     this.createResourceButton = page.getByRole("button", { name: "Create Resource" });
-    this.totalResourcesCount = page.locator('div').filter({ hasText: /^Total Resources9resources$/ }).nth(1);
-    this.stackHealth = page.locator('div').filter({ hasText: /^Stack Health88%healthy$/ }).nth(1);
-    this.workspaceStatus = page.locator('div').filter({ hasText: /^Workspace StatusActiverunning$/ }).nth(1);
-    this.deleteAllResourcesButton = page.getByRole('button', { name: 'delete Delete Environment' });
-    
+    this.totalResourcesCount = page.locator("div").filter({ hasText: /^Total Resources/ }).first();
+    this.stackHealth = page.locator("div").filter({ hasText: /^Stack Health/ }).first();
+    this.workspaceStatus = page.locator("div").filter({ hasText: /^Workspace Status/ }).first();
+    this.deleteAllResourcesButton = page.getByRole('button', { name: 'delete Delete Stack' });
+    this.confirmDeleteButton = page.getByRole('button', { name: 'delete Delete Stack' });
 
     // --- Storage ---
     this.storageNameInput = page.getByPlaceholder("Enter storage name");
+    this.createResourceButton = page.getByRole("button", { name: "Create Resource" });
 
     // --- Database ---
-    this.databaseTab = page.getByRole('tab', { name: 'Database' });
-    this.databaseInstanceNameInput = page.getByPlaceholder('Enter database instance name');
-    this.databaseNameInput = page.getByPlaceholder('Enter database name');
+    this.databaseTab = page.getByRole("tab", { name: "Database" });
+    this.databaseInstanceNameInput = page.getByPlaceholder("Enter database instance name");
+    this.databaseNameInput = page.getByPlaceholder("Enter database name");
     this.databaseUsernameInput = page.getByPlaceholder("Enter database username");
     this.databasePasswordInput = page.getByPlaceholder("Enter database password");
-    // Initialization of createDatabaseButton remains in the Database Locators section
-        this.createDatabaseButton = page.getByRole('button', { name: 'Create Resource' });
-    
+    this.createDatabaseButton = page.getByRole("button", { name: "Create Resource" });
   }
 
   // ---------- Common Methods ----------
@@ -62,47 +60,36 @@ export class CloudOpsPage {
   async verifyPageLoaded() {
     await expect(this.addResourceButton).toBeVisible({ timeout: 30000 });
   }
-  async addResource(resourceName: string) {
-    await this.storageNameInput.waitFor({ state: "visible", timeout: 10000 });
-    await this.storageNameInput.fill(resourceName);
-  }
-
-  async create() {
-    await this.createResourceButton.waitFor({ state: "visible", timeout: 10000 });
-    await this.createResourceButton.click();
-  }
-
-  async verifyResourceCreated(name: string) {
-    const created = this.page.getByText(name);
-    await expect(created).toBeVisible({ timeout: 20000 });
-  }
 
   async getTotalResourcesCount() {
+    // Check if "No Cloud Resources" heading is visible
+    if (await this.page.getByRole('heading', { name: 'No Cloud Resources' }).isVisible()) {
+      return 0;
+    }
+  
+    // Else parse the count from "Total Resources" text
     const text = await this.totalResourcesCount.innerText();
-    return parseInt(text);
-  }
-
-  async verifyStackHealthVisible() {
-    await expect(this.stackHealth).toBeVisible({ timeout: 10000 });
-  }
-
-  async verifyWorkspaceStatus(expected: string) {
-    const status = await this.workspaceStatus.innerText();
-    expect(status.trim()).toBe(expected);
+    const match = text.match(/Total Resources\s+(\d+)/);
+    if (!match) throw new Error(`Unexpected text: ${text}`);
+    return parseInt(match[1], 10);
   }
 
   async deleteAllResources() {
-    await this.deleteAllResourcesButton.waitFor({ state: "visible", timeout: 10000 });
+    await this.deleteAllResourcesButton.waitFor({ state: "visible", timeout: 20000 });
     await this.deleteAllResourcesButton.click();
-    const confirmBtn = this.page.getByRole("button", { name: "Confirm" });
-    await confirmBtn.waitFor({ state: "visible", timeout: 10000 });
-    await confirmBtn.click();
+    await this.confirmDeleteButton.waitFor({ state: "visible", timeout: 20000 });
+    await this.confirmDeleteButton.click();
   }
 
   // ---------- Storage Methods ----------
   async addStorage(name: string) {
-    await this.storageNameInput.waitFor({ state: "visible", timeout: 10000 });
+    await this.storageNameInput.waitFor({ state: "visible", timeout: 20000 });
     await this.storageNameInput.fill(name);
+  }
+
+  async createStorage() {
+    await this.createResourceButton.waitFor({ state: "visible", timeout: 20000 });
+    await this.createResourceButton.click();
   }
 
   // ---------- Database Methods ----------
@@ -118,8 +105,8 @@ export class CloudOpsPage {
     await this.databasePasswordInput.fill(password);
   }
 
-    async clickCreateDatabaseButton() {
-        await this.createDatabaseButton.waitFor({ state: "visible", timeout: 10000 });
-        await this.createDatabaseButton.click();
-    }
+  async createDatabase() {
+    await this.createDatabaseButton.waitFor({ state: "visible", timeout: 10000 });
+    await this.createDatabaseButton.click();
+  }
 }

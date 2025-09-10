@@ -95,11 +95,10 @@ export interface TestData {
       username: string;
       password: string;
     };
-  };
-  finops: {
-    "gcp-projectid": string;
-    "gcp-dataset-id": string;
-    "gcp-table-id": string;
+    finops: {
+      gcpprojectid: string;
+      gcpdatasetid: string;
+      gcptableid: string;
   };
 }
 
