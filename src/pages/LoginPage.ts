@@ -4,34 +4,26 @@ export class LoginPage {
   private page: Page;
 
   //Xpaths
-  private signinButtonMainXpath: string = '//*[@id="root"]/div[2]/div/div/div[2]/button';
-  private emailXpath: string = '//*[@id="user_name_field"]';
-  private passwordInputXpath: string = '//*[@id="password_field"]';
-  private signinButtonXpath: string = '//*[@id="root"]/main/div/div/div/div/form/button';
-  private emailErrorMessageXpath: string = '//*[@id="root"]/main/div/div/div/div/form/div[1]/span';
-  private passwordErrorMessageXpath: string = '//*[@id="root"]/main/div/div/div/div/form/div[2]/span';
-  private emailEmptyErrorXpath: string = '//*[@id="root"]/main/div/div/div/div/form/div[1]/span';
-  private passwordEmptyErrorXpath: string = '//*[@id="root"]/main/div/div/div/div/form/div[2]/span';
   private togglePasswordVisibilityIconXpath: string = '//*[@id="root"]/main/div/div/div/div/form/div[2]/div/div/div/button'
 
   //Locators
-  private signinButtonMain: Locator;
-  private emailInput: Locator;
-  private passwordInput: Locator;
-  private signinButton: Locator;
-  private emailErrorMessage: Locator;
-  private passwordErrorMessage: Locator;
-  private togglePasswordVisibilityIcon: Locator;
+  readonly signinButtonMain: Locator;
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly loginButton: Locator;
+  readonly emailErrorMessage: Locator;
+  readonly passwordErrorMessage: Locator;
+  readonly togglePasswordVisibilityIcon: Locator;
 
   constructor(page: Page) {
 
     this.page = page;
-    this.signinButtonMain = page.locator(`xpath=${this.signinButtonMainXpath}`);
-    this.emailInput = page.locator(`xpath=${this.emailXpath}`); 
-    this.passwordInput = page.locator(`xpath=${this.passwordInputXpath}`); 
-    this.signinButton = page.locator(`xpath=${this.signinButtonXpath}`);    
-    this.emailErrorMessage = page.locator(`xpath=${this.emailErrorMessageXpath}`);  
-    this.passwordErrorMessage = page.locator(`xpath=${this.passwordErrorMessageXpath}`);
+    this.signinButtonMain = page.getByRole('button', { name: 'login Sign in with OAuth' });
+    this.emailInput = page.getByPlaceholder('Enter Email'); 
+    this.passwordInput = page.getByPlaceholder('Enter Password');
+    this.loginButton = page.getByRole('button', { name: 'Login' });
+    this.emailErrorMessage = page.getByText('Invalid email address');  
+    this.passwordErrorMessage = page.getByText('Invalid login. Please try');
     this.togglePasswordVisibilityIcon = page.locator(`xpath=${this.togglePasswordVisibilityIconXpath}`);    
   }
 
@@ -59,7 +51,7 @@ export class LoginPage {
     await this.page.keyboard.type(password);
     await this.page.waitForTimeout(2000);
 
-    await this.signinButton.click();
+    await this.loginButton.click();
   }
 
   // Get the error message

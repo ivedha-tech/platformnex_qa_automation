@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "platformnex@ivedha.com"
-    password: "Admin@123"
+    email: "sanduni.gunawardhana@ivedha.com"
+    password: "Sandu@123"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -12,10 +12,10 @@ login:
     expectedErrorMessageWrongMail: "Invalid email address."
     expectedErrorMessageWrongPassword: "Invalid login. Please try again."
     expectedErrorMessageEmpty: "Required field"
- 
+
 application:
   valid:
-    appName: "TestApp1"
+    appName: "Test-App-Automation"
     description: "Sample App"
     owner: "guests"
   edit:
@@ -23,7 +23,8 @@ application:
     updatedDescription: "Edited App Description"
     updatedOwner: "admins"
   successMessage:
-    expectedMessage: "System Edited Successfully!"
+    expectedMessageOnboarded: "System Onboarded Successfully!"
+    expectedMessageUpdated: "System Updated Successfully!"
   MyApp:
     name: "MyApp"
     description: "This is the description of MyApp"
@@ -36,7 +37,7 @@ component:
   comp:
     valid:
       kind: "component"
-      compName: "TestComponentAuto1"
+      compName: "TestComponentAuto"
       description: "Sample Component"
       owner: "guests"
       type: "website"
@@ -49,7 +50,8 @@ component:
       updatedType: "service"
       updateEnvironment: "production"
     successMessage:
-      expectedMessage: "Component Updated Successfully!"
+      expectedMessageOnboarded: "Component Onboarded Successfully!"
+      expectedMessageUpdated: "Component Updated Successfully!"
   MyComponent:
     name: "MyComponent"
     description: "This is the description of MyComponent"
@@ -76,7 +78,8 @@ api:
       updatedType: "graphql"
       updatedApiDefinition: "Edited API definition"
     successMessage:
-      expectedMessage: "API Updated Successfully!"
+      expectedMessageOnboarded: "API Onboarded Successfully!"
+      expectedMessageUpdated: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -84,7 +87,7 @@ api:
       - "annotation1"
       - "annotation2"
     owner: "Owner1"
- 
+
 resource:
   comp:
     valid:
@@ -102,8 +105,9 @@ resource:
       updatedType: "Cache"
       updatedTags: "ResTag1,ResTag2,ResTag3"
     successMessage:
-      expectedMessage: "Resource Updated Successfully!"
- 
+      expectedMessageOnboarded: "Resource Onboarded Successfully!"
+      expectedMessageUpdated: "Resource Updated Successfully!"
+
 quickstart:
   basicinfo:
     name: "anyone556"
@@ -153,3 +157,27 @@ finops:
   gcp-projectid: "demo-project-123"
   gcp-dataset-id: "demo_dataset"
   gcp-table-id: "demo_table"
+
+devops:
+  compKind: "Component"
+  componentName: "devops-auto-test-component"
+  description: "DevOps QA component"
+  owner: "guests"
+  type: "website"
+  environment: "development"
+  providerOption: "Github"
+  repoUrl: "https://github.com/ivedha-tech/platformnex_qa_automation"
+  gcpProjectID: "prj-dev-platform-next"
+
+  expected:
+    sonarMissingHeading: "Missing Plugin SonarQube"
+    sonarSetupInProgressHeading: "SonarQube Setup in Progress"
+    prTitlePrefix: "Onboard SonarQube:"
+    codeQualityCards:
+      - "Reliability"
+      - "Security"
+      - "Maintainability"
+      - "Hotspots Reviewed"
+      - "Coverage"
+      - "Duplications"
+
