@@ -154,10 +154,9 @@ cloudops:
     password: "Admin@42"
     
 finops:
-  gcp-projectid: "demo-project-123"
-  gcp-dataset-id: "demo_dataset"
-  gcp-table-id: "demo_table"
-
+  gcpprojectid: "prj-dev-platform-next"
+  gcpdatasetid: "ds_billing"
+  gcptableid: "gcp_billing_export_resource_v1_01E9B5_60A8A4_E1FE52"
 devops:
   compKind: "Component"
   componentName: "devops-auto-test-component"
@@ -181,7 +180,3 @@ devops:
       - "Coverage"
       - "Duplications"
 
-finops:
-  gcpprojectid: "prj-dev-platform-next"
-  gcpdatasetid: "ds_billing"
-  gcptableid: "gcp_billing_export_resource_v1_01E9B5_60A8A4_E1FE52"

@@ -3,7 +3,7 @@ import { BasePage } from "../../pages/BasePage";
 import { MainPage } from "../../pages/MainPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
 import { DevopsPage } from "../../pages/DevopsPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 import { loginAsUser } from "../../utils/authHelper";
 import { Asserts } from "../../utils/asserts";
 

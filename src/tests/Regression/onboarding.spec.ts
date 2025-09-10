@@ -2,7 +2,7 @@ import { test, Page, TestInfo } from "@playwright/test";
 import { LoginPage } from "../../pages/LoginPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
 import { MainPage } from "../../pages/MainPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 import { loginAsUser } from "../../utils/authHelper";
 import { Asserts } from "../../utils/asserts";
 

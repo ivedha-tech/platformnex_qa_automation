@@ -95,23 +95,28 @@ export interface TestData {
       username: string;
       password: string;
     };
-    finops: {
+  };
+  finops: {
       gcpprojectid: string;
       gcpdatasetid: string;
       gcptableid: string;
   };
-}
-
-// ✅ Close the interface here
+};
 
 // Function to load YAML data from a file
-export function loadYamlData(filePath: string): TestData {
+export default function loadYmalData(filePath: string): TestData {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
-    const data = yaml.load(fileContents) as TestData;
-    return data;
-  } catch (e) {
-    console.error(`Error loading YAML file: ${e}`);
-    throw e;
-  }
-}
+    const parsed = yaml.load(fileContents) as unknown;
+    return parsed as TestData;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    // Provide a concise, actionable hint for duplicate-key errors
+    if (/duplicated mapping key/i.test(message)) {
+      throw new Error(
+        `YAML error: duplicated mapping key. Ensure each key is unique at its indentation level in ${filePath}.`
+      );
+    }
+    throw error;
+  };
+};
