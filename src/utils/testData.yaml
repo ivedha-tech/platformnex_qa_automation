@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "platformnex@ivedha.com"
-    password: "Admin@123"
+    email: "sanduni.gunawardhana@ivedha.com"
+    password: "Sandu@123"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -15,21 +15,29 @@ login:
 
 application:
   valid:
-    appName: "TestApp1"
+    appName: "Test-App-Automation"
     description: "Sample App"
     owner: "guests"
   edit:
     updatedAppName: "Edited-Application"
     updatedDescription: "Edited App Description"
     updatedOwner: "admins"
-  successMessage: 
-    expectedMessage: "System Edited Successfully!" 
+  successMessage:
+    expectedMessageOnboarded: "System Onboarded Successfully!"
+    expectedMessageUpdated: "System Updated Successfully!"
+  MyApp:
+    name: "MyApp"
+    description: "This is the description of MyApp"
+    tags:
+      - "tag1"
+      - "tag2"
+    owner: "Owner1"
 
 component:
   comp:
     valid:
       kind: "component"
-      compName: "TestComponentAuto1"
+      compName: "TestComponentAuto"
       description: "Sample Component"
       owner: "guests"
       type: "website"
@@ -41,10 +49,19 @@ component:
       updatedDescription: "Edited Comp Description"
       updatedType: "service"
       updateEnvironment: "production"
-    successMessage: 
-      expectedMessage: "Component Updated Successfully!" 
+    successMessage:
+      expectedMessageOnboarded: "Component Onboarded Successfully!"
+      expectedMessageUpdated: "Component Updated Successfully!"
+  MyComponent:
+    name: "MyComponent"
+    description: "This is the description of MyComponent"
+    tags:
+      - "compTag1"
+      - "compTag2"
+    owner: "Owner1"
 
-  api:
+api:
+  comp:
     valid:
       kind: "api"
       apiName: "TestAPI"
@@ -60,10 +77,9 @@ component:
       updatedDescription: "Edited API Description"
       updatedType: "graphql"
       updatedApiDefinition: "Edited API definition"
-    successMessage: 
-      expectedMessage: "API Updated Successfully!"   
-
-api:
+    successMessage:
+      expectedMessageOnboarded: "API Onboarded Successfully!"
+      expectedMessageUpdated: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -72,19 +88,37 @@ api:
       - "annotation2"
     owner: "Owner1"
 
+resource:
+  comp:
+    valid:
+      kind: "resource"
+      resourceName: "TestRes"
+      description: "Sample Resource"
+      owner: "guests"
+      type: "Database"
+      environment: "development"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedResourceName: "EditedRes"
+      updatedDescription: "Edited Resource Description"
+      updatedOwner: "admins"
+      updatedType: "Cache"
+      updatedTags: "ResTag1,ResTag2,ResTag3"
+    successMessage:
+      expectedMessageOnboarded: "Resource Onboarded Successfully!"
+      expectedMessageUpdated: "Resource Updated Successfully!"
+
 quickstart:
   basicinfo:
     name: "anyone556"
     description: "Anything"
     owner: "guests"
     system: "Platformnex"
-
   frontend:
     repoOwner: "ivedha-tech"
     repoName: "anyonefrontend4523"
     serviceName: "anyoneservicefrontend4523"
     serviceDescription: "anything"
-
   backend:
     repoOwner: "ivedha-tech"
     repoName: "anyone556"
@@ -94,48 +128,28 @@ quickstart:
     dbServiceName: "anyone556name"
     dbName: "anyone556namebackend"
     dbPassword: "Pass@123"
-
   infrastructure:
     project: "prj-dev-platform-next"
 
+devops:
+  compKind: "Component"
+  componentName: "devops-auto-test-component"
+  description: "DevOps QA component"
+  owner: "guests"
+  type: "website"
+  environment: "development"
+  providerOption: "Github"
+  repoUrl: "https://github.com/ivedha-tech/platformnex_qa_automation"
+  gcpProjectID: "prj-dev-platform-next"
 
-jira:
-  search:
-    byId: "PEJ"
-    bySummary: "Start sending emails"
-  filters:
-    project: "PEJ"
-    epic: "DevOps UI"
-    sprint: "Today"
-    status: "To Do"
-
-cloudops:
-  resource:
-    name: "testing4"
-    type: "storage"
-
-  database:
-    instanceName: "testing42"
-    version: "PostgreSQL 15"
-    dbName: "testdb42"
-    username: "dbuser42"
-    password: "Admin@42"
-
-resource:
-  valid:
-    kind: "resource"
-    resourceName: "TestRes"
-    description: "Sample Resource"
-    owner: "guests"
-    type: "Database"
-    environment: "development"
-    gcpProjectID: "prj-dev-platform-next"
-  edit:
-    updatedResourceName: "EditedRes"
-    updatedDescription: "Edited Resource Description"
-    updatedOwner: "admins"
-    updatedType: "Cache"
-    updatedTags: "ResTag1,ResTag2,ResTag3"
-  successMessage: 
-    expectedMessage: "Resource Updated Successfully!"
-
+  expected:
+    sonarMissingHeading: "Missing Plugin SonarQube"
+    sonarSetupInProgressHeading: "SonarQube Setup in Progress"
+    prTitlePrefix: "Onboard SonarQube:"
+    codeQualityCards:
+      - "Reliability"
+      - "Security"
+      - "Maintainability"
+      - "Hotspots Reviewed"
+      - "Coverage"
+      - "Duplications"

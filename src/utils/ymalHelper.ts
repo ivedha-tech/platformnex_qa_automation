@@ -1,7 +1,23 @@
-import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+import * as fs from "fs";
+import * as yaml from "js-yaml";
 
 export interface TestData {
+  devops: {
+    componentName: any;
+    description: any;
+    owner: any;
+    type: any;
+    environment: any;
+    providerOption: any;
+    repoUrl: any;
+    gcpProjectID: any;
+    expected: {
+      sonarMissingHeading: any;
+      sonarSetupInProgressHeading: any;
+      prTitlePrefix: any;
+      codeQualityCards: any;
+    };
+  };
   resource: any;
   api: any;
   application: any;
@@ -50,7 +66,7 @@ export interface TestData {
       dbName: string;
       dbPassword: string;
     };
-  
+
     infrastructure: {
       project: string;
     };
@@ -70,24 +86,24 @@ export interface TestData {
   };
   cloudops: {
     resource: {
-        name: string;
+      name: string;
     };
     database?: {
-        instanceName: string;
-        version: string;
-        dbName: string;
-        username: string;
-        password: string;
+      instanceName: string;
+      version: string;
+      dbName: string;
+      username: string;
+      password: string;
     };
+  };
 }
-}   
 
- // ✅ Close the interface here
+// ✅ Close the interface here
 
 // Function to load YAML data from a file
 export function loadYamlData(filePath: string): TestData {
   try {
-    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const fileContents = fs.readFileSync(filePath, "utf8");
     const data = yaml.load(fileContents) as TestData;
     return data;
   } catch (e) {
