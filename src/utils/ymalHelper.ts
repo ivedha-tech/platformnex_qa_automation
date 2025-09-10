@@ -96,6 +96,11 @@ export interface TestData {
       password: string;
     };
   };
+  finops: {
+    "gcp-projectid": string;
+    "gcp-dataset-id": string;
+    "gcp-table-id": string;
+  };
 }
 
 // ✅ Close the interface here

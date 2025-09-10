@@ -32,7 +32,7 @@ application:
       - "tag1"
       - "tag2"
     owner: "Owner1"
-
+ 
 component:
   comp:
     valid:
@@ -59,7 +59,7 @@ component:
       - "compTag1"
       - "compTag2"
     owner: "Owner1"
-
+ 
 api:
   comp:
     valid:
@@ -131,6 +131,33 @@ quickstart:
   infrastructure:
     project: "prj-dev-platform-next"
 
+jira:
+  search:
+    byId: "PEJ"
+    bySummary: "Start sending emails"
+  filters:
+    project: "PEJ"
+    epic: "DevOps UI"
+    sprint: "Today"
+    status: "To Do"
+ 
+cloudops:
+  resource:
+    name: "testing4"
+    type: "storage"
+ 
+  database:
+    instanceName: "testing42"
+    version: "PostgreSQL 15"
+    dbName: "testdb42"
+    username: "dbuser42"
+    password: "Admin@42"
+    
+finops:
+  gcp-projectid: "demo-project-123"
+  gcp-dataset-id: "demo_dataset"
+  gcp-table-id: "demo_table"
+
 devops:
   compKind: "Component"
   componentName: "devops-auto-test-component"
@@ -153,3 +180,4 @@ devops:
       - "Hotspots Reviewed"
       - "Coverage"
       - "Duplications"
+
