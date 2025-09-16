@@ -45,5 +45,9 @@ await page.waitForTimeout(3000);
 
 // ✅ Validation step
 await expect(page.getByText(testData.jira.search.byId)).toBeVisible();
+
+// Click Open PRs tab and wait for loading
+await jiraPage.openPrs();
+await page.waitForTimeout(5000); // wait for PRs to load
 });
 

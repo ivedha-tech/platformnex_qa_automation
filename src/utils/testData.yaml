@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "subas.thayananthan@ivedha.com"
-    password: "@Subas2306"
+    email: "sanduni.gunawardhana@ivedha.com"
+    password: "Sandu@123"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -28,14 +28,14 @@ application:
 component:
   comp:
     valid:
-      kind: "cursor"
-      compName: "cursor1"
+      kind: "cursor232166"
+      compName: "cursor232166"
       description: "Sample Component"
       owner: "guests"
       type: "website"
       environment: "development"
       scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/inforntf"
+      repoLink: "https://github.com/ivedha-tech/regression-repo-f-9"
       gcpProjectID: "prj-dev-platform-next"
     edit:
       updatedDescription: "Edited Comn Description"
@@ -101,13 +101,13 @@ quickstart:
 
 jira:
   search:
-    byId: "SEN"
+    byId: "155"
     bySummary: "Start sending emails"
   filters:
-    project: "SEN"
+    project: "DC"
     epic: "All Epics"
     sprint: "Today"
-    status: "To Do"
+    status: "Done"
 
 cloudops:
   resource:
