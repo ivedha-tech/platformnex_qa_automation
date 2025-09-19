@@ -43,7 +43,7 @@ component:
       type: "website"
       environment: "development"
       scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/inforntf"
+      repoLink: "https://github.com/ivedha-tech/test-qa-f-15"
       gcpProjectID: "prj-dev-platform-next"
     edit:
       updatedDescription: "Edited Comn Description"
@@ -70,7 +70,7 @@ api:
       type: "openapi"
       environment: "development"
       scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/inforntf"
+      repoLink: "https://github.com/ivedha-tech/test-qa-f-15"
       apiDefinition: "Defining the api"
       gcpProjectID: "prj-dev-platform-next"
     edit:
@@ -165,7 +165,7 @@ devops:
   type: "website"
   environment: "development"
   providerOption: "Github"
-  repoUrl: "https://github.com/ivedha-tech/platformnex_qa_automation"
+  repoUrl: "https://github.com/ivedha-tech/test-qa-f-15"
   gcpProjectID: "prj-dev-platform-next"
 
   expected:

@@ -60,6 +60,7 @@ export class OnboardingPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
+    console.log("Initializing OnboardingPage...");
 
     //Tour locators
     this.primaryButtonSecond = page
@@ -145,6 +146,8 @@ export class OnboardingPage extends BasePage {
     // application
     this.applicationCardByName = (name: string) => page.getByRole('heading', { name: new RegExp(`^${name}$`, 'i') });
     this.paginationNextButton = page.getByRole('button', { name: 'chevron_right' });
+    
+    console.log("OnboardingPage initialized successfully");
   }
 
   // ---------------------------
@@ -155,31 +158,59 @@ export class OnboardingPage extends BasePage {
     description: string,
     owner: string
   ): Promise<void> {
-    //await this.handleTour();
-    await this.onboardApplicationButton.click();
+    try {
+      console.log(`Starting application onboarding for: ${name}`);
+      //await this.handleTour();
+      console.log("Clicking onboard application button");
+      await this.onboardApplicationButton.click();
 
-    await this.newAppName.waitFor({ state: "visible" });
-    await this.newAppName.fill(name);
+      console.log("Filling application name");
+      await this.newAppName.waitFor({ state: "visible" });
+      await this.newAppName.fill(name);
 
-    await this.appDescription.waitFor({ state: "visible" });
-    await this.appDescription.fill(description);
+      console.log("Filling application description");
+      await this.appDescription.waitFor({ state: "visible" });
+      await this.appDescription.fill(description);
 
-    await this.appOwner.click();
-    await this.appOwnerselector.click();
-    await this.appOnboardButton.click();
+      console.log("Selecting application owner");
+      await this.appOwner.click();
+      await this.appOwnerselector.click();
+      
+      console.log("Clicking onboard button");
+      await this.appOnboardButton.click();
 
-    await this.page.waitForLoadState("domcontentloaded");
+      console.log("Waiting for page to load");
+      await this.page.waitForLoadState("domcontentloaded");
+      console.log(`Application ${name} onboarded successfully`);
+    } catch (error) {
+      console.error(`Error onboarding application ${name}:`, error);
+      throw error;
+    }
   }
 
   async viewApplication(): Promise<void> {
-    await this.page.waitForLoadState("domcontentloaded");
-    await this.viewApplicationButton.waitFor({ state: "visible" });
-    await this.viewApplicationButton.click();
+    try {
+      console.log("Viewing application details");
+      await this.page.waitForLoadState("domcontentloaded");
+      await this.viewApplicationButton.waitFor({ state: "visible" });
+      await this.viewApplicationButton.click();
+      console.log("Application view opened successfully");
+    } catch (error) {
+      console.error("Error viewing application:", error);
+      throw error;
+    }
   }
 
   async startOverApplication(): Promise<void> {
-    await this.startOverButton.waitFor({ state: "visible" });
-    await this.startOverButton.click();
+    try {
+      console.log("Starting over application");
+      await this.startOverButton.waitFor({ state: "visible" });
+      await this.startOverButton.click();
+      console.log("Application start over completed");
+    } catch (error) {
+      console.error("Error starting over application:", error);
+      throw error;
+    }
   }
 
   async editApplication(
@@ -187,87 +218,131 @@ export class OnboardingPage extends BasePage {
     updatedDescription: string,
     tags: string[]
   ): Promise<void> {
-    await this.appDescription.waitFor({ state: "visible" });
-    await this.appDescription.fill(updatedDescription);
+    try {
+      console.log(`Editing application: ${name}`);
+      await this.appDescription.waitFor({ state: "visible" });
+      await this.appDescription.fill(updatedDescription);
 
-    if (tags.length) {
-      await this.compTags.waitFor({ state: "visible" });
-      await this.compTags.fill(tags.join(", "));
+      if (tags.length) {
+        console.log(`Adding tags: ${tags.join(", ")}`);
+        await this.compTags.waitFor({ state: "visible" });
+        await this.compTags.fill(tags.join(", "));
+      }
+
+      console.log("Saving application changes");
+      await this.appOnboardButton.waitFor({ state: "visible" });
+      await this.appOnboardButton.click();
+
+      await this.applicationNameView(name).waitFor({
+        state: "visible",
+        timeout: 60000,
+      });
+      console.log(`Application ${name} edited successfully`);
+    } catch (error) {
+      console.error(`Error editing application ${name}:`, error);
+      throw error;
     }
-
-    await this.appOnboardButton.waitFor({ state: "visible" });
-    await this.appOnboardButton.click();
-
-    await this.applicationNameView(name).waitFor({
-      state: "visible",
-      timeout: 60000,
-    });
   }
   
   async selectApplicationByName(name: string): Promise<void> {
-    await this.page.waitForLoadState("domcontentloaded");
-    await this.handlePagination(
-      this.applicationCardByName(name),
-      this.paginationNextButton,
-      "click"
-    );
+    try {
+      console.log(`Selecting application by name: ${name}`);
+      await this.page.waitForLoadState("domcontentloaded");
+      await this.handlePagination(
+        this.applicationCardByName(name),
+        this.paginationNextButton,
+        "click"
+      );
+      console.log(`Application ${name} selected successfully`);
+    } catch (error) {
+      console.error(`Error selecting application ${name}:`, error);
+      throw error;
+    }
   }
 
   getCurrentUrl(): string {
-    return this.page.url();
+    const url = this.page.url();
+    console.log(`Current URL: ${url}`);
+    return url;
   }
 
   async waitForPageLoad(): Promise<void> {
+    console.log("Waiting for page to load completely");
     await this.page.waitForLoadState('networkidle');
     await this.page.waitForTimeout(2000);
+    console.log("Page loaded successfully");
   }
 
   // ---------------------------
   // Component Functions
   // ---------------------------
   async clickOnboardComponentButton() {
-    await this.page.waitForLoadState("domcontentloaded");
     try {
+      console.log("Looking for onboard component button");
+      await this.page.waitForLoadState("domcontentloaded");
+      
       // Try onboardExistingComponentButton first
-      await this.onboardExistingComponentButton.waitFor({
-        state: "visible",
-        timeout: 6000,
-      });
-      await this.onboardExistingComponentButton.click();
-    } catch {
       try {
-        // If not found, try onboardComponentButton
+        console.log("Trying to find onboard existing component button");
+        await this.onboardExistingComponentButton.waitFor({
+          state: "visible",
+          timeout: 6000,
+        });
+        await this.onboardExistingComponentButton.click();
+        console.log("Clicked onboard existing component button");
+        return;
+      } catch (error) {
+        console.log("Onboard existing component button not found, trying alternative", error);
+      }
+      
+      // If not found, try onboardComponentButton
+      try {
+        console.log("Trying to find onboard component button");
         await this.onboardComponentButton.waitFor({
           state: "visible",
           timeout: 6000,
         });
         await this.onboardComponentButton.click();
-      } catch {
-        throw new Error(
-          "No Onboard Component button found in the application view."
-        );
+        console.log("Clicked onboard component button");
+        return;
+      } catch (error) {
+        console.log("Onboard component button not found");
       }
+      
+      throw new Error(
+        "No Onboard Component button found in the application view."
+      );
+    } catch (error) {
+      console.error("Error clicking onboard component button:", error);
+      throw error;
     }
   }
 
   // New helper method for safe next button clicking
   async clickNextSafely(waitForLocator: () => Locator, timeout = 60000) {
+    console.log("Attempting to click Next button safely");
     const start = Date.now();
     while (Date.now() - start < timeout) {
       try {
         const nextBtn = this.page.getByRole("button", { name: "Next" });
         if (await nextBtn.isVisible() && await nextBtn.isEnabled()) {
+          console.log("Next button is visible and enabled, clicking");
           await nextBtn.scrollIntoViewIfNeeded();
           await nextBtn.click({ force: true });
           
           // Wait for the next step to load
           for (let i = 0; i < 5; i++) {
-            if (await waitForLocator().isVisible()) return;
+            if (await waitForLocator().isVisible()) {
+              console.log("Next step loaded successfully");
+              return;
+            }
             await this.page.waitForTimeout(300);
             await nextBtn.click({ force: true });
           }
         }
-      } catch {}
+      } catch (error) {
+        console.log("Error clicking Next button, retrying:", error);
+      }
       await this.page.waitForTimeout(500);
     }
     throw new Error("Next button not clickable or next step not visible in timeout");
@@ -286,90 +361,114 @@ export class OnboardingPage extends BasePage {
     apiDefinitionPath: string,
     gcpProjectID: string
   ): Promise<void> {
-    // Click onboard component button
-    await this.clickOnboardComponentButton();
+    try {
+      console.log(`Starting component onboarding for: ${name} of kind: ${kind}`);
+      
+      // Click onboard component button
+      await this.clickOnboardComponentButton();
 
-    // Select Kind
-    await this.kindDropdown.waitFor({ state: "visible" });
-    await this.kindDropdown.click();
-    await this.kindComponentOption(kind).click();
+      // Select Kind
+      console.log(`Selecting component kind: ${kind}`);
+      await this.kindDropdown.waitFor({ state: "visible" });
+      await this.kindDropdown.click();
+      await this.kindComponentOption(kind).click();
 
-    // Fill Name
-    await this.newCompNameField.waitFor({ state: "visible" });
-    await this.newCompNameField.fill(name);
+      // Fill Name
+      console.log(`Filling component name: ${name}`);
+      await this.newCompNameField.waitFor({ state: "visible" });
+      await this.newCompNameField.fill(name);
 
-    // Fill Description
-    await this.compDescription.waitFor({ state: "visible" });
-    await this.compDescription.fill(description);
+      // Fill Description
+      console.log(`Filling component description: ${description}`);
+      await this.compDescription.waitFor({ state: "visible" });
+      await this.compDescription.fill(description);
 
-    // Click Next with safe handling
-    await this.clickNextSafely(() => this.typeDropdown);
+      // Click Next with safe handling
+      console.log("Clicking Next to proceed to type selection");
+      await this.clickNextSafely(() => this.page.getByLabel("Type:"));
 
-    // Select Type
-    await this.typeDropdown.waitFor({ state: "visible" });
-    await this.typeDropdown.click();
-    await this.selectTypeOption(type).click();
+      // Select Type
+      console.log(`Selecting component type: ${type}`);
+      await this.typeDropdown.waitFor({ state: "visible" });
+      await this.typeDropdown.click();
+      await this.selectTypeOption(type).click();
 
-    // Select Environment
-    await this.environmentDropdown.waitFor({ state: "visible" });
-    await this.environmentDropdown.click();
-    await this.selectEnvironmentOption(environment).click();
+      // Select Environment
+      console.log(`Selecting environment: ${environment}`);
+      await this.environmentDropdown.waitFor({ state: "visible" });
+      await this.environmentDropdown.click();
+      await this.selectEnvironmentOption(environment).click();
 
-    // -----------------------------------------
-    // Region (only if type === "RESOURCE")
-    // -----------------------------------------
-    if (kind.toLowerCase() === "resource") {
-      await this.resourceRegionField.waitFor({ state: "visible" });
-      await this.resourceRegionField.fill(apiDefinitionPath);
+      // Region (only if type === "RESOURCE")
+      if (kind.toLowerCase() === "resource") {
+        console.log(`Filling resource region: ${apiDefinitionPath}`);
+        await this.resourceRegionField.waitFor({ state: "visible" });
+        await this.resourceRegionField.fill(apiDefinitionPath);
+      }
+
+      // Fill repository link (only in component and api)
+      if (kind.toLowerCase() === "component" || kind.toLowerCase() === "api") {
+        // Select source control provider
+        console.log(`Selecting source control provider: ${option}`);
+        await this.sourceControlProvider.waitFor({ state: "visible" });
+        await this.sourceControlProvider.click();
+        await this.selecSourceControlOption(option).click();
+
+        // Fill repository
+        console.log(`Filling repository link: ${repoLink}`);
+        await this.repoLinkField.waitFor({ state: "visible" });
+        await this.repoLinkField.fill(repoLink);
+      }
+      
+      // API Definition (only if type === "API")
+      if (kind.toLowerCase() === "api" && apiDefinitionPath) {
+        console.log(`Filling API definition: ${apiDefinitionPath}`);
+        await this.apiDefinitionField.waitFor({ state: "visible" });
+        await this.apiDefinitionField.fill(apiDefinitionPath);
+      }
+
+      // Fill GCP project name
+      if (kind.toLowerCase() === "api" || kind.toLowerCase() === "resource") {
+        console.log(`Filling GCP project ID: ${gcpProjectID}`);
+        await this.gcpProjectField.waitFor({ state: "visible" });
+        await this.gcpProjectField.fill(gcpProjectID);
+      }
+
+      // Click Next with safe handling
+      console.log("Clicking Next to proceed to review");
+      await this.clickNextSafely(() => this.compOnboardButton);
+
+      // Click Onboard
+      console.log("Clicking Onboard to complete component creation");
+      await this.compOnboardButton.waitFor({ state: "visible" });
+      await this.compOnboardButton.click();
+      
+      // Wait for success and view application button
+      console.log("Waiting for view application button to appear");
+      await this.viewApplicationButton.waitFor({ state: "visible", timeout: 60000 });
+      await this.page.waitForLoadState("domcontentloaded");
+      
+      console.log(`Component ${name} onboarded successfully`);
+    } catch (error) {
+      console.error(`Error onboarding component ${name}:`, error);
+      throw error;
     }
-
-    // -----------------------------------------
-    // Fill repository link (only in component and api)
-    // -------------------------------------
-    if (kind.toLowerCase() === "component" || kind.toLowerCase() === "api") {
-      // Select source control provider
-      await this.sourceControlProvider.waitFor({ state: "visible" });
-      await this.sourceControlProvider.click();
-      await this.selecSourceControlOption(option).click();
-
-      // Fill repository
-      await this.repoLinkField.waitFor({ state: "visible" });
-      await this.repoLinkField.fill(repoLink);
-    }
-    
-    // -----------------------------------------
-    // API Definition (only if type === "API")
-    // -----------------------------------------
-    if (kind.toLowerCase() === "api" && apiDefinitionPath) {
-      await this.apiDefinitionField.waitFor({ state: "visible" });
-      await this.apiDefinitionField.fill(apiDefinitionPath);
-    }
-
-    // Fill GCP project name
-    if (kind.toLowerCase() === "api" || kind.toLowerCase() === "resource") {
-    await this.gcpProjectField.waitFor({ state: "visible" });
-    await this.gcpProjectField.fill(gcpProjectID);
-    }
-
-    // Click Next with safe handling
-    await this.clickNextSafely(() => this.compOnboardButton);
-
-    // Click Onboard
-    await this.compOnboardButton.waitFor({ state: "visible" });
-    await this.compOnboardButton.click();
-    
-    // Wait for success and view application button
-    await this.viewApplicationButton.waitFor({ state: "visible", timeout: 60000 });
-    await this.page.waitForLoadState("domcontentloaded");
   }
 
   async viewComponent(componentName: string, componentRow: Locator, nextButtonComponentTable: Locator): Promise<Locator> {
-    await this.handlePagination(
-      componentRow,
-      nextButtonComponentTable,
-      "exists"
-    );
-    return this.componentRow(componentName);
+    try {
+      console.log(`Viewing component: ${componentName}`);
+      await this.handlePagination(
+        componentRow,
+        nextButtonComponentTable,
+        "exists"
+      );
+      console.log(`Component ${componentName} found successfully`);
+      return this.componentRow(componentName);
+    } catch (error) {
+      console.error(`Error viewing component ${componentName}:`, error);
+      throw error;
+    }
   }
 
   // ---------------------------
@@ -385,71 +484,88 @@ export class OnboardingPage extends BasePage {
     newApiDefinition?: string,
     newGcpProjectID?: string
   ): Promise<void> {
-    // Navigate to application view (assume already inside)
-    await this.page.waitForLoadState("domcontentloaded");
+    try {
+      console.log(`Editing component: ${componentName}`);
+      
+      // Navigate to application view (assume already inside)
+      await this.page.waitForLoadState("domcontentloaded");
 
-    // Locate component row and click Edit
-    await this.handlePagination(
-      this.componentRow(componentName),
-      this.nextButtonComponentTable,
-      "exists"
-    );
+      // Locate component row and click Edit
+      console.log(`Finding component row for: ${componentName}`);
+      await this.handlePagination(
+        this.componentRow(componentName),
+        this.nextButtonComponentTable,
+        "exists"
+      );
 
-    const editBtn = this.editButtonInRow(componentName);
-    await editBtn.waitFor({ state: "visible", timeout: 10000 });
-    await editBtn.click();
+      const editBtn = this.editButtonInRow(componentName);
+      await editBtn.waitFor({ state: "visible", timeout: 10000 });
+      await editBtn.click();
+      console.log("Edit button clicked");
 
-    // -----------------------------------------
-    // Update editable fields (Kind & Name not editable)
-    // -----------------------------------------
+      // Update editable fields (Kind & Name not editable)
+      // Update description
+      if (updatedDescription) {
+        console.log(`Updating description to: ${updatedDescription}`);
+        await this.compDescription.waitFor({ state: "visible" });
+        await this.compDescription.fill(updatedDescription);
+      }
 
-    // Update description
-    if (updatedDescription) {
-      await this.compDescription.waitFor({ state: "visible" });
-      await this.compDescription.fill(updatedDescription);
+      // Update Owner (optional)
+      if (newOwner) {
+        console.log(`Updating owner to: ${newOwner}`);
+        await this.compOwner.waitFor({ state: "visible" });
+        await this.compOwner.click();
+        await this.page.getByLabel(newOwner).click();
+      }
+
+      // Next step
+      console.log("Clicking Next to proceed to next step");
+      await this.nextButton.click();
+
+      // Update Environment
+      if (newEnvironment) {
+        console.log(`Updating environment to: ${newEnvironment}`);
+        await this.environmentDropdown.waitFor({ state: "visible" });
+        await this.environmentDropdown.click();
+        await this.selectEnvironmentOption(newEnvironment).click();
+      }
+
+      // Update Repo link
+      if (newRepoLink) {
+        console.log(`Updating repository link to: ${newRepoLink}`);
+        await this.repoLinkField.waitFor({ state: "visible" });
+        await this.repoLinkField.fill(newRepoLink);
+      }
+
+      // Update API Definition (if applicable)
+      if (newApiDefinition) {
+        console.log(`Updating API definition to: ${newApiDefinition}`);
+        await this.apiDefinitionField.waitFor({ state: "visible" });
+        await this.apiDefinitionField.fill(newApiDefinition);
+      }
+
+      // Update GCP Project ID
+      if (newGcpProjectID) {
+        console.log(`Updating GCP project ID to: ${newGcpProjectID}`);
+        await this.gcpProjectField.waitFor({ state: "visible" });
+        await this.gcpProjectField.fill(newGcpProjectID);
+      }
+
+      // Next → Preview → Save
+      console.log("Clicking Next to proceed to preview");
+      await this.nextButton.click();
+      await this.nextButton.waitFor({ state: "visible" });
+      await this.nextButton.click();
+
+      console.log("Clicking Onboard to save changes");
+      await this.compOnboardButton.waitFor({ state: "visible" });
+      await this.compOnboardButton.click();
+      
+      console.log(`Component ${componentName} edited successfully`);
+    } catch (error) {
+      console.error(`Error editing component ${componentName}:`, error);
+      throw error;
     }
-
-    // Update Owner (optional)
-    if (newOwner) {
-      await this.compOwner.waitFor({ state: "visible" });
-      await this.compOwner.click();
-      await this.page.getByLabel(newOwner).click();
-    }
-
-    // Next step
-    await this.nextButton.click();
-
-    // Update Environment
-    if (newEnvironment) {
-      await this.environmentDropdown.waitFor({ state: "visible" });
-      await this.environmentDropdown.click();
-      await this.selectEnvironmentOption(newEnvironment).click();
-    }
-
-    // Update Repo link
-    if (newRepoLink) {
-      await this.repoLinkField.waitFor({ state: "visible" });
-      await this.repoLinkField.fill(newRepoLink);
-    }
-
-    // Update API Definition (if applicable)
-    if (newApiDefinition) {
-      await this.apiDefinitionField.waitFor({ state: "visible" });
-      await this.apiDefinitionField.fill(newApiDefinition);
-    }
-
-    // Update GCP Project ID
-    if (newGcpProjectID) {
-      await this.gcpProjectField.waitFor({ state: "visible" });
-      await this.gcpProjectField.fill(newGcpProjectID);
-    }
-
-    // Next → Preview → Save
-    await this.nextButton.click();
-    await this.nextButton.waitFor({ state: "visible" });
-    await this.nextButton.click();
-
-    await this.compOnboardButton.waitFor({ state: "visible" });
-    await this.compOnboardButton.click();
   }
 }

@@ -6,6 +6,7 @@ export class DevopsPage extends BasePage {
   // Locators
   // ---------------------------
   readonly devopsTab: Locator;
+  readonly subTabCICD: Locator;
 
   // component selector in DevOps
   readonly componentSelectorButton: Locator;
@@ -44,12 +45,21 @@ export class DevopsPage extends BasePage {
   readonly backArrowButton: Locator;
   readonly recentCommits: Locator;
 
+  // CI/CD
+  readonly cicdTab: Locator;
+  readonly configureCICDButton: Locator;
+  readonly gcpProjectInput: Locator;
+  readonly nextStepButton: Locator;
+  readonly createTriggerButton: Locator;
+  readonly configCompleteNotification: Locator;
+
 
   constructor(page: Page) {
     super(page);
 
     // DevOps tab
     this.devopsTab = page.getByRole("tab", { name: "DevOps" });
+    this.subTabCICD = page.getByRole('button', { name: 'Configure CI/CD' });
 
     // component selector (button shows current selection), option by visible text
     this.componentSelectorButton = page
@@ -109,6 +119,15 @@ export class DevopsPage extends BasePage {
     this.viewMoreButton = page.getByRole("button", { name: "View more" });
     this.backArrowButton = page.getByLabel('DevOps').getByRole('button');
     this.recentCommits = page.getByText(/Recent Commits/i);
+
+    // CI/CD locators
+    this.cicdTab = page.getByRole("tab", { name: "CI/CD" });
+    this.configureCICDButton = page.getByRole("button", { name: "Configure CI/CD" });
+    this.gcpProjectInput = page.getByPlaceholder("your-gcp-project-id");
+    this.nextStepButton = page.getByRole("button", { name: "Next Step" });
+    this.createTriggerButton = page.getByRole("button", { name: "Create Trigger" });
+    this.configCompleteNotification = page.getByText(/CI\/CD Configuration Complete/i);
+  
   }
 
   // ---------------------------
@@ -119,6 +138,12 @@ export class DevopsPage extends BasePage {
     await this.devopsTab.waitFor({ state: "visible" });
     await this.devopsTab.click();
     await this.page.waitForLoadState("domcontentloaded");
+  }
+
+  async openSubTabs(name: string): Promise<void> {
+    await this.subTabCICD.waitFor({state: "visible"});
+    await this.subTabCICD.click();
+     await this.page.waitForLoadState("domcontentloaded");
   }
 
   async selectComponentByName(name: string): Promise<void> {
@@ -270,4 +295,28 @@ async verifyRecentCommits() {
   await this.scrollAndWait(this.recentCommits);
   await expect(this.recentCommits).toBeVisible();
 }
+
+async openCICDTab(): Promise<void> {
+    await this.cicdTab.waitFor({ state: "visible" });
+    await this.cicdTab.click();
+    await this.page.waitForLoadState("domcontentloaded");
+  }
+
+  async configureCICD(projectId: string): Promise<void> {
+    await this.configureCICDButton.waitFor({ state: "visible" });
+    await this.configureCICDButton.click();
+
+    // Fill project ID
+    await this.gcpProjectInput.waitFor({ state: "visible" });
+    await this.gcpProjectInput.fill(projectId);
+
+    // Walk through the steps
+    await this.nextStepButton.click();
+    await this.nextStepButton.click();
+    await this.createTriggerButton.click();
+
+    // Validate notification
+    await this.configCompleteNotification.waitFor({ state: "visible", timeout: 30_000 });
+    await expect(this.configCompleteNotification).toBeVisible();
+  }
 }
