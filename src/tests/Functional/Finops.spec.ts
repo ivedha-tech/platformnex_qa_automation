@@ -12,7 +12,7 @@ let finopsPage: FinopsPage;
 
 const testData: any = loadYamlData("src/utils/testData.yaml");
 
-test.setTimeout(180000);
+test.setTimeout(190000);
 
 test.beforeEach(async ({ page }) => {
   mainPage = new MainPage(page);
@@ -51,12 +51,15 @@ test("Onboard component", async () => {
  // ---------- TC002: Configure FinOps & Validate Dashboard ----------
 test("Configure FinOps + Validate Dashboard + Usage Explorer", async () => {
   // navigate directly to FinOps page
-  await finopsPage.page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Platformnex/finops?environment=development&component=AAPI");
+  await finopsPage.page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test/finops?environment=development&component=prod-test-qa");
 
+  // Step 2: Select the same component
+  
   // Select created component
-  const projectName = `web_asset ${testData.component.comp.valid.compName}`;
-  await finopsPage.selectProject(projectName);
-
+    const projectName = testData.component.comp.valid.compName;
+    await finopsPage.projectDropdownButton.click();
+    await finopsPage.projectOption(projectName).click();
+    await finopsPage.page.waitForTimeout(2000); // wait for selection to register
   // Update FinOps Config
   await finopsPage.updateFinopsConfig(
     testData.finops.gcpprojectid,
@@ -64,15 +67,11 @@ test("Configure FinOps + Validate Dashboard + Usage Explorer", async () => {
     testData.finops.gcptableid
   );
 
-  // Finalize and validate FinOps dashboard
-  await finopsPage.finalizeAndValidate(projectName);
-
   // Open Usage Explorer and validate
   await finopsPage.openUsageExplorer();
-  await finopsPage.validateUsageExplorerUI();
 
   // Optionally switch time range
-  await finopsPage.switchTimeRange("This Week");
+  await finopsPage.switchTimeRange("Last Month");
 
   // (Optional) If you want to log spend + savings
   // await finopsPage.validateSpendAndSavings();

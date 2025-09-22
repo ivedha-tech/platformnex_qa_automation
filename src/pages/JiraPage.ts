@@ -4,9 +4,10 @@ export class JiraPage {
   readonly page: Page;
   readonly searchBox: Locator;
   readonly projectDropdown: Locator;
-readonly epicDropdown: Locator;
-//readonly sprintDropdown: Locator;
-readonly statusDropdown: Locator;
+  readonly epicDropdown: Locator;
+  //readonly sprintDropdown: Locator;
+  readonly statusDropdown: Locator;
+  readonly openPrsButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,7 +18,7 @@ readonly statusDropdown: Locator;
     this.epicDropdown = page.locator('button').filter({ hasText: 'All Epics' });
     //this.sprintDropdown = page.locator('button').filter({ hasText: /^All$/ }); // exact "All"
     this.statusDropdown = page.locator('button').filter({ hasText: 'All Status' });
-  
+    this.openPrsButton = page.getByRole('tab', { name: 'Open PRs' });
   }
 
   async searchTask(value: string) {
@@ -42,9 +43,15 @@ readonly statusDropdown: Locator;
   //}
   
   async selectStatus(status: string) {
-    await this.statusDropdown.click();
-    await this.page.getByText(status, { exact: true }).click();
+    await this.statusDropdown.click(); // open dropdown
+    await this.page.locator('[role="option"]').getByText(status, { exact: true }).click(); 
+    await this.page.waitForLoadState("networkidle");
   }
   
-  
+  //click the OpenPrsbutton and wait for loading
+  async openPrs() {
+    await this.openPrsButton.click();
+    await this.page.waitForLoadState("networkidle");
+  }
+
 }
