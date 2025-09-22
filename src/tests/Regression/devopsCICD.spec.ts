@@ -97,11 +97,12 @@ test.describe("DevOps CI/CD Flow", () => {
     await onboardingPage.viewApplication();
 
 
+    await devopsPage.openDevOpsTab();
     // 3) Select our component in DevOps
     await devopsPage.selectComponentByName(newCompName);
 
     await devopsPage.openDevOpsTab();
-    await devopsPage.selectComponentByName("TestComponentAuto");
+    //await devopsPage.selectComponentByName("TestComponentAuto");
 
     await devopsPage.openCICDTab();
     await devopsPage.configureCICD(gcpProjectID);

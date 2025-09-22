@@ -88,11 +88,17 @@ export class OnboardingPage extends BasePage {
     this.applicationNameView = (name: string) =>
       page.getByRole("heading", { name: `${name}` });
     this.startOverButton = page.locator("#startOverApp");
-    this.sidebarTabApplication = page.getByRole('complementary').getByRole('link', { name: 'Applications' });
+    this.sidebarTabApplication = page
+      .getByRole("complementary")
+      .getByRole("link", { name: "Applications" });
 
     // Component locators
-    this.onboardExistingComponentButton = page.getByRole('button', { name: /onboard\s+existing\s+component/i });
-    this.onboardComponentButton = page.getByRole('button', { name: /onboard\s+component/i });
+    this.onboardExistingComponentButton = page.getByRole("button", {
+      name: /onboard\s+existing\s+component/i,
+    });
+    this.onboardComponentButton = page.getByRole("button", {
+      name: /onboard\s+component/i,
+    });
     this.kindDropdown = page.getByLabel("Kind:");
     this.kindComponentOption = (kind: string) => page.getByLabel(`${kind}`);
     this.newCompNameField = page.getByPlaceholder("Name...");
@@ -101,13 +107,17 @@ export class OnboardingPage extends BasePage {
     this.compTags = page.getByLabel("Tags");
     this.typeDropdown = page.getByLabel("Type:");
     this.selectTypeOption = (type: string) => page.getByLabel(`${type}`);
-    this.environmentDropdown = page.getByLabel('Environment:');
-    this.selectEnvironmentOption = (environment: string) => page.getByLabel(`${environment}`);
-    this.sourceControlProvider = page.locator('button').filter({ hasText: 'Github' });
-    this.selecSourceControlOption = (option: string) => page.getByLabel(`${option}`);
+    this.environmentDropdown = page.getByLabel("Environment:");
+    this.selectEnvironmentOption = (environment: string) =>
+      page.getByLabel(`${environment}`);
+    this.sourceControlProvider = page
+      .locator("button")
+      .filter({ hasText: "Github" });
+    this.selecSourceControlOption = (option: string) =>
+      page.getByLabel(`${option}`);
     this.repoLinkField = page.getByPlaceholder("repository link...");
     this.gcpProjectField = page.getByPlaceholder("gcp project name...");
-    this.nextButton = page.getByRole('button', { name: 'Next' });
+    this.nextButton = page.getByRole("button").filter({ hasText: "Next" });
     this.compOnboardButton = page.getByRole("button", {
       name: "Onboard",
       exact: true,
@@ -118,7 +128,10 @@ export class OnboardingPage extends BasePage {
       name: "chevron_right",
     });
     this.editButtonInRow = (name: string) =>
-      this.page.getByRole('row', { name: new RegExp(`^${name} .*`, 'i') }).getByRole('img').nth(1);
+      this.page
+        .getByRole("row", { name: new RegExp(`^${name} .*`, "i") })
+        .getByRole("img")
+        .nth(1);
 
     // API locators
     this.apiDefinitionField = page.getByPlaceholder("API definition...");
@@ -132,9 +145,8 @@ export class OnboardingPage extends BasePage {
     this.successMessageApplication = page.getByRole("heading", {
       name: /System/,
     });
-    this.componentOnboardedSuccess = page.getByRole("heading", {
-      name: /Component/,
-    });
+    this.componentOnboardedSuccess = page.getByRole('heading')
+      .filter({ hasText: /(Component|API|Resource)\s+(Onboarded|Edited)\s+/i })
     this.apiOnboardedSuccess = page.getByRole("heading", { name: /API/ });
     this.resourceOnboardedSuccess = page.getByRole("heading", {
       name: /Resource/,
@@ -144,9 +156,12 @@ export class OnboardingPage extends BasePage {
     });
 
     // application
-    this.applicationCardByName = (name: string) => page.getByRole('heading', { name: new RegExp(`^${name}$`, 'i') });
-    this.paginationNextButton = page.getByRole('button', { name: 'chevron_right' });
-    
+    this.applicationCardByName = (name: string) =>
+      page.getByRole("heading", { name: new RegExp(`^${name}$`, "i") });
+    this.paginationNextButton = page.getByRole("button", {
+      name: "chevron_right",
+    });
+
     console.log("OnboardingPage initialized successfully");
   }
 
@@ -175,7 +190,7 @@ export class OnboardingPage extends BasePage {
       console.log("Selecting application owner");
       await this.appOwner.click();
       await this.appOwnerselector.click();
-      
+
       console.log("Clicking onboard button");
       await this.appOnboardButton.click();
 
@@ -243,7 +258,7 @@ export class OnboardingPage extends BasePage {
       throw error;
     }
   }
-  
+
   async selectApplicationByName(name: string): Promise<void> {
     try {
       console.log(`Selecting application by name: ${name}`);
@@ -268,7 +283,7 @@ export class OnboardingPage extends BasePage {
 
   async waitForPageLoad(): Promise<void> {
     console.log("Waiting for page to load completely");
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
     await this.page.waitForTimeout(2000);
     console.log("Page loaded successfully");
   }
@@ -280,7 +295,7 @@ export class OnboardingPage extends BasePage {
     try {
       console.log("Looking for onboard component button");
       await this.page.waitForLoadState("domcontentloaded");
-      
+
       // Try onboardExistingComponentButton first
       try {
         console.log("Trying to find onboard existing component button");
@@ -292,9 +307,12 @@ export class OnboardingPage extends BasePage {
         console.log("Clicked onboard existing component button");
         return;
       } catch (error) {
-        console.log("Onboard existing component button not found, trying alternative", error);
+        console.log(
+          "Onboard existing component button not found, trying alternative",
+          error
+        );
       }
-      
+
       // If not found, try onboardComponentButton
       try {
         console.log("Trying to find onboard component button");
@@ -308,7 +326,7 @@ export class OnboardingPage extends BasePage {
       } catch (error) {
         console.log("Onboard component button not found");
       }
-      
+
       throw new Error(
         "No Onboard Component button found in the application view."
       );
@@ -322,14 +340,15 @@ export class OnboardingPage extends BasePage {
   async clickNextSafely(waitForLocator: () => Locator, timeout = 60000) {
     console.log("Attempting to click Next button safely");
     const start = Date.now();
+    await this.page.waitForTimeout(1000);
     while (Date.now() - start < timeout) {
       try {
-        const nextBtn = this.page.getByRole("button", { name: "Next" });
-        if (await nextBtn.isVisible() && await nextBtn.isEnabled()) {
+        const nextBtn = this.nextButton;
+        if ((await nextBtn.isVisible()) && (await nextBtn.isEnabled())) {
           console.log("Next button is visible and enabled, clicking");
           await nextBtn.scrollIntoViewIfNeeded();
           await nextBtn.click({ force: true });
-          
+
           // Wait for the next step to load
           for (let i = 0; i < 5; i++) {
             if (await waitForLocator().isVisible()) {
@@ -345,7 +364,34 @@ export class OnboardingPage extends BasePage {
       }
       await this.page.waitForTimeout(500);
     }
-    throw new Error("Next button not clickable or next step not visible in timeout");
+    throw new Error(
+      "Next button not clickable or next step not visible in timeout"
+    );
+  }
+
+  async clickNextSafelyV2() {
+    console.log("Clicking Next button (simple approach)");
+
+    try {
+      await this.page.waitForLoadState("domcontentloaded");
+      const nextBtn = this.nextButton;
+
+      await nextBtn.waitFor({ state: "visible", timeout: 10000 });
+      console.log("Next button found and visible");
+
+      await nextBtn.scrollIntoViewIfNeeded();
+      await nextBtn.click({ force: true });
+
+      console.log("Next button clicked successfully");
+
+      // Don't wait for anything else - let the calling code handle what comes next
+    } catch (error) {
+      if (this.page.isClosed()) {
+        console.log("Page closed after Next click - this is likely expected");
+        return;
+      }
+      throw error;
+    }
   }
 
   async onboardNewComponent(
@@ -362,46 +408,37 @@ export class OnboardingPage extends BasePage {
     gcpProjectID: string
   ): Promise<void> {
     try {
-      console.log(`Starting component onboarding for: ${name} of kind: ${kind}`);
-      
       // Click onboard component button
       await this.clickOnboardComponentButton();
 
       // Select Kind
-      console.log(`Selecting component kind: ${kind}`);
       await this.kindDropdown.waitFor({ state: "visible" });
       await this.kindDropdown.click();
       await this.kindComponentOption(kind).click();
 
       // Fill Name
-      console.log(`Filling component name: ${name}`);
       await this.newCompNameField.waitFor({ state: "visible" });
       await this.newCompNameField.fill(name);
 
       // Fill Description
-      console.log(`Filling component description: ${description}`);
       await this.compDescription.waitFor({ state: "visible" });
       await this.compDescription.fill(description);
 
       // Click Next with safe handling
-      console.log("Clicking Next to proceed to type selection");
       await this.clickNextSafely(() => this.page.getByLabel("Type:"));
 
       // Select Type
-      console.log(`Selecting component type: ${type}`);
       await this.typeDropdown.waitFor({ state: "visible" });
       await this.typeDropdown.click();
       await this.selectTypeOption(type).click();
 
       // Select Environment
-      console.log(`Selecting environment: ${environment}`);
       await this.environmentDropdown.waitFor({ state: "visible" });
       await this.environmentDropdown.click();
       await this.selectEnvironmentOption(environment).click();
 
       // Region (only if type === "RESOURCE")
       if (kind.toLowerCase() === "resource") {
-        console.log(`Filling resource region: ${apiDefinitionPath}`);
         await this.resourceRegionField.waitFor({ state: "visible" });
         await this.resourceRegionField.fill(apiDefinitionPath);
       }
@@ -409,45 +446,55 @@ export class OnboardingPage extends BasePage {
       // Fill repository link (only in component and api)
       if (kind.toLowerCase() === "component" || kind.toLowerCase() === "api") {
         // Select source control provider
-        console.log(`Selecting source control provider: ${option}`);
         await this.sourceControlProvider.waitFor({ state: "visible" });
         await this.sourceControlProvider.click();
         await this.selecSourceControlOption(option).click();
 
         // Fill repository
-        console.log(`Filling repository link: ${repoLink}`);
         await this.repoLinkField.waitFor({ state: "visible" });
         await this.repoLinkField.fill(repoLink);
       }
-      
+
       // API Definition (only if type === "API")
       if (kind.toLowerCase() === "api" && apiDefinitionPath) {
-        console.log(`Filling API definition: ${apiDefinitionPath}`);
         await this.apiDefinitionField.waitFor({ state: "visible" });
         await this.apiDefinitionField.fill(apiDefinitionPath);
       }
 
       // Fill GCP project name
       if (kind.toLowerCase() === "api" || kind.toLowerCase() === "resource") {
-        console.log(`Filling GCP project ID: ${gcpProjectID}`);
         await this.gcpProjectField.waitFor({ state: "visible" });
         await this.gcpProjectField.fill(gcpProjectID);
       }
 
-      // Click Next with safe handling
-      console.log("Clicking Next to proceed to review");
-      await this.clickNextSafely(() => this.compOnboardButton);
+      // Second click - just click and move on
+      console.log("=== SECOND NEXT CLICK ===");
+      await this.clickNextSafelyV2();
+
+      // If we reach here, the page didn't close, so we can continue
+      if (!this.page.isClosed()) {
+        console.log("Page still open, looking for onboard button");
+        // Look for the onboard button or handle next steps
+      }
+
+      // Third click - just click and move on
+      console.log("=== THIRD NEXT CLICK ===");
+      await this.clickNextSafelyV2();
+
+      // If we reach here, the page didn't close, so we can continue
+      if (!this.page.isClosed()) {
+        console.log("Page still open, looking for onboard button");
+        // Look for the onboard button or handle next steps
+      }
 
       // Click Onboard
-      console.log("Clicking Onboard to complete component creation");
       await this.compOnboardButton.waitFor({ state: "visible" });
       await this.compOnboardButton.click();
-      
+
       // Wait for success and view application button
-      console.log("Waiting for view application button to appear");
       await this.viewApplicationButton.waitFor({ state: "visible", timeout: 60000 });
       await this.page.waitForLoadState("domcontentloaded");
-      
+
       console.log(`Component ${name} onboarded successfully`);
     } catch (error) {
       console.error(`Error onboarding component ${name}:`, error);
@@ -455,7 +502,11 @@ export class OnboardingPage extends BasePage {
     }
   }
 
-  async viewComponent(componentName: string, componentRow: Locator, nextButtonComponentTable: Locator): Promise<Locator> {
+  async viewComponent(
+    componentName: string,
+    componentRow: Locator,
+    nextButtonComponentTable: Locator
+  ): Promise<Locator> {
     try {
       console.log(`Viewing component: ${componentName}`);
       await this.handlePagination(
@@ -486,7 +537,7 @@ export class OnboardingPage extends BasePage {
   ): Promise<void> {
     try {
       console.log(`Editing component: ${componentName}`);
-      
+
       // Navigate to application view (assume already inside)
       await this.page.waitForLoadState("domcontentloaded");
 
@@ -561,7 +612,7 @@ export class OnboardingPage extends BasePage {
       console.log("Clicking Onboard to save changes");
       await this.compOnboardButton.waitFor({ state: "visible" });
       await this.compOnboardButton.click();
-      
+
       console.log(`Component ${componentName} edited successfully`);
     } catch (error) {
       console.error(`Error editing component ${componentName}:`, error);
