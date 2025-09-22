@@ -1,6 +1,7 @@
 import { Page, Locator } from "@playwright/test";
 
 export class BasePage {
+  
   constructor(protected page: Page) {
     this.page = page;
   }
@@ -52,32 +53,29 @@ export class BasePage {
     }
   }
 
-  // ---------------------------
-  // Tour Functions
-  // ---------------------------
-  async completeTour(): Promise<void> {
-    if (await this.primaryButtonSecond.isVisible({ timeout: 6000 }).catch(() => false)) {
-      await this.primaryButtonSecond.click();
-    }
-    if (await this.nextStepButton.isVisible({ timeout: 6000 }).catch(() => false)) {
-      await this.nextStepButton.click();
-    }
-    if (await this.finishButton.isVisible({ timeout: 6000 }).catch(() => false)) {
-      await this.finishButton.click();
-    }
-  }
+// ---------------------------
+// Tour Functions
+// ---------------------------
+async completeTour(): Promise<void> {
+  await this.primaryButtonSecond.waitFor({ state: "visible", timeout: 6000 });
+  await this.primaryButtonSecond.click();
 
-  async skipTour(): Promise<void> {
-    if (await this.skipTourButton.isVisible({ timeout: 6000 }).catch(() => false)) {
-      // double click to make sure it closes
-      await this.skipTourButton.click();
-    }
-  }
+  await this.nextStepButton.waitFor({ state: "visible", timeout: 6000 });
+  await this.nextStepButton.click();
 
-  async handleTour(): Promise<void> {
-    await this.page.waitForLoadState("domcontentloaded");
-    await this.page.mouse.click(0, 0);
-    await this.completeTour();
-    await this.skipTour();
-  }
+  await this.finishButton.waitFor({ state: "visible", timeout: 6000 });
+  await this.finishButton.click();
+}
+
+async skipTour(): Promise<void> {
+  await this.skipTourButton.waitFor({ state: "visible", timeout: 6000 });
+  await this.skipTourButton.click();
+}
+
+async handleTour(): Promise<void> {
+  await this.page.waitForLoadState("domcontentloaded");
+  await this.skipTour();
+  await this.completeTour();
+  await this.skipTour();
+}
 }

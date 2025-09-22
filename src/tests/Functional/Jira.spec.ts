@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { JiraPage } from "../../pages/JiraPage";
 import { LoginPage } from "../../pages/LoginPage";
 import { MainPage } from "../../pages/MainPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 
 const testData = loadYamlData("src/utils/testData.yaml");
 

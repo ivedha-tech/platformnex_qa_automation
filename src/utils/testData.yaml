@@ -15,16 +15,24 @@ login:
 
 application:
   valid:
-    appName: "TestApp1"
+    appName: "Test-App-Automation"
     description: "Sample App"
     owner: "guests"
   edit:
     updatedAppName: "Edited-Application"
     updatedDescription: "Edited App Description"
     updatedOwner: "admins"
-  successMessage: 
-    expectedMessage: "System Edited Successfully!" 
-
+  successMessage:
+    expectedMessageOnboarded: "System Onboarded Successfully!"
+    expectedMessageUpdated: "System Updated Successfully!"
+  MyApp:
+    name: "MyApp"
+    description: "This is the description of MyApp"
+    tags:
+      - "tag1"
+      - "tag2"
+    owner: "Owner1"
+ 
 component:
   comp:
     valid:
@@ -41,10 +49,19 @@ component:
       updatedDescription: "Edited Comn Description"
       updatedType: "service"
       updateEnvironment: "production"
-    successMessage: 
-      expectedMessage: "Component Updated Successfully!" 
-
-  api:
+    successMessage:
+      expectedMessageOnboarded: "Component Onboarded Successfully!"
+      expectedMessageUpdated: "Component Updated Successfully!"
+  MyComponent:
+    name: "MyComponent"
+    description: "This is the description of MyComponent"
+    tags:
+      - "compTag1"
+      - "compTag2"
+    owner: "Owner1"
+ 
+api:
+  comp:
     valid:
       kind: "api"
       apiName: "TestAPI"
@@ -60,10 +77,9 @@ component:
       updatedDescription: "Edited API Description"
       updatedType: "graphql"
       updatedApiDefinition: "Edited API definition"
-    successMessage: 
-      expectedMessage: "API Updated Successfully!"   
-
-api:
+    successMessage:
+      expectedMessageOnboarded: "API Onboarded Successfully!"
+      expectedMessageUpdated: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -72,19 +88,37 @@ api:
       - "annotation2"
     owner: "Owner1"
 
+resource:
+  comp:
+    valid:
+      kind: "resource"
+      resourceName: "TestRes"
+      description: "Sample Resource"
+      owner: "guests"
+      type: "Database"
+      environment: "development"
+      gcpProjectID: "prj-dev-platform-next"
+    edit:
+      updatedResourceName: "EditedRes"
+      updatedDescription: "Edited Resource Description"
+      updatedOwner: "admins"
+      updatedType: "Cache"
+      updatedTags: "ResTag1,ResTag2,ResTag3"
+    successMessage:
+      expectedMessageOnboarded: "Resource Onboarded Successfully!"
+      expectedMessageUpdated: "Resource Updated Successfully!"
+
 quickstart:
   basicinfo:
     name: "aut23t"
     description: "Anything"
     owner: "guests"
     system: "Platformnex"
-
   frontend:
     repoOwner: "ivedha-tech"
     repoName: "aut23repofront23"
     serviceName: "autservice23"
     serviceDescription: "anything"
-
   backend:
     repoOwner: "ivedha-tech"
     repoName: "autb23"
@@ -94,10 +128,8 @@ quickstart:
     dbServiceName: "aut23dbname"
     dbName: "autdbnamebackend"
     dbPassword: "Pass@123"
-
   infrastructure:
     project: "prj-dev-platform-next"
-
 
 jira:
   search:
@@ -108,38 +140,42 @@ jira:
     epic: "All Epics"
     sprint: "Today"
     status: "Done"
-
 cloudops:
   resource:
     name: "aimic"
     type: "storage"
-
+ 
   database:
     instanceName: "aicloudops"
     version: "PostgreSQL 15"
     dbName: "tey230db"
     username: "dbtey230"
     password: "Admin@42"
-
-resource:
-  valid:
-    kind: "resource"
-    resourceName: "TestRes"
-    description: "Sample Resource"
-    owner: "guests"
-    type: "Database"
-    environment: "development"
-    gcpProjectID: "prj-dev-platform-next"
-  edit:
-    updatedResourceName: "EditedRes"
-    updatedDescription: "Edited Resource Description"
-    updatedOwner: "admins"
-    updatedType: "Cache"
-    updatedTags: "ResTag1,ResTag2,ResTag3"
-  successMessage: 
-    expectedMessage: "Resource Updated Successfully!"
-
+    
 finops:
   gcpprojectid: "prj-dev-platform-next"
   gcpdatasetid: "ds_billing"
   gcptableid: "gcp_billing_export_resource_v1_01E9B5_60A8A4_E1FE52"
+devops:
+  compKind: "Component"
+  componentName: "devops-auto-test-component"
+  description: "DevOps QA component"
+  owner: "guests"
+  type: "website"
+  environment: "development"
+  providerOption: "Github"
+  repoUrl: "https://github.com/ivedha-tech/platformnex_qa_automation"
+  gcpProjectID: "prj-dev-platform-next"
+
+  expected:
+    sonarMissingHeading: "Missing Plugin SonarQube"
+    sonarSetupInProgressHeading: "SonarQube Setup in Progress"
+    prTitlePrefix: "Onboard SonarQube:"
+    codeQualityCards:
+      - "Reliability"
+      - "Security"
+      - "Maintainability"
+      - "Hotspots Reviewed"
+      - "Coverage"
+      - "Duplications"
+

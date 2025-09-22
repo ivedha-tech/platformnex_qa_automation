@@ -3,7 +3,7 @@ import { MainPage } from "../../pages/MainPage";
 import { LoginPage } from "../../pages/LoginPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
 import { FinopsPage } from "../../pages/FinopsPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 
 let mainPage: MainPage;
 let loginPage: LoginPage;

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/LoginPage';
 import { DashboardPage } from '../../pages/DashboardPage';
 import { MainPage } from '../../pages/MainPage'
-import { loadYamlData } from '../../utils/ymalHelper';
+import loadYamlData from '../../utils/yamlHelper';
 import { Asserts } from '../../utils/asserts';
 import { assert } from 'console';
 

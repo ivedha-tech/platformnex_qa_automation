@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { MainPage } from "../../pages/MainPage";
 import { LoginPage } from "../../pages/LoginPage";
 import { Quickstart3TierPage } from "../../pages/Quickstart3TierPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 
 const testData = loadYamlData("src/utils/testData.yaml");
 
