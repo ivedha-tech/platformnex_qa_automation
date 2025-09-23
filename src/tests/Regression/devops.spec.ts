@@ -69,23 +69,7 @@ test.describe("DevOps Gateway Flow", () => {
     );
     page.waitForLoadState("domcontentloaded");
 
-    //await devopsPage.selectComponentByName("test-comp")
-
-    // await devopsPage.selectFilter("This Week");
-
-    // await devopsPage.selectBranchDropdown(
-    //   /main \(default\)/i,
-    //   /Onboarding-Regression-test-/i
-    // );
-    // await devopsPage.selectBranchDropdown(
-    //   /Onboarding-Regression-test-/i,
-    //   /Login-functional-test-/i
-    // );
-
-    // 1) select application
-    //await onboardingPage.selectApplicationByName("TestApp1");
-
-    // 2) Onboard a new component (re-use your OnboardingPage API)
+    // 2) Onboard a new component
     const newCompName = `${componentName}-${Date.now()}`;
     await onboardingPage.onboardNewComponent(
       "Component",
@@ -109,16 +93,14 @@ test.describe("DevOps Gateway Flow", () => {
     // Land back on Application Overview and open DevOps tab
     await onboardingPage.viewApplication();
 
-    // 3) Select our component in DevOps
-    //await devopsPage.selectComponentByName(newCompName);
-
     await devopsPage.openDevOpsTab();
+    // 3) Select our component in DevOps
+    await devopsPage.selectComponentByName(newCompName);
+
     await devopsPage.verifyCommitInsights();
     await devopsPage.verifyLibraryChecker();
     await devopsPage.expandLibraryDependencies();
     await devopsPage.verifyRecentCommits();
-
-    await devopsPage.selectComponentByName("test-auto");
 
     // Verify we see "Missing Plugin SonarQube"
     await Asserts.validateTextContains(

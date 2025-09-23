@@ -30,6 +30,8 @@ export class OnboardingPage extends BasePage {
   readonly compOwner: Locator;
   readonly compTags: Locator;
   readonly compOnboardButton: Locator;
+  readonly applicationOverview: Locator;
+  readonly relatedComponentTable: Locator;
   readonly componentRow: (name: string) => Locator;
   readonly nextButtonComponentTable: Locator;
   readonly kindDropdown: Locator;
@@ -122,11 +124,13 @@ export class OnboardingPage extends BasePage {
       name: "Onboard",
       exact: true,
     });
-    this.componentRow = (name: string) =>
-      this.page.getByRole("cell", { name: new RegExp(`\\b${name}\\b`, "i") });
-    this.nextButtonComponentTable = this.page.getByRole("button", {
-      name: "chevron_right",
+    this.applicationOverview = page.getByRole("heading", {
+      name: "Application Overview",
     });
+    this.relatedComponentTable = page.getByText("Related Components");
+    this.componentRow = (name: string) =>
+      this.page.getByRole("cell").filter({ hasText: `${name}` });
+    this.nextButtonComponentTable = this.page.getByLabel("Go to next page");
     this.editButtonInRow = (name: string) =>
       this.page
         .getByRole("row", { name: new RegExp(`^${name} .*`, "i") })
@@ -145,8 +149,9 @@ export class OnboardingPage extends BasePage {
     this.successMessageApplication = page.getByRole("heading", {
       name: /System/,
     });
-    this.componentOnboardedSuccess = page.getByRole('heading')
-      .filter({ hasText: /(Component|API|Resource)\s+(Onboarded|Edited)\s+/i })
+    this.componentOnboardedSuccess = page
+      .getByRole("heading")
+      .filter({ hasText: /(Component|API|Resource)\s+(Onboarded|Edited)\s+/i });
     this.apiOnboardedSuccess = page.getByRole("heading", { name: /API/ });
     this.resourceOnboardedSuccess = page.getByRole("heading", {
       name: /Resource/,
@@ -210,6 +215,12 @@ export class OnboardingPage extends BasePage {
       await this.viewApplicationButton.waitFor({ state: "visible" });
       await this.viewApplicationButton.click();
       console.log("Application view opened successfully");
+
+      await this.waitForPageLoad();
+
+      // Safe reload with error handling
+      await this.safeReload();
+
     } catch (error) {
       console.error("Error viewing application:", error);
       throw error;
@@ -336,64 +347,6 @@ export class OnboardingPage extends BasePage {
     }
   }
 
-  // New helper method for safe next button clicking
-  async clickNextSafely(waitForLocator: () => Locator, timeout = 60000) {
-    console.log("Attempting to click Next button safely");
-    const start = Date.now();
-    await this.page.waitForTimeout(1000);
-    while (Date.now() - start < timeout) {
-      try {
-        const nextBtn = this.nextButton;
-        if ((await nextBtn.isVisible()) && (await nextBtn.isEnabled())) {
-          console.log("Next button is visible and enabled, clicking");
-          await nextBtn.scrollIntoViewIfNeeded();
-          await nextBtn.click({ force: true });
-
-          // Wait for the next step to load
-          for (let i = 0; i < 5; i++) {
-            if (await waitForLocator().isVisible()) {
-              console.log("Next step loaded successfully");
-              return;
-            }
-            await this.page.waitForTimeout(300);
-            await nextBtn.click({ force: true });
-          }
-        }
-      } catch (error) {
-        console.log("Error clicking Next button, retrying:", error);
-      }
-      await this.page.waitForTimeout(500);
-    }
-    throw new Error(
-      "Next button not clickable or next step not visible in timeout"
-    );
-  }
-
-  async clickNextSafelyV2() {
-    console.log("Clicking Next button (simple approach)");
-
-    try {
-      await this.page.waitForLoadState("domcontentloaded");
-      const nextBtn = this.nextButton;
-
-      await nextBtn.waitFor({ state: "visible", timeout: 10000 });
-      console.log("Next button found and visible");
-
-      await nextBtn.scrollIntoViewIfNeeded();
-      await nextBtn.click({ force: true });
-
-      console.log("Next button clicked successfully");
-
-      // Don't wait for anything else - let the calling code handle what comes next
-    } catch (error) {
-      if (this.page.isClosed()) {
-        console.log("Page closed after Next click - this is likely expected");
-        return;
-      }
-      throw error;
-    }
-  }
-
   async onboardNewComponent(
     kind: string,
     applicationName: string,
@@ -492,14 +445,20 @@ export class OnboardingPage extends BasePage {
       await this.compOnboardButton.click();
 
       // Wait for success and view application button
-      await this.viewApplicationButton.waitFor({ state: "visible", timeout: 60000 });
-      await this.page.waitForLoadState("domcontentloaded");
+      await this.viewApplicationButton.waitFor({
+        state: "visible",
+        timeout: 60000,
+      });
+      await this.waitForPageLoad();
 
       console.log(`Component ${name} onboarded successfully`);
+      await this.applicationOverview.isVisible();
+      await this.relatedComponentTable.isVisible();
     } catch (error) {
       console.error(`Error onboarding component ${name}:`, error);
       throw error;
     }
+    await this.waitForPageLoad();
   }
 
   async viewComponent(
@@ -507,12 +466,14 @@ export class OnboardingPage extends BasePage {
     componentRow: Locator,
     nextButtonComponentTable: Locator
   ): Promise<Locator> {
+    await this.page.waitForLoadState("domcontentloaded");
+    await this.safeReload();
     try {
       console.log(`Viewing component: ${componentName}`);
       await this.handlePagination(
         componentRow,
         nextButtonComponentTable,
-        "exists"
+        "click"
       );
       console.log(`Component ${componentName} found successfully`);
       return this.componentRow(componentName);
@@ -538,10 +499,10 @@ export class OnboardingPage extends BasePage {
     try {
       console.log(`Editing component: ${componentName}`);
 
-      // Navigate to application view (assume already inside)
+      // Navigate to application view
       await this.page.waitForLoadState("domcontentloaded");
 
-      // Locate component row and click Edit
+      // Locate component row and click Edit using pagination
       console.log(`Finding component row for: ${componentName}`);
       await this.handlePagination(
         this.componentRow(componentName),
@@ -554,7 +515,10 @@ export class OnboardingPage extends BasePage {
       await editBtn.click();
       console.log("Edit button clicked");
 
-      // Update editable fields (Kind & Name not editable)
+      // Wait for edit modal/form to load
+      await this.page.waitForLoadState("domcontentloaded");
+
+      // Step 1: Update basic information
       // Update description
       if (updatedDescription) {
         console.log(`Updating description to: ${updatedDescription}`);
@@ -570,10 +534,11 @@ export class OnboardingPage extends BasePage {
         await this.page.getByLabel(newOwner).click();
       }
 
-      // Next step
-      console.log("Clicking Next to proceed to next step");
-      await this.nextButton.click();
+      // Click Next to proceed to technical details
+      console.log("Clicking Next to proceed to technical details");
+      await this.clickNextSafely(() => this.environmentDropdown);
 
+      // Step 2: Update technical details
       // Update Environment
       if (newEnvironment) {
         console.log(`Updating environment to: ${newEnvironment}`);
@@ -582,41 +547,178 @@ export class OnboardingPage extends BasePage {
         await this.selectEnvironmentOption(newEnvironment).click();
       }
 
-      // Update Repo link
-      if (newRepoLink) {
+      // Update Repo link (only for component and API kinds)
+      if (
+        newRepoLink &&
+        (kind.toLowerCase() === "component" || kind.toLowerCase() === "api")
+      ) {
         console.log(`Updating repository link to: ${newRepoLink}`);
         await this.repoLinkField.waitFor({ state: "visible" });
         await this.repoLinkField.fill(newRepoLink);
       }
 
-      // Update API Definition (if applicable)
-      if (newApiDefinition) {
+      // Update API Definition (only for API kind)
+      if (newApiDefinition && kind.toLowerCase() === "api") {
         console.log(`Updating API definition to: ${newApiDefinition}`);
         await this.apiDefinitionField.waitFor({ state: "visible" });
         await this.apiDefinitionField.fill(newApiDefinition);
       }
 
-      // Update GCP Project ID
-      if (newGcpProjectID) {
+      // Update GCP Project ID (only for API and Resource kinds)
+      if (
+        newGcpProjectID &&
+        (kind.toLowerCase() === "api" || kind.toLowerCase() === "resource")
+      ) {
         console.log(`Updating GCP project ID to: ${newGcpProjectID}`);
         await this.gcpProjectField.waitFor({ state: "visible" });
         await this.gcpProjectField.fill(newGcpProjectID);
       }
 
-      // Next → Preview → Save
-      console.log("Clicking Next to proceed to preview");
-      await this.nextButton.click();
-      await this.nextButton.waitFor({ state: "visible" });
-      await this.nextButton.click();
+      // Update Resource Region (only for Resource kind)
+      if (kind.toLowerCase() === "resource" && newApiDefinition) {
+        console.log(`Updating resource region to: ${newApiDefinition}`);
+        await this.resourceRegionField.waitFor({ state: "visible" });
+        await this.resourceRegionField.fill(newApiDefinition);
+      }
 
+      // Click Next to proceed to preview
+      console.log("=== SECOND NEXT CLICK (to preview) ===");
+      await this.clickNextSafelyV2();
+
+      // If page is still open, handle preview step
+      if (!this.page.isClosed()) {
+        console.log("Page still open, proceeding to final step");
+
+        // Click Next on preview page (if needed) or directly click Onboard
+        // Some flows might require an additional Next click on preview
+        try {
+          if (await this.nextButton.isVisible({ timeout: 3000 })) {
+            console.log("=== THIRD NEXT CLICK (final step) ===");
+            await this.clickNextSafelyV2();
+          }
+        } catch (error) {
+          console.log("No third Next button found, proceeding to Onboard");
+        }
+      }
+
+      // Click Onboard to save changes
       console.log("Clicking Onboard to save changes");
-      await this.compOnboardButton.waitFor({ state: "visible" });
+      await this.compOnboardButton.waitFor({
+        state: "visible",
+        timeout: 15000,
+      });
       await this.compOnboardButton.click();
 
+      // Wait for success message and page load
+      await this.page.waitForLoadState("domcontentloaded");
       console.log(`Component ${componentName} edited successfully`);
     } catch (error) {
       console.error(`Error editing component ${componentName}:`, error);
       throw error;
+    }
+  }
+  //-----------------------------
+  // helper methods
+  //-------------------------------
+  async clickNextSafely(waitForLocator: () => Locator, timeout = 60000) {
+    console.log("Attempting to click Next button safely");
+    const start = Date.now();
+    await this.page.waitForTimeout(1000);
+    while (Date.now() - start < timeout) {
+      try {
+        const nextBtn = this.nextButton;
+        if ((await nextBtn.isVisible()) && (await nextBtn.isEnabled())) {
+          console.log("Next button is visible and enabled, clicking");
+          await nextBtn.scrollIntoViewIfNeeded();
+          await nextBtn.click({ force: true });
+
+          // Wait for the next step to load
+          for (let i = 0; i < 5; i++) {
+            if (await waitForLocator().isVisible()) {
+              console.log("Next step loaded successfully");
+              return;
+            }
+            await this.page.waitForTimeout(300);
+            await nextBtn.click({ force: true });
+          }
+        }
+      } catch (error) {
+        console.log("Error clicking Next button, retrying:", error);
+      }
+      await this.page.waitForTimeout(500);
+    }
+    throw new Error(
+      "Next button not clickable or next step not visible in timeout"
+    );
+  }
+
+  async clickNextSafelyV2() {
+    console.log("Clicking Next button (simple approach)");
+
+    try {
+      await this.page.waitForLoadState("domcontentloaded");
+      const nextBtn = this.nextButton;
+
+      await nextBtn.waitFor({ state: "visible", timeout: 10000 });
+      console.log("Next button found and visible");
+
+      await nextBtn.scrollIntoViewIfNeeded();
+      await nextBtn.click({ force: true });
+
+      console.log("Next button clicked successfully");
+
+      // Don't wait for anything else - let the calling code handle what comes next
+    } catch (error) {
+      if (this.page.isClosed()) {
+        console.log("Page closed after Next click - this is likely expected");
+        return;
+      }
+      throw error;
+    }
+  }
+  async safeReload(): Promise<void> {
+    try {
+      // Check if page is still available before reloading
+      if (this.page.isClosed()) {
+        console.log("Page is already closed, skipping reload");
+        return;
+      }
+
+      console.log("Attempting safe page reload...");
+
+      // Use waitForEvent to handle navigation properly
+      await Promise.all([
+        this.page.waitForLoadState("networkidle"),
+        this.page.reload(),
+      ]);
+
+      console.log("Page reloaded successfully");
+    } catch (error) {
+      if (this.page.isClosed()) {
+        console.log(
+          "Page closed during reload - this may be expected behavior"
+        );
+        return;
+      }
+
+      console.warn("Reload failed, attempting recovery:", error);
+
+      // Try alternative reload method
+      await this.alternativeReload();
+    }
+  }
+
+  private async alternativeReload(): Promise<void> {
+    try {
+      // Alternative: Use evaluate to reload from client side
+      await this.page.evaluate(() => {
+        location.reload();
+      });
+
+      await this.page.waitForLoadState("networkidle");
+    } catch (error) {
+      console.warn("Alternative reload also failed:", error);
+      // Continue without reload - the page might already be in correct state
     }
   }
 }

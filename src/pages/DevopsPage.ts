@@ -10,33 +10,34 @@ export class DevopsPage extends BasePage {
 
   // component selector in DevOps
   readonly componentSelectorButton: Locator;
+  readonly searchBar: Locator;
   readonly componentOptionByName: (name: string) => Locator;
 
   // SonarQube missing/setup locators
-  readonly missingPluginHeading: Locator; // "Missing Plugin SonarQube"
-  readonly setupNewButton: Locator; // "Set Up New"
-  readonly onboardingConfirmTitle: Locator; // "Confirm Onboarding"
-  readonly onboardingConfirmBody: Locator; // text "Do you want to confirm"
-  readonly onboardingConfirmButton: Locator; // "Confirm"
-  readonly onboardingModalCloseButton: Locator; // "Close"
-  readonly setupInProgressHeading: Locator; // "SonarQube Setup in Progress"
+  readonly missingPluginHeading: Locator;
+  readonly setupNewButton: Locator;
+  readonly onboardingConfirmTitle: Locator;
+  readonly onboardingConfirmBody: Locator;
+  readonly onboardingConfirmButton: Locator;
+  readonly onboardingModalCloseButton: Locator;
+  readonly setupInProgressHeading: Locator;
 
   // Pull Requests section
-  readonly pullRequestsSectionTitle: Locator; // "Pull Requests"
+  readonly pullRequestsSectionTitle: Locator;
   readonly onboardSonarPRRowByPrefix: (prefix: string) => Locator;
 
   // PR details page
-  readonly prTitlePrefixHeading: Locator; // "Onboard SonarQube:"
-  readonly mergeButton: Locator; // "Merge"
-  public mergingBlockedBanner: Locator; // "Merging is blocked"
-  public bypassRuleCheckbox: Locator; // "Merge without waiting for requirement..."
-  public mergeAnywayButton: Locator; // "Merge anyway"
-  public confirmMergeDialogTitle: Locator; // "Confirm Merge"
-  public confirmMergeButton: Locator; // "Confirm"
+  readonly prTitlePrefixHeading: Locator;
+  readonly mergeButton: Locator;
+  public mergingBlockedBanner: Locator;
+  public bypassRuleCheckbox: Locator;
+  public mergeAnywayButton: Locator;
+  public confirmMergeDialogTitle: Locator;
+  public confirmMergeButton: Locator;
 
   // Code Quality cards after refresh
-  readonly codeQualityHeading: Locator; // "Code Quality"
-  readonly qualityCardByName: (name: string) => Locator; // reliability/security/etc.
+  readonly codeQualityHeading: Locator;
+  readonly qualityCardByName: (name: string) => Locator;
 
   //Devops Ui
   readonly commitInsightsSection: Locator;
@@ -53,19 +54,20 @@ export class DevopsPage extends BasePage {
   readonly createTriggerButton: Locator;
   readonly configCompleteNotification: Locator;
 
-
   constructor(page: Page) {
     super(page);
+    console.log("🔄 Initializing DevopsPage...");
 
     // DevOps tab
     this.devopsTab = page.getByRole("tab", { name: "DevOps" });
     this.subTabCICD = page.getByRole('button', { name: 'Configure CI/CD' });
 
-    // component selector (button shows current selection), option by visible text
+    // component selector
     this.componentSelectorButton = page
       .locator("button").filter({
-  hasText: /web_asset.+/i,
-});
+        hasText: /web_asset.+/i,
+      });
+    this.searchBar = page.getByPlaceholder('Search');
     this.componentOptionByName = (name: string) =>
       page.getByRole("option", {
         name: new RegExp(`web_asset\\s+${name}$`, "i"),
@@ -91,7 +93,6 @@ export class DevopsPage extends BasePage {
     // Pull Requests
     this.pullRequestsSectionTitle = page.getByText(/Pull Requests/i);
     this.onboardSonarPRRowByPrefix = (prefix: string) =>
-      // Any row that starts with "Onboard SonarQube:" regardless of suffix
       page.getByRole("row", { name: new RegExp(`${prefix}\\s*`, "i") });
 
     // PR details
@@ -127,7 +128,8 @@ export class DevopsPage extends BasePage {
     this.nextStepButton = page.getByRole("button", { name: "Next Step" });
     this.createTriggerButton = page.getByRole("button", { name: "Create Trigger" });
     this.configCompleteNotification = page.getByText(/CI\/CD Configuration Complete/i);
-  
+
+    console.log("DevopsPage initialized successfully");
   }
 
   // ---------------------------
@@ -135,40 +137,78 @@ export class DevopsPage extends BasePage {
   // ---------------------------
 
   async openDevOpsTab(): Promise<void> {
+    console.log("📊 Opening DevOps tab...");
     await this.devopsTab.waitFor({ state: "visible" });
     await this.devopsTab.click();
     await this.page.waitForLoadState("domcontentloaded");
+    console.log("DevOps tab opened successfully");
   }
 
   async openSubTabs(name: string): Promise<void> {
+    console.log(`📂 Opening sub-tab: ${name}...`);
     await this.subTabCICD.waitFor({state: "visible"});
     await this.subTabCICD.click();
-     await this.page.waitForLoadState("domcontentloaded");
+    await this.page.waitForLoadState("domcontentloaded");
+    console.log(`Sub-tab ${name} opened successfully`);
   }
 
   async selectComponentByName(name: string): Promise<void> {
-  // Open dropdown
-  await this.componentSelectorButton.waitFor({ state: "visible" });
-  await this.componentSelectorButton.click();
+    console.log(`Starting component selection for: "${name}"`);
+    
+    // Always start with a refresh
+    console.log("Refreshing page before component selection...");
+    await this.page.reload();
+    await this.page.waitForLoadState("domcontentloaded");
+    console.log("Page refreshed successfully");
 
-  // Locator for option inside dropdown
-  const option = this.componentOptionByName(name);
+    try {
+      console.log(`🔍 Trying dropdown selection for component "${name}"...`);
 
-  // Wait until visible & click
-  await option.waitFor({ state: "visible", timeout: 10000 });
-  await option.scrollIntoViewIfNeeded();
-  await option.click();
+      // Open dropdown
+      await this.componentSelectorButton.waitFor({ state: "visible" });
+      await this.componentSelectorButton.click();
+      console.log("Component dropdown opened");
 
-  // Wait for selection to apply
-  await this.page.waitForLoadState("domcontentloaded");
-}
+      // Try to locate option in dropdown
+      const option = this.componentOptionByName(name);
+      await option.waitFor({ state: "visible", timeout: 5000 });
+      await option.scrollIntoViewIfNeeded();
+      await option.click();
+      console.log(`Successfully selected component "${name}" from dropdown`);
+      
+    } catch (error) {
+      console.error(`Dropdown selection failed for component "${name}":`, error);
+      console.log(`Falling back to search bar for component "${name}"...`);
+
+      // Use search bar instead
+      await this.searchBar.waitFor({ state: "visible" });
+      await this.searchBar.fill(name);
+      console.log(`Search term "${name}" entered`);
+
+      // Wait for filtered option to appear
+      const filteredOption = this.componentOptionByName(name);
+      await filteredOption.waitFor({ state: "visible", timeout: 10000 });
+      await filteredOption.scrollIntoViewIfNeeded();
+      await filteredOption.click();
+      console.log(`Successfully selected component "${name}" using search bar`);
+    }
+
+    // Ensure selection applies
+    await this.page.waitForLoadState("domcontentloaded");
+    console.log(`Component selection process completed for "${name}"`);
+  }
 
   async setupNewSonarQube(): Promise<void> {
+    console.log("Starting SonarQube setup process...");
+    
     await this.missingPluginHeading.waitFor({
       state: "visible",
       timeout: 30000,
     });
+    console.log("Missing plugin heading found");
+    
     await this.setupNewButton.click();
+    console.log("'Set Up New' button clicked");
 
     // Confirm onboarding
     await this.onboardingConfirmTitle.waitFor({
@@ -176,147 +216,220 @@ export class DevopsPage extends BasePage {
       timeout: 15000,
     });
     await this.onboardingConfirmBody.waitFor({ state: "visible" });
+    console.log("Onboarding confirmation dialog appeared");
+    
     await this.onboardingConfirmButton.click();
+    console.log("Onboarding confirmed");
+    
     await this.onboardingModalCloseButton.click();
+    console.log("Modal closed");
 
-    // Wait for modal content to stabilize then close
+    // Wait for setup progress
     await this.setupInProgressHeading.waitFor({
       state: "visible",
       timeout: 60000,
     });
-    
+    console.log("SonarQube setup in progress heading visible");
+    console.log("SonarQube setup process completed successfully");
   }
 
   async openOnboardSonarQubePullRequest(prefix: string): Promise<void> {
+    console.log(`Looking for SonarQube PR with prefix: "${prefix}"`);
+    
     await this.pullRequestsSectionTitle.waitFor({ state: "visible" });
+    console.log("Pull Requests section found");
+    
     const prRow = this.onboardSonarPRRowByPrefix(prefix);
     await prRow.waitFor({ state: "visible", timeout: 60000 });
+    console.log(`PR row with prefix "${prefix}" found`);
+    
     await prRow.click();
+    console.log("PR row clicked");
+    
     await this.prTitlePrefixHeading.waitFor({
       state: "visible",
       timeout: 30000,
     });
+    console.log("PR details page loaded successfully");
   }
 
   private async ensureDevOpsLoaded(): Promise<void> {
-  const mustHaveSections: Locator[] = [
-    this.commitInsightsSection,
-    this.libraryCheckerSection,
-  ];
+    console.log("🔍 Ensuring DevOps page is fully loaded...");
+    
+    const mustHaveSections: Locator[] = [
+      this.commitInsightsSection,
+      this.libraryCheckerSection,
+    ];
 
-  for (const section of mustHaveSections) {
-    await this.scrollAndWait(section, 15000); // more time, scrolling included
-  }
-
-  // Optional sections fallback (don’t fail if missing)
-  const optionalSections: Locator[] = [
-    this.pullRequestsSectionTitle,
-    this.codeQualityHeading,
-    this.recentCommits,
-  ];
-  for (const section of optionalSections) {
-    try {
-      await this.scrollAndWait(section, 8000);
-    } catch {
-      // log instead of failing
-      console.log(`⚠️ Optional DevOps section not found: ${await section.toString()}`);
+    for (const section of mustHaveSections) {
+      console.log(`Waiting for required section: ${await section.toString()}`);
+      await this.scrollAndWait(section, 15000);
+      console.log("Section loaded successfully");
     }
+
+    // Optional sections fallback
+    const optionalSections: Locator[] = [
+      this.pullRequestsSectionTitle,
+      this.codeQualityHeading,
+      this.recentCommits,
+    ];
+    
+    for (const section of optionalSections) {
+      try {
+        console.log(`Checking optional section: ${await section.toString()}`);
+        await this.scrollAndWait(section, 8000);
+        console.log("Optional section found");
+      } catch {
+        console.log(`Optional DevOps section not found: ${await section.toString()}`);
+      }
+    }
+    
+    console.log("DevOps page loading verification completed");
   }
-}
 
   private async scrollAndWait(locator: Locator, timeout = 30000) {
-  await locator.waitFor({ state: "attached", timeout });
-  await locator.scrollIntoViewIfNeeded();
-  await locator.waitFor({ state: "visible", timeout });
-}
+    console.log(`Scrolling to and waiting for locator (timeout: ${timeout}ms)`);
+    await locator.waitFor({ state: "attached", timeout });
+    await locator.scrollIntoViewIfNeeded();
+    await locator.waitFor({ state: "visible", timeout });
+    console.log("Locator is now visible and in view");
+  }
 
   async bypassAndMergePR(): Promise<void> {
+    console.log("🔄 Starting PR bypass and merge process...");
+    
     await this.mergeButton.waitFor({ state: "visible" });
     await this.mergeButton.click();
+    console.log("Merge button clicked");
 
     await this.mergingBlockedBanner.waitFor({
       state: "visible",
       timeout: 15000,
     });
+    console.log("Merging blocked banner appeared");
+    
     await this.bypassRuleCheckbox.check();
+    console.log("Bypass rule checkbox checked");
 
     await this.mergeAnywayButton.waitFor({ state: "visible" });
     await this.mergeAnywayButton.click();
+    console.log("'Merge anyway' button clicked");
 
     await this.confirmMergeDialogTitle.waitFor({ state: "visible" });
     await this.confirmMergeButton.click();
+    console.log("Merge confirmed");
+    
+    console.log("PR bypass and merge completed successfully");
   }
 
   async refreshAndEnsureComponent(componentName: string): Promise<void> {
+    console.log(`Refreshing and ensuring component "${componentName}" is selected...`);
+    
     // Hard refresh
     await this.page.reload();
     await this.page.waitForLoadState("domcontentloaded");
+    console.log("Page refreshed");
 
-    // If not selected, select
+    // Check if component is already selected
     const dropdownText = await this.componentSelectorButton.textContent();
     const selected = (dropdownText || "").includes(componentName);
+    
     if (!selected) {
+      console.log(`Component "${componentName}" not selected, selecting now...`);
       await this.selectComponentByName(componentName);
-      await this.page.mouse.click(0, 0);
+      await this.page.mouse.click(0, 0); // Click away to close dropdown
+      console.log("Component selection ensured");
+    } else {
+      console.log(`Component "${componentName}" already selected`);
     }
+    
+    console.log("Component refresh and ensure process completed");
   }
 
   async selectFilter(filterName: string) {
+    console.log(`Selecting filter: "${filterName}"`);
     await this.page.getByRole("button", { name: "This Month" }).click();
     await this.page.getByText(filterName).click();
+    console.log(`Filter "${filterName}" selected successfully`);
   }
 
   async selectBranchDropdown(branchRegex: RegExp, optionRegex: RegExp) {
+    console.log(`Selecting branch dropdown option`);
     await this.page.getByRole("combobox", { name: branchRegex }).click();
     await this.page.getByText(optionRegex).click();
+    console.log("Branch dropdown option selected");
   }
 
   async verifyCommitInsights() {
-  await this.scrollAndWait(this.commitInsightsSection);
-  await expect(this.commitInsightsSection).toBeVisible();
-}
+    console.log("Verifying Commit Insights section...");
+    await this.scrollAndWait(this.commitInsightsSection);
+    await expect(this.commitInsightsSection).toBeVisible();
+    console.log("Commit Insights section verified successfully");
+  }
 
-async verifyLibraryChecker() {
-  await this.scrollAndWait(this.libraryCheckerSection);
-  await expect(this.libraryCheckerSection).toBeVisible();
-  await this.scrollAndWait(this.page.getByText(/All dependencies are secure/i));
-  await expect(this.page.getByText(/All dependencies are secure/i)).toBeVisible();
-}
+  async verifyLibraryChecker() {
+    console.log("Verifying Library Checker section...");
+    await this.scrollAndWait(this.libraryCheckerSection);
+    await expect(this.libraryCheckerSection).toBeVisible();
+    
+    await this.scrollAndWait(this.page.getByText(/All dependencies are secure/i));
+    await expect(this.page.getByText(/All dependencies are secure/i)).toBeVisible();
+    console.log("Library Checker section verified successfully");
+  }
 
-async expandLibraryDependencies() {
-  await this.scrollAndWait(this.viewMoreButton);
-  await this.viewMoreButton.click();
-  await this.scrollAndWait(this.page.getByText("Library Dependencies"));
-  await expect(this.page.getByText("Library Dependencies")).toBeVisible();
-  await this.backArrowButton.click()
-}
+  async expandLibraryDependencies() {
+    console.log("Expanding Library Dependencies...");
+    await this.scrollAndWait(this.viewMoreButton);
+    await this.viewMoreButton.click();
+    
+    await this.scrollAndWait(this.page.getByText("Library Dependencies"));
+    await expect(this.page.getByText("Library Dependencies")).toBeVisible();
+    
+    await this.backArrowButton.click();
+    console.log("Library Dependencies expanded and navigated back successfully");
+  }
 
-async verifyRecentCommits() {
-  await this.scrollAndWait(this.recentCommits);
-  await expect(this.recentCommits).toBeVisible();
-}
+  async verifyRecentCommits() {
+    console.log("Verifying Recent Commits section...");
+    await this.scrollAndWait(this.recentCommits);
+    await expect(this.recentCommits).toBeVisible();
+    console.log("Recent Commits section verified successfully");
+  }
 
-async openCICDTab(): Promise<void> {
+  async openCICDTab(): Promise<void> {
+    console.log("Opening CI/CD tab...");
     await this.cicdTab.waitFor({ state: "visible" });
     await this.cicdTab.click();
     await this.page.waitForLoadState("domcontentloaded");
+    console.log("CI/CD tab opened successfully");
   }
 
   async configureCICD(projectId: string): Promise<void> {
+    console.log(`Starting CI/CD configuration for project: ${projectId}`);
+    
     await this.configureCICDButton.waitFor({ state: "visible" });
     await this.configureCICDButton.click();
+    console.log("Configure CI/CD button clicked");
 
     // Fill project ID
     await this.gcpProjectInput.waitFor({ state: "visible" });
     await this.gcpProjectInput.fill(projectId);
+    console.log(`GCP Project ID filled: ${projectId}`);
 
     // Walk through the steps
+    console.log("🚶 Walking through configuration steps...");
     await this.nextStepButton.click();
+    console.log("Step 1 completed");
+    
     await this.nextStepButton.click();
+    console.log("Step 2 completed");
+    
     await this.createTriggerButton.click();
+    console.log("Trigger creation initiated");
 
     // Validate notification
     await this.configCompleteNotification.waitFor({ state: "visible", timeout: 30_000 });
     await expect(this.configCompleteNotification).toBeVisible();
+    console.log("CI/CD configuration completed successfully");
   }
 }

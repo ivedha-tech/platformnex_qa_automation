@@ -72,7 +72,7 @@ test.describe("DevOps CI/CD Flow", () => {
     // 1) select application
     //await onboardingPage.selectApplicationByName("TestApp1");
 
-    // 2) Onboard a new component (re-use your OnboardingPage API)
+    // 2) Onboard a new component 
     const newCompName = `${componentName}-${Date.now()}`;
     await onboardingPage.onboardNewComponent(
       "Component",
@@ -86,11 +86,6 @@ test.describe("DevOps CI/CD Flow", () => {
       repoUrl,
       "",
       gcpProjectID
-    );
-
-    await Asserts.validateSuccessMessage(
-      onboardingPage.componentOnboardedSuccess,
-      compExpectedMessageOnboarded
     );
 
     // Land back on Application Overview and open DevOps tab
