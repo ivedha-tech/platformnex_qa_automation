@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import monocart from 'monocart-reporter';
 
 export default defineConfig({
   testDir: './src/tests',
@@ -6,7 +7,15 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   timeout: 30000,
   retries: process.env.CI ? 2 : 0,
-  reporter: [['html', { outputFolder: 'reports' }]],
+  reporter: [
+    ['list'], // keep console output
+    ['monocart-reporter', {
+      outputFile: 'reports/test-report.html',  // HTML report location
+      outputDir: 'reports',                   // directory for all artifacts
+      inlineAssets: true,                     // self-contained HTML file
+      name: 'PlatformNEX Automation Report',
+    }]
+  ],
   use: {
     trace: 'on-first-retry',
     headless: false,

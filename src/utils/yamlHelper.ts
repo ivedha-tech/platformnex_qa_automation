@@ -3,6 +3,7 @@ import * as yaml from "js-yaml";
 
 export interface TestData {
   devops: {
+    codeQualityCards: any;
     componentName: any;
     description: any;
     owner: any;

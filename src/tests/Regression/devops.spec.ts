@@ -2,6 +2,7 @@ import { test } from "@playwright/test";
 import { BasePage } from "../../pages/BasePage";
 import { MainPage } from "../../pages/MainPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
+import { FinopsPage } from "../../pages/FinopsPage";
 import { DevopsPage } from "../../pages/DevopsPage";
 import loadYamlData from "../../utils/yamlHelper";
 import { loginAsUser } from "../../utils/authHelper";
@@ -12,7 +13,9 @@ const testData = loadYamlData("src/utils/testData.yaml");
 let basePage: BasePage;
 let mainPage: MainPage;
 let onboardingPage: OnboardingPage;
+let finopsPage: FinopsPage;
 let devopsPage: DevopsPage;
+let newCompName: string;
 
 // login
 const { email, password } = testData.login.valid;
@@ -23,7 +26,6 @@ const { appName } = testData.application.valid;
 //component
 const {
   expectedMessageOnboarded: compExpectedMessageOnboarded,
-  expectedMessageUpdated: compExpectedMessageUpdated,
 } = testData.component.comp.successMessage;
 
 // devops (component + devops flow inputs)
@@ -46,88 +48,70 @@ const {
 
 test.beforeEach(async ({ page }, testInfo) => {
   onboardingPage = new OnboardingPage(page);
+  finopsPage = new FinopsPage(page);
   mainPage = new MainPage(page);
   basePage = new BasePage(page);
   devopsPage = new DevopsPage(page);
 
   testInfo.setTimeout(testInfo.timeout + 30_000);
 
-  // Precondition: Login
+  // --- Precondition: Login ---
   await loginAsUser(page, email, password);
-  await mainPage.navigateToApplication();
+
+  // --- Precondition: Navigate directly to application ---
+  await page.goto(
+    "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
+  );
+  await page.waitForLoadState("domcontentloaded");
+
+  // --- Precondition: Onboard a new component ---
+  newCompName = `${componentName}-${Date.now()}`;
+  await onboardingPage.onboardNewComponent(
+    "Component",
+    appName,
+    newCompName,
+    description,
+    owner,
+    type,
+    environment,
+    providerOption,
+    repoUrl,
+    "",
+    gcpProjectID
+  );
+
+  await Asserts.validateSuccessMessage(
+    onboardingPage.componentOnboardedSuccess,
+    compExpectedMessageOnboarded
+  );
+
+  // Land back on Application Overview (ready for tests)
+  await onboardingPage.viewApplication();
 });
 
 test.describe("DevOps Gateway Flow", () => {
-  test("Onboard component and complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({
+  test("Complete SonarQube setup via PR merge (bypass), then verify Code Quality cards", async ({
     page,
-  }, testInfo) => {
-    
-    await page.goto(
-      "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Test-App"
-    );
-    page.waitForLoadState("domcontentloaded");
-
+  }) => {
+    // Open DevOps tab
     await devopsPage.openDevOpsTab();
 
-    await devopsPage.selectComponentByName("test-comp")
+    // Select the component onboarded in precondition
+    await devopsPage.selectComponentByName(newCompName);
 
+    // Verify insights
     await devopsPage.verifyCommitInsights();
-
-    // await devopsPage.selectFilter("This Week");
-
-    // await devopsPage.selectBranchDropdown(
-    //   /main \(default\)/i,
-    //   /Onboarding-Regression-test-/i
-    // );
-    // await devopsPage.selectBranchDropdown(
-    //   /Onboarding-Regression-test-/i,
-    //   /Login-functional-test-/i
-    // );
-
     await devopsPage.verifyLibraryChecker();
     await devopsPage.expandLibraryDependencies();
     await devopsPage.verifyRecentCommits();
 
-    // 1) select application
-    //await onboardingPage.selectApplicationByName("TestApp1");
-
-    // 2) Onboard a new component (re-use your OnboardingPage API)
-    // const newCompName = `${componentName}-${Date.now()}`;
-    // await onboardingPage.onboardNewComponent(
-    //   "Component",
-    //   appName,
-    //   newCompName,
-    //   description,
-    //   owner,
-    //   type,
-    //   environment,
-    //   providerOption,
-    //   repoUrl,
-    //   "",
-    //   gcpProjectID
-    // );
-
-    // await Asserts.validateSuccessMessage(
-    //   onboardingPage.componentOnboardedSuccess,
-    //   compExpectedMessageOnboarded
-    // );
-
-    // Land back on Application Overview and open DevOps tab
-    // await onboardingPage.viewApplication();
-
-
-    // 3) Select our component in DevOps
-    //await devopsPage.selectComponentByName(newCompName);
-
-    await devopsPage.selectComponentByName("test-auto")
-
-    // Verify we see "Missing Plugin SonarQube"
+    // Verify "Missing Plugin SonarQube"
     await Asserts.validateTextContains(
       devopsPage.missingPluginHeading,
       sonarMissingHeading
     );
 
-    // 4) Setup new SonarQube (confirm and close)
+    // Setup new SonarQube
     await devopsPage.setupNewSonarQube();
 
     // Verify "Setup in Progress"
@@ -136,16 +120,14 @@ test.describe("DevOps Gateway Flow", () => {
       sonarSetupInProgressHeading
     );
 
-    // 5) Open PR "Onboard SonarQube: <repo-or-component>"
+    // Open PR and bypass merge
     await devopsPage.openOnboardSonarQubePullRequest(prTitlePrefix);
-
-    // 6) Merge with bypass
     await devopsPage.bypassAndMergePR();
 
-    // 7) Return to DevOps dashboard and refresh + ensure component is selected
-    await devopsPage.refreshAndEnsureComponent("test-auto");
+    // Refresh and ensure component is selected
+    await devopsPage.refreshAndEnsureComponent(newCompName);
 
-    // 8) Validate Code Quality cards are visible
+    // Validate Code Quality cards
     await Asserts.validateTextContains(
       devopsPage.codeQualityHeading,
       "Code Quality"
