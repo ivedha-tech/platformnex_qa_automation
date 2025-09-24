@@ -36,8 +36,8 @@ application:
 component:
   comp:
     valid:
-      kind: "cursor232166"
-      compName: "cursor232166"
+      kind: "component"
+      compName: "test-automation-comp"
       description: "Sample Component"
       owner: "guests"
       type: "website"
