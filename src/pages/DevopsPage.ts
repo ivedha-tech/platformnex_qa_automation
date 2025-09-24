@@ -162,7 +162,7 @@ export class DevopsPage extends BasePage {
     console.log("Page refreshed successfully");
 
     try {
-      console.log(`🔍 Trying dropdown selection for component "${name}"...`);
+      console.log(`Trying dropdown selection for component "${name}"...`);
 
       // Open dropdown
       await this.componentSelectorButton.waitFor({ state: "visible" });

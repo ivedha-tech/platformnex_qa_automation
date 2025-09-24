@@ -467,7 +467,7 @@ export class OnboardingPage extends BasePage {
     nextButtonComponentTable: Locator
   ): Promise<Locator> {
     await this.page.waitForLoadState("domcontentloaded");
-    await this.safeReload();
+    await this.safeReload(); 
     try {
       console.log(`Viewing component: ${componentName}`);
       await this.handlePagination(
