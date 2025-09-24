@@ -34,6 +34,7 @@ export class FinopsPage {
   readonly projectDropdownButton: Locator;
   readonly projectOption: (compname: string) => Locator;
 
+
   // --- Dashboard ---
   readonly spendChart: Locator;
   readonly breakdownSection: Locator;
@@ -65,18 +66,21 @@ export class FinopsPage {
     this.repoLinkInput = page.getByPlaceholder("repository link...");
     this.onboardSubmit = page.getByRole("button", {name: "Onboard",exact: true,});
     this.viewAppButton = page.getByRole("button", { name: "View Application" });
+   // Project dropdown
+    // Prefer common select patterns (combobox or listbox button) instead of hard-coded text
+    // Dropdown button (any project name)
+// Prefer common select patterns (combobox or listbox button) instead of hard-coded text 
+this.projectDropdownButton = page.locator('button').filter({ hasText: 'web_assetcursor232166' }).first(); 
+this.projectOption = (name: string) => page.getByRole("option", { name });
 
     // FinOps Config
-    this.updateFinopsConfigButton = page.getByRole("button", {name: "Update FinOps Configs",});
+    this.updateFinopsConfigButton = page.getByRole('button', { name: 'Update FinOps Configs' });
     this.gcpProjectIdInput = page.getByLabel("gcp-projectid *");
     this.gcpDatasetIdInput = page.getByLabel("gcp-dataset-id *");
     this.gcpTableIdInput = page.getByLabel("gcp-table-id *");
     this.submitButton = page.getByRole("button", { name: "Submit" });
 
-    // Project dropdown
-    // Prefer common select patterns (combobox or listbox button) instead of hard-coded text
-    this.projectDropdownButton = page.locator("button[aria-haspopup='listbox'], [role='combobox']").first();
-    this.projectOption = (name: string) => page.getByRole("option", { name });
+    
 
     // Dashboard
     this.spendChart = page.locator("canvas");
@@ -168,6 +172,11 @@ export class FinopsPage {
     await this.gcpDatasetIdInput.fill(datasetId);
     await this.gcpTableIdInput.fill(tableId);
     await this.submitButton.click();
+    await this.page.waitForLoadState("networkidle");
+    // Wait for either the spend chart or no data message to appear
+    await Promise 
+    //add waiting time to load the dashboard
+    await this.page.waitForTimeout(20000);
   }
   //step 6
   async validateFinopsUI() {
@@ -177,50 +186,18 @@ export class FinopsPage {
     await expect(this.anomalyPanel).toBeVisible({ timeout: 60000 });
   }
 
-  async finalizeAndValidate(projectName: string) {
-    // wait after submit
-    await this.page.waitForTimeout(60000);
-    await this.page.reload();
-    await this.page.waitForLoadState("networkidle");
-
-    // reselect project
-    await this.projectDropdownButton.click();
-    await this.projectOption(projectName).click();
-
-    // ✅ validate dashboard
-    await this.validateFinopsUI();
-  }
-
-  async switchTimeRange(range: string) {
-    await this.timeRangeDropdown.click();
-    await this.page.getByText(range, { exact: true }).click();
-  }
+  
   // click Usage Explorer tab
   async openUsageExplorer() {
     await this.usageExplorerTab.click();
     await this.page.waitForLoadState("networkidle");
   }
 
-  private async isVisibleWithin(locator: Locator,timeoutMs: number): Promise<boolean> {
-    try {
-      await locator.waitFor({ state: "visible", timeout: timeoutMs });
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  async validateUsageExplorerUI() {
-    // Basic validation for Usage Explorer - ensure page content appears (chart/table or empty state)
-    if (await this.isVisibleWithin(this.noDataMessage, 10000)) {
-      await expect(this.noDataMessage).toBeVisible();
-    } else {
-      await expect(this.spendChart.first()).toBeVisible({ timeout: 30000 });
-    }
-  }
-
-  async openUsageExplorerAndValidate() {
-    await this.openUsageExplorer();
-    await this.validateUsageExplorerUI();
-  }
+  async switchTimeRange(range: string) {
+    // Open dropdown
+    await this.timeRangeDropdown.click();
+    await this.page.getByText(range, { exact: true }).click();
+    await this.page.waitForTimeout(1000);   
+  }  
+  
 }

@@ -36,8 +36,8 @@ application:
 component:
   comp:
     valid:
-      kind: "component"
-      compName: "TestComponentAuto"
+      kind: "cursor232166"
+      compName: "cursor232166"
       description: "Sample Component"
       owner: "guests"
       type: "website"
@@ -133,14 +133,13 @@ quickstart:
 
 jira:
   search:
-    byId: "SEN"
+    byId: "155"
     bySummary: "Start sending emails"
   filters:
-    project: "SEN"
+    project: "DC"
     epic: "All Epics"
     sprint: "Today"
-    status: "To Do"
- 
+    status: "Done"
 cloudops:
   resource:
     name: "aimic"
