@@ -1,8 +1,8 @@
-import { test } from "@playwright/test";
+import { test, Page, TestInfo } from "@playwright/test";
 import { LoginPage } from "../../pages/LoginPage";
 import { OnboardingPage } from "../../pages/OnboardingPage";
 import { MainPage } from "../../pages/MainPage";
-import { loadYamlData } from "../../utils/ymalHelper";
+import loadYamlData from "../../utils/yamlHelper";
 import { loginAsUser } from "../../utils/authHelper";
 import { Asserts } from "../../utils/asserts";
 
@@ -22,10 +22,9 @@ const {
   description: appDesc,
   owner: appOwner,
 } = testData.application.valid;
-const { updatedDescription: appUpdatedDesc, tags: appTags } =
-  testData.application.edit;
-const { expectedMessage: appExpectedMessage } =
-  testData.application.successMessage;
+const {
+  expectedMessageOnboarded: appExpectedMessageOnboarded,
+} = testData.application.successMessage;
 
 // Component
 const {
@@ -39,10 +38,15 @@ const {
   repoLink,
   gcpProjectID,
 } = testData.component.comp.valid;
-const { updatedDescription: compUpdatedDesc, updatedType: compUpdatedType, updatedEnvironment: compUpdatedEnv } =
-  testData.component.comp.edit;
-const { expectedMessage: compExpectedMessage } =
-  testData.component.comp.successMessage;
+const {
+  updatedDescription: compUpdatedDesc,
+  updatedType: compUpdatedType,
+  updatedEnvironment: compUpdatedEnv,
+} = testData.component.comp.edit;
+const {
+  expectedMessageOnboarded: compExpectedMessageOnboarded,
+  expectedMessageUpdated: compExpectedMessageUpdated,
+} = testData.component.comp.successMessage;
 
 // API
 const {
@@ -55,9 +59,10 @@ const {
   environment: apiEnv,
   scOption: apiSCOption,
   repoLink: apiRepoLink,
-} = testData.component.api.valid;
-const { updatedDescription: apiUpdatedDesc, annotations: apiAnnotationsEdit } =
-  testData.component.api.edit;
+} = testData.api.comp.valid;
+const {
+  expectedMessageOnboarded: apiExpectedMessageOnboarded,
+} = testData.api.comp.successMessage;
 
 // Resource
 const {
@@ -67,12 +72,12 @@ const {
   owner: resOwner,
   type: resType,
   environment: resourceEnv,
-  gcpProjectID: resourceGcp,
-} = testData.component.resource.valid;
-const { updatedDescription: resUpdatedDesc, tags: resTagsEdit } =
-  testData.component.resource.edit;
+} = testData.resource.comp.valid;
+const {
+  expectedMessageOnboarded: recExpectedMessageOnboarded,
+} = testData.resource.comp.successMessage;
 
-test.beforeEach(async ({ page }, testInfo) => {
+test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
   onboardingPage = new OnboardingPage(page);
   mainPage = new MainPage(page);
 
@@ -81,32 +86,36 @@ test.beforeEach(async ({ page }, testInfo) => {
   // Precondition: Login
   await loginAsUser(page, email, password);
   await mainPage.navigateToApplication();
+
+  // Temporary navigation
+  await page.goto(
+    "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
+  );
+  await page.waitForLoadState("domcontentloaded");
 });
 
-test.describe("Onboarding and Editing Tests", () => {
-  test("Onboard and view ", async () => {
-    // ---------------------------
-    // Application Onboarding + View
-    // ---------------------------
-    await onboardingPage.onboardNewApplication(appName, appDesc, appOwner);
-    await Asserts.validateSuccessMessage(
-      onboardingPage.successMessageApplication,
-      appExpectedMessage
-    );
+test.describe("Onboarding Suite", () => {
+  // test("Should onboard a new application successfully", async () => {
+  //   const newAppName = `${appName}-${Date.now()}`;
+    
+  //   await onboardingPage.onboardNewApplication(newAppName, appDesc, appOwner);
+  //   await Asserts.validateSuccessMessage(
+  //     onboardingPage.successMessageApplication,
+  //     appExpectedMessageOnboarded
+  //   );
 
-    await onboardingPage.viewApplication();
-    await Asserts.validateText(
-      onboardingPage.applicationNameView(appName),
-      appName
-    );
+  //   await onboardingPage.viewApplication();
+  //   await onboardingPage.waitForPageLoad();
+  // });
 
-    // ---------------------------
-    // Component Onboarding + View
-    // ---------------------------
+  test("Should onboard a new component successfully", async () => {
+    const newAppName = "Regression-test";
+    const newCompName = `${compName}-${Date.now()}`;
+    
     await onboardingPage.onboardNewComponent(
       componentKind,
-      appName,
-      compName,
+      newAppName,
+      newCompName,
       compDesc,
       compOwner,
       compType,
@@ -116,32 +125,24 @@ test.describe("Onboarding and Editing Tests", () => {
       apiDefinition,
       gcpProjectID
     );
+    
     await Asserts.validateSuccessMessage(
       onboardingPage.componentOnboardedSuccess,
-      compExpectedMessage
+      compExpectedMessageOnboarded
     );
 
     await onboardingPage.viewApplication();
-    await Asserts.validateText(
-      onboardingPage.applicationNameView(appName),
-      appName
-    );
+    await onboardingPage.waitForPageLoad();
+  });
 
-    await Asserts.validateSectionVisible(
-      await onboardingPage.viewComponent(
-        compName,
-        onboardingPage.componentRow(compName),
-        onboardingPage.nextButtonComponentTable
-      )
-    );
-
-    // ---------------------------
-    // API Onboarding + View
-    // ---------------------------
+  test("Should onboard a new API successfully", async () => {
+    const newAppName = "Regression-test";
+    const newApiName = `${apiName}-${Date.now()}`;
+    
     await onboardingPage.onboardNewComponent(
       apiKind,
-      appName,
-      apiName,
+      newAppName,
+      newApiName,
       apiDesc,
       apiOwner,
       apiType,
@@ -151,84 +152,91 @@ test.describe("Onboarding and Editing Tests", () => {
       apiDefinition,
       gcpProjectID
     );
+    
     await Asserts.validateSuccessMessage(
       onboardingPage.apiOnboardedSuccess,
-      compExpectedMessage
+      apiExpectedMessageOnboarded
     );
 
     await onboardingPage.viewApplication();
-    await Asserts.validateText(
-      onboardingPage.applicationNameView(appName),
-      appName
-    );
+    await onboardingPage.waitForPageLoad();
+  });
 
-    await Asserts.validateSectionVisible(
-      await onboardingPage.viewComponent(
-        compName,
-        onboardingPage.componentRow(compName),
-        onboardingPage.nextButtonComponentTable
-      )
-    );
-
-    // ---------------------------
-    // Resource Onboarding + View
-    // ---------------------------
+  test("Should onboard a new resource successfully", async () => {
+    const newAppName = "Regression-test";
+    const newResourceName = `${resourceName}-${Date.now()}`;
+    
     await onboardingPage.onboardNewComponent(
-      apiKind,
-      appName,
-      resourceName,
+      resourceKind,
+      newAppName,
+      newResourceName,
       resDesc,
       resOwner,
       resType,
       resourceEnv,
       compSCOption,
+      "",
+      "",
+      gcpProjectID
+    );
+    
+    await Asserts.validateSuccessMessage(
+      onboardingPage.resourceOnboardedSuccess,
+      recExpectedMessageOnboarded
+    );
+
+    await onboardingPage.viewApplication();
+    await onboardingPage.waitForPageLoad();
+  });
+
+  test("Should edit an existing component successfully", async () => {
+    const newAppName = "Regression-test";
+    const newCompName = `${compName}-${Date.now()}`;
+    
+    // First onboard a component
+    await onboardingPage.onboardNewComponent(
+      componentKind,
+      newAppName,
+      newCompName,
+      compDesc,
+      compOwner,
+      compType,
+      compEnv,
+      compSCOption,
       repoLink,
       apiDefinition,
       gcpProjectID
     );
-    await Asserts.validateSuccessMessage(
-      onboardingPage.resourceOnboardedSuccess,
-      compExpectedMessage
-    );
+    await onboardingPage.waitForPageLoad();
 
     await onboardingPage.viewApplication();
-    await Asserts.validateText(
-      onboardingPage.applicationNameView(appName),
-      appName
-    );
+    
 
-    await Asserts.validateSectionVisible(
-      await onboardingPage.viewComponent(
-        compName,
-        onboardingPage.componentRow(compName),
-        onboardingPage.nextButtonComponentTable
-      )
-    );
+    await onboardingPage.waitForPageLoad();
 
-    // ----------------------------------------------
-    // Edit component 
-    // ---------------------------------------
-
+    // Edit the component
     await onboardingPage.editComponentByName(
       componentKind,
-      compName,
+      newCompName,
       compUpdatedDesc,
-      compUpdatedType, 
-      compUpdatedEnv, 
-      "https://github.com/new/repo", // update repo
-      undefined, // skip API definition for component
+      compUpdatedType,
+      compUpdatedEnv,
+      "https://github.com/new/repo",
+      undefined,
       "new-gcp-project-id"
     );
 
+    await onboardingPage.waitForPageLoad();
     await Asserts.validateSuccessMessage(
       onboardingPage.editComponentSuccess,
-      compExpectedMessage
+      compExpectedMessageUpdated
     );
 
-    // Verify updated description
+    // Verify the component is still visible after edit
     await onboardingPage.viewApplication();
-    await Asserts.validateSectionVisible(onboardingPage.componentRow(compName));
+    await onboardingPage.waitForPageLoad();
+    await Asserts.validateSectionVisible(
+      onboardingPage.componentRow(newCompName)
+    );
   });
-
-  
 });

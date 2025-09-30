@@ -1,7 +1,9 @@
 import { Page, Locator } from "@playwright/test";
 
 export class BasePage {
+  
   constructor(protected page: Page) {
+    console.log("Initializing BasePage...");
     this.page = page;
   }
 
@@ -27,28 +29,53 @@ export class BasePage {
     nextButtonLocator: Locator,
     action: "click" | "getText" | "exists" = "click"
   ): Promise<string | boolean | void> {
+    console.log(`Handling pagination with action: ${action}`);
     let found = false;
+    let pageNumber = 1;
 
-    while (!found) {
-      if (await targetLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
-        switch (action) {
-          case "click":
-            await targetLocator.click();
-            return;
-          case "getText":
-            return await targetLocator.innerText();
-          case "exists":
-            return true;
+    try {
+      while (!found) {
+        console.log(`Checking for target on page ${pageNumber}`);
+        
+        if (await targetLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
+          console.log(`Target element found on page ${pageNumber}`);
+          
+          switch (action) {
+            case "click":
+              console.log("Clicking target element");
+              await targetLocator.click();
+              console.log("Successfully clicked target element");
+              return;
+            case "getText":
+              const text = await targetLocator.innerText();
+              console.log(`Retrieved text from target: ${text}`);
+              return text;
+            case "exists":
+              console.log("Target element exists");
+              return true;
+          }
+        } else {
+          console.log(`Target not found on page ${pageNumber}`);
+        }
+
+        if (await nextButtonLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
+          console.log("Next page button found, clicking");
+          await nextButtonLocator.click();
+          await this.page.waitForLoadState("networkidle"); // wait for page load
+          console.log("Next page loaded");
+          pageNumber++;
+        } else {
+          console.log("No more pages available");
+          if (action === "exists") {
+            console.log("Returning false for existence check");
+            return false; // for existence check
+          }
+          throw new Error("Target element not found in any page");
         }
       }
-
-      if (await nextButtonLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await nextButtonLocator.click();
-        await this.page.waitForLoadState("networkidle"); // wait for page load
-      } else {
-        if (action === "exists") return false; // for existence check
-        throw new Error("Target element not found in any page");
-      }
+    } catch (error) {
+      console.error("Error in handlePagination:", error);
+      throw error;
     }
   }
 
@@ -56,28 +83,59 @@ export class BasePage {
   // Tour Functions
   // ---------------------------
   async completeTour(): Promise<void> {
-    if (await this.primaryButtonSecond.isVisible({ timeout: 6000 }).catch(() => false)) {
+    try {
+      console.log("Starting tour completion process");
+      
+      console.log("Waiting for primary button to be visible");
+      await this.primaryButtonSecond.waitFor({ state: "visible", timeout: 6000 });
+      console.log("Clicking primary button");
       await this.primaryButtonSecond.click();
-    }
-    if (await this.nextStepButton.isVisible({ timeout: 6000 }).catch(() => false)) {
+
+      console.log("Waiting for next step button to be visible");
+      await this.nextStepButton.waitFor({ state: "visible", timeout: 6000 });
+      console.log("Clicking next step button");
       await this.nextStepButton.click();
-    }
-    if (await this.finishButton.isVisible({ timeout: 6000 }).catch(() => false)) {
+
+      console.log("Waiting for finish button to be visible");
+      await this.finishButton.waitFor({ state: "visible", timeout: 6000 });
+      console.log("Clicking finish button");
       await this.finishButton.click();
+      
+      console.log("Tour completed successfully");
+    } catch (error) {
+      console.error("Error completing tour:", error);
+      throw error;
     }
   }
 
   async skipTour(): Promise<void> {
-    if (await this.skipTourButton.isVisible({ timeout: 6000 }).catch(() => false)) {
-      // double click to make sure it closes
+    try {
+      console.log("Skipping tour");
+      console.log("Waiting for skip tour button to be visible");
+      await this.skipTourButton.waitFor({ state: "visible", timeout: 6000 });
+      console.log("Clicking skip tour button");
       await this.skipTourButton.click();
+      console.log("Tour skipped successfully");
+    } catch (error) {
+      console.error("Error skipping tour:", error);
+      throw error;
     }
   }
 
   async handleTour(): Promise<void> {
-    await this.page.waitForLoadState("domcontentloaded");
-    await this.page.mouse.click(0, 0);
-    await this.completeTour();
-    await this.skipTour();
+    try {
+      console.log("Handling tour process");
+      await this.page.waitForLoadState("domcontentloaded");
+      console.log("Page loaded, attempting to skip tour");
+      await this.skipTour();
+      console.log("Attempting to complete tour");
+      await this.completeTour();
+      console.log("Attempting to skip tour again");
+      await this.skipTour();
+      console.log("Tour handling completed successfully");
+    } catch (error) {
+      console.error("Error handling tour:", error);
+      throw error;
+    }
   }
 }
