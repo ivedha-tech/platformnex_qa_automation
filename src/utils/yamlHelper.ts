@@ -107,19 +107,13 @@ export interface TestData {
 };
 
 // Function to load YAML data from a file
-export default function loadYmalData(filePath: string): TestData {
+export default function loadYamlData(filePath: string): TestData {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
     const parsed = yaml.load(fileContents) as unknown;
     return parsed as TestData;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    // Provide a concise, actionable hint for duplicate-key errors
-    if (/duplicated mapping key/i.test(message)) {
-      throw new Error(
-        `YAML error: duplicated mapping key. Ensure each key is unique at its indentation level in ${filePath}.`
-      );
-    }
     throw error;
   };
 };
