@@ -22,31 +22,37 @@ export class JiraPage {
   }
 
   async searchTask(value: string) {
-    await this.searchBox.waitFor({ state: 'visible', timeout: 15000 });
+    await this.searchBox.waitFor({ state: "visible", timeout: 15000 });
     await this.searchBox.fill(value);
-    await this.page.keyboard.press('Enter');
+    await this.page.keyboard.press("Enter");
   }
-
+  
+  private async selectDropdownOption(dropdown: Locator, optionText: string) {
+    await dropdown.click(); // open dropdown
+    const option = this.page.locator('[role="option"]').getByText(
+      new RegExp(`^${optionText}\\s*$`, "i")
+    );
+    await option.waitFor({ state: "visible" });
+    await option.click();
+    await this.page.waitForLoadState("networkidle"); // wait for UI refresh
+  }
+  
   async selectProject(projectName: string) {
-    await this.projectDropdown.click(); // open dropdown
-    await this.page.getByText(projectName, { exact: true }).click(); // select option
+    await this.selectDropdownOption(this.projectDropdown, projectName);
   }
   
   async selectEpic(epicName: string) {
-    await this.epicDropdown.click();
-    await this.page.locator('[role="option"]', { hasText: epicName }).click();
-  }  
+    await this.selectDropdownOption(this.epicDropdown, epicName);
+  }
   
   //async selectSprint(sprintName: string) {
-   // await this.sprintDropdown.click();
-    //await this.page.getByText(sprintName, { exact: true }).click();
-  //}
+   // await this.selectDropdownOption(this.sprintDropdown, sprintName);
+ // }
   
   async selectStatus(status: string) {
-    await this.statusDropdown.click(); // open dropdown
-    await this.page.locator('[role="option"]').getByText(status, { exact: true }).click(); 
-    await this.page.waitForLoadState("networkidle");
+    await this.selectDropdownOption(this.statusDropdown, status);
   }
+  
   
   //click the OpenPrsbutton and wait for loading
   async openPrs() {

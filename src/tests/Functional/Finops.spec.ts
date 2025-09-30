@@ -37,6 +37,7 @@ test.beforeEach(async ({ page }) => {
   const appLink = page.getByText('dnsRegression-testOwned by:');
   await appLink.waitFor({ state: "visible", timeout: 20000 });
   await appLink.click();
+  
 });
 
 // ---------- TC001: Onboard Component ----------

@@ -79,6 +79,9 @@ export interface TestData {
         username: string;
         password: string;
     };
+    gcp?: {
+      projectId: string;
+    };
     finops: {
       gcpprojectid: string;
       gcpdatasetid: string;
