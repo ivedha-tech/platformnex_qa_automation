@@ -34,7 +34,7 @@ application:
     owner: "Owner1"
  
 component:
-  comp:
+  compData:
     valid:
       kind: "component"
       compName: "test-automation-comp"
@@ -61,7 +61,7 @@ component:
     owner: "Owner1"
  
 api:
-  comp:
+  apiData:
     valid:
       kind: "api"
       apiName: "TestAPI"
@@ -89,7 +89,7 @@ api:
     owner: "Owner1"
 
 resource:
-  comp:
+  resData:
     valid:
       kind: "resource"
       resourceName: "TestRes"

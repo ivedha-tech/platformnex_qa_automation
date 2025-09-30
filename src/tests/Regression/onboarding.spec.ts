@@ -37,16 +37,16 @@ const {
   scOption: compSCOption,
   repoLink,
   gcpProjectID,
-} = testData.component.comp.valid;
+} = testData.component.compData.valid;
 const {
   updatedDescription: compUpdatedDesc,
   updatedType: compUpdatedType,
   updatedEnvironment: compUpdatedEnv,
-} = testData.component.comp.edit;
+} = testData.component.compData.edit;
 const {
   expectedMessageOnboarded: compExpectedMessageOnboarded,
   expectedMessageUpdated: compExpectedMessageUpdated,
-} = testData.component.comp.successMessage;
+} = testData.component.compData.successMessage;
 
 // API
 const {
@@ -59,10 +59,10 @@ const {
   environment: apiEnv,
   scOption: apiSCOption,
   repoLink: apiRepoLink,
-} = testData.api.comp.valid;
+} = testData.api.apiData.valid;
 const {
   expectedMessageOnboarded: apiExpectedMessageOnboarded,
-} = testData.api.comp.successMessage;
+} = testData.api.apiData.successMessage;
 
 // Resource
 const {
@@ -72,10 +72,10 @@ const {
   owner: resOwner,
   type: resType,
   environment: resourceEnv,
-} = testData.resource.comp.valid;
+} = testData.resource.resData.valid;
 const {
   expectedMessageOnboarded: recExpectedMessageOnboarded,
-} = testData.resource.comp.successMessage;
+} = testData.resource.resData.successMessage;
 
 test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
   onboardingPage = new OnboardingPage(page);
