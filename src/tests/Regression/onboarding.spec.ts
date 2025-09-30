@@ -80,6 +80,7 @@ const {
 test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
   onboardingPage = new OnboardingPage(page);
   mainPage = new MainPage(page);
+  
 
   testInfo.setTimeout(testInfo.timeout + 30_000);
 
@@ -92,6 +93,9 @@ test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
     "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
   );
   await page.waitForLoadState("domcontentloaded");
+
+  // Handle Feedback
+  await mainPage.handleFeedbackPopup();
 });
 
 test.describe("Onboarding Suite", () => {

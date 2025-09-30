@@ -15,6 +15,10 @@ export class BasePage {
   readonly finishButton: Locator = this.page.locator("locator-for-finish-button");
   readonly skipTourButton: Locator = this.page.locator("locator-for-skip-tour-button");
 
+  //Feedback form locators
+  readonly feedbackForm: Locator = this.page.getByLabel("Page Feedback");
+  readonly closeButton: Locator = this.page.getByRole("button", { name: "Cancel" });
+
   // ---------------------------
   // Pagination Handler
   // ---------------------------
@@ -136,6 +140,19 @@ export class BasePage {
     } catch (error) {
       console.error("Error handling tour:", error);
       throw error;
+    }
+  }
+
+  async handleFeedbackPopup(): Promise<void> {
+
+    const isVisible = await this.feedbackForm
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+
+    if (isVisible) {
+      console.log("Feedback popup detected. Closing...");
+      await this.closeButton.click();
+      await this.page.waitForTimeout(500);
     }
   }
 }
