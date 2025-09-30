@@ -2,10 +2,12 @@ import { test, expect } from "@playwright/test";
 import { MainPage } from "../../pages/MainPage";
 import { LoginPage } from "../../pages/LoginPage";
 import { CloudOpsPage } from "../../pages/CloudopsPage";
-import loadYamlData from "../../utils/yamlHelper";
+import { ComponentOnboardingPage } from "../../pages/ComponentOnboardingPage";
+import { loadYamlData } from "../../utils/ymalHelper";
 
 let mainPage: MainPage;
 let loginPage: LoginPage;
+let componentOnboardingPage: ComponentOnboardingPage;
 let cloudOpsPage: CloudOpsPage;
 
 const testData: { 
@@ -13,20 +15,22 @@ const testData: {
   cloudops: { 
     resource: { name: string }, 
     database?: { instanceName: string, version: string, dbName: string, username: string, password: string } 
-  } 
+  },
 } = loadYamlData("src/utils/testData.yaml");
 
-test.setTimeout(180000);
+test.setTimeout(190000);
 
 test.beforeEach(async ({ page }) => {
   mainPage = new MainPage(page);
   loginPage = new LoginPage(page);
+  componentOnboardingPage = new ComponentOnboardingPage(page);
   cloudOpsPage = new CloudOpsPage(page);
 
   // ---------- Login ----------
   await mainPage.navigateToHomePage();
   await mainPage.openLoginPage();
   await loginPage.login(testData.login.valid.email, testData.login.valid.password);
+  
 
   // ---------- Navigate to Application ----------
   await page.getByRole("link", { name: "Applications" }).click();
@@ -34,10 +38,10 @@ test.beforeEach(async ({ page }) => {
   await page.locator('[data-test-id="overlay"]').waitFor({ state: 'hidden', timeout: 30000 });
   await page.getByText('dnsRegression-testOwned by:').click();
 
-
   // ---------- Open CloudOps ----------
   await cloudOpsPage.openCloudOps();
   await cloudOpsPage.verifyPageLoaded();
+  
 });
 
 // ---------- TC001: Add Storage ----------
@@ -72,3 +76,5 @@ test ("TC003 - Delete All Resources", async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'No Cloud Resources' }))
     .toBeVisible({ timeout: 60000 });
 });
+
+

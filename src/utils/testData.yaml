@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "sanduni.gunawardhana@ivedha.com"
-    password: "Sandu@123"
+    email: "subas.thayananthan@ivedha.com"
+    password: "@Subas2306"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
@@ -110,23 +110,24 @@ resource:
 
 quickstart:
   basicinfo:
-    name: "aut23t"
+    name: "done23"
     description: "Anything"
     owner: "guests"
-    system: "Platformnex"
+    system: "Regression-test"
+
   frontend:
     repoOwner: "ivedha-tech"
-    repoName: "aut23repofront23"
-    serviceName: "autservice23"
+    repoName: "done23f"
+    serviceName: "done23servicefront"
     serviceDescription: "anything"
   backend:
     repoOwner: "ivedha-tech"
-    repoName: "autb23"
-    serviceName: "aut23servicebackend"
+    repoName: "doneb23b"
+    serviceName: "done23servicebackennd"
     serviceDescription: "Anything"
-    dependOnService: "xdvsrepo"
-    dbServiceName: "aut23dbname"
-    dbName: "autdbnamebackend"
+    dependOnService: "donerepo"
+    dbServiceName: "done23dbname"
+    dbName: "donedbnamebackend"
     dbPassword: "Pass@123"
   infrastructure:
     project: "prj-dev-platform-next"
@@ -136,26 +137,53 @@ jira:
     byId: "155"
     bySummary: "Start sending emails"
   filters:
-    project: "DC"
+    project: "All Projects"
     epic: "All Epics"
     sprint: "Today"
-    status: "Done"
+    status: "All Status"
+
 cloudops:
-  resource:
-    name: "aimic"
+ resource:
+    name: "aimic1"
     type: "storage"
- 
-  database:
-    instanceName: "aicloudops"
+
+ database:
+    instanceName: "aicloudops1"
     version: "PostgreSQL 15"
-    dbName: "tey230db"
-    username: "dbtey230"
+    dbName: "tey230db1"
+    username: "dbtey2301"
     password: "Admin@42"
-    
+gcp:
+    projectId: "prj-dev-platform-next"
+
+resource:
+  valid:
+    kind: "resource"
+    resourceName: "TestRes"
+    description: "Sample Resource"
+    owner: "guests"
+    type: "Database"
+    environment: "development"
+    gcpProjectID: "prj-dev-platform-next"
+  edit:
+    updatedResourceName: "EditedRes"
+    updatedDescription: "Edited Resource Description"
+    updatedOwner: "admins"
+    updatedType: "Cache"
+    updatedTags: "ResTag1,ResTag2,ResTag3"
+  successMessage: 
+    expectedMessage: "Resource Updated Successfully!"
+
 finops:
   gcpprojectid: "prj-dev-platform-next"
   gcpdatasetid: "ds_billing"
   gcptableid: "gcp_billing_export_resource_v1_01E9B5_60A8A4_E1FE52"
+
+sre:
+  cloudrun:
+    projectSlug: "prj-dev-platform-next"
+    serviceName: "platformnex-v2-frontend-dit2"
+    location: "us-central1"
 devops:
   compKind: "Component"
   componentName: "devops-auto-test-component"

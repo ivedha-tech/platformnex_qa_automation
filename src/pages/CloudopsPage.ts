@@ -5,6 +5,9 @@ export class CloudOpsPage {
 
   // --- Common Locators ---
   readonly cloudOpsTab: Locator;
+  readonly updateGcpButton: Locator;
+  readonly gcpProjectInput: Locator;
+  readonly submitButton: Locator;
   readonly addResourceButton: Locator;
   readonly createResourceButton: Locator;
   readonly totalResourcesCount: Locator;
@@ -29,17 +32,20 @@ export class CloudOpsPage {
 
     // --- Common ---
     this.cloudOpsTab = page.getByRole("tab", { name: "CloudOps" });
+    this.updateGcpButton = page.getByRole("button", { name: "Update GCP Project ID" });
+    this.gcpProjectInput = page.getByPlaceholder("prj-dev-platform-next");
+    this.submitButton = page.getByRole("button", { name: "Submit" });
     this.addResourceButton = page.getByRole("button", { name: "add Add Resource" });
     this.createResourceButton = page.getByRole("button", { name: "Create Resource" });
     this.totalResourcesCount = page.locator("div").filter({ hasText: /^Total Resources/ }).first();
     this.stackHealth = page.locator("div").filter({ hasText: /^Stack Health/ }).first();
     this.workspaceStatus = page.locator("div").filter({ hasText: /^Workspace Status/ }).first();
     this.deleteAllResourcesButton = page.getByRole('button', { name: 'delete Delete Stack' });
-    this.confirmDeleteButton = page.getByRole('button', { name: 'delete Delete Stack' });
-
+    this.confirmDeleteButton = page.getByRole('button', { name: ' Delete Stack' });
+    
     // --- Storage ---
     this.storageNameInput = page.getByPlaceholder("Enter storage name");
-    this.createResourceButton = page.getByRole("button", { name: "Create Resource" });
+    this.createResourceButton = page.getByRole('button', { name: 'Create Resource' });
 
     // --- Database ---
     this.databaseTab = page.getByRole("tab", { name: "Database" });
@@ -49,6 +55,27 @@ export class CloudOpsPage {
     this.databasePasswordInput = page.getByPlaceholder("Enter database password");
     this.createDatabaseButton = page.getByRole("button", { name: "Create Resource" });
   }
+  // Dynamic select component from dropdown
+async selectComponentForUpdate(componentName: string) {
+  // click apiTestAPI-* button (dynamic one)
+  const dynamicButton = this.page.locator("button").filter({ hasText: "apiTestAPI-" }).first();
+  await dynamicButton.click();
+
+  // select the component created just now
+  const option = this.page.getByRole("option", { name: new RegExp(componentName) });
+  await option.click();
+}
+
+// Update GCP Project ID
+async updateGcpProjectId(projectId: string) {
+  await this.updateGcpButton.click();
+  await this.gcpProjectInput.fill(projectId);
+  await this.submitButton.click();
+
+  // Hard refresh after update
+  await this.page.reload();
+  await this.page.waitForLoadState("networkidle");
+}
 
   // ---------- Common Methods ----------
   async openCloudOps() {
