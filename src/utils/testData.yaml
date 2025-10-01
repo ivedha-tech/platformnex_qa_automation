@@ -114,7 +114,6 @@ quickstart:
     description: "Anything"
     owner: "guests"
     system: "Regression-test"
-
   frontend:
     repoOwner: "ivedha-tech"
     repoName: "done23f"
@@ -153,26 +152,9 @@ cloudops:
     dbName: "tey230db1"
     username: "dbtey2301"
     password: "Admin@42"
-gcp:
-    projectId: "prj-dev-platform-next"
 
-resource:
-  valid:
-    kind: "resource"
-    resourceName: "TestRes"
-    description: "Sample Resource"
-    owner: "guests"
-    type: "Database"
-    environment: "development"
-    gcpProjectID: "prj-dev-platform-next"
-  edit:
-    updatedResourceName: "EditedRes"
-    updatedDescription: "Edited Resource Description"
-    updatedOwner: "admins"
-    updatedType: "Cache"
-    updatedTags: "ResTag1,ResTag2,ResTag3"
-  successMessage: 
-    expectedMessage: "Resource Updated Successfully!"
+gcp:
+  projectId: "prj-dev-platform-next"
 
 finops:
   gcpprojectid: "prj-dev-platform-next"
@@ -184,6 +166,7 @@ sre:
     projectSlug: "prj-dev-platform-next"
     serviceName: "platformnex-v2-frontend-dit2"
     location: "us-central1"
+
 devops:
   compKind: "Component"
   componentName: "devops-auto-test-component"

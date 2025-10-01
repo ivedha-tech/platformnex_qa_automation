@@ -188,11 +188,23 @@ export interface TestData {
     };
   };
 
+  gcp: {
+    projectId: string;
+  }
+
   finops: {
     gcpprojectid: string;
     gcpdatasetid: string;
     gcptableid: string;
   };
+
+  sre: {
+    cloudrun: {
+      projectSlug: string;
+      serviceName: string;
+      location: string;
+    }
+  }
 
   devops: {
     compKind: string;
