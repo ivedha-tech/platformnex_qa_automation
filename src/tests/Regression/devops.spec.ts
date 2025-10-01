@@ -26,7 +26,7 @@ const { appName } = testData.application.valid;
 //component
 const {
   expectedMessageOnboarded: compExpectedMessageOnboarded,
-} = testData.component.comp.successMessage;
+} = testData.component.compData.successMessage;
 
 // devops (component + devops flow inputs)
 const {
