@@ -99,18 +99,18 @@ test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
 });
 
 test.describe("Onboarding Suite", () => {
-  // test("Should onboard a new application successfully", async () => {
-  //   const newAppName = `${appName}-${Date.now()}`;
+  test("Should onboard a new application successfully", async () => {
+    // const newAppName = `${appName}-${Date.now()}`;
     
-  //   await onboardingPage.onboardNewApplication(newAppName, appDesc, appOwner);
-  //   await Asserts.validateSuccessMessage(
-  //     onboardingPage.successMessageApplication,
-  //     appExpectedMessageOnboarded
-  //   );
+    // await onboardingPage.onboardNewApplication(newAppName, appDesc, appOwner);
+    // await Asserts.validateSuccessMessage(
+    //   onboardingPage.successMessageApplication,
+    //   appExpectedMessageOnboarded
+    // );
 
-  //   await onboardingPage.viewApplication();
-  //   await onboardingPage.waitForPageLoad();
-  // });
+    // await onboardingPage.viewApplication();
+    // await onboardingPage.waitForPageLoad();
+  });
 
   test("Should onboard a new component successfully", async () => {
     const newAppName = "Regression-test";
