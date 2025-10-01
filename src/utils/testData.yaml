@@ -48,7 +48,7 @@ component:
     edit:
       updatedDescription: "Edited Comn Description"
       updatedType: "service"
-      updateEnvironment: "production"
+      updatedEnvironment: "production"
     successMessage:
       expectedMessageOnboarded: "Component Onboarded Successfully!"
       expectedMessageUpdated: "Component Updated Successfully!"

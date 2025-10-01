@@ -3,7 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test:typecheck": "tsc --noEmit",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:specific": "playwright test tests/your-test-file.spec.ts",
+    "playwright:install": "playwright install",
+    "playwright:report": "playwright show-report",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "pretest": "npm run test:typecheck"
   },
   "keywords": [],
   "author": "",
@@ -12,11 +24,13 @@
   "devDependencies": {
     "@playwright/test": "^1.49.1",
     "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.19.19",
     "eslint": "^9.17.0",
+    "js-yaml": "^4.1.0",
     "monocart-reporter": "^2.9.22",
     "nodemailer": "^7.0.6",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.9.3"
   }
 }

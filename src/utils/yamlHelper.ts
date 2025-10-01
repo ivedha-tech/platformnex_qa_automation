@@ -2,28 +2,6 @@ import * as fs from "fs";
 import * as yaml from "js-yaml";
 
 export interface TestData {
-  devops: {
-    codeQualityCards: any;
-    componentName: any;
-    description: any;
-    owner: any;
-    type: any;
-    environment: any;
-    providerOption: any;
-    repoUrl: any;
-    gcpProjectID: any;
-    expected: {
-      sonarMissingHeading: any;
-      sonarSetupInProgressHeading: any;
-      prTitlePrefix: any;
-      codeQualityCards: any;
-    };
-  };
-  resource: any;
-  api: any;
-  application: any;
-  component: any;
-
   login: {
     valid: {
       email: string;
@@ -41,6 +19,117 @@ export interface TestData {
       expectedErrorMessageWrongMail: string;
       expectedErrorMessageWrongPassword: string;
       expectedErrorMessageEmpty: string;
+    };
+  };
+
+  application: {
+    valid: {
+      appName: string;
+      description: string;
+      owner: string;
+    };
+    edit: {
+      updatedAppName: string;
+      updatedDescription: string;
+      updatedOwner: string;
+    };
+    successMessage: {
+      expectedMessageOnboarded: string;
+      expectedMessageUpdated: string;
+    };
+    MyApp: {
+      name: string;
+      description: string;
+      tags: string[];
+      owner: string;
+    };
+  };
+
+  component: {
+    compData: {
+      valid: {
+        kind: string;
+        compName: string;
+        description: string;
+        owner: string;
+        type: string;
+        environment: string;
+        scOption: string;
+        repoLink: string;
+        gcpProjectID: string;
+      };
+      edit: {
+        updatedDescription: string;
+        updatedType: string;
+        updatedEnvironment: string; // Fixed: added 'd' to match your usage
+      };
+      successMessage: {
+        expectedMessageOnboarded: string;
+        expectedMessageUpdated: string;
+      };
+    };
+    MyComponent: {
+      name: string;
+      description: string;
+      tags: string[];
+      owner: string;
+    };
+  };
+
+  api: {
+    apiData: {
+      valid: {
+        kind: string;
+        apiName: string;
+        description: string;
+        owner: string;
+        type: string;
+        environment: string;
+        scOption: string;
+        repoLink: string;
+        apiDefinition: string;
+        gcpProjectID: string;
+      };
+      edit: {
+        updatedDescription: string;
+        updatedType: string;
+        updatedApiDefinition: string;
+      };
+      successMessage: {
+        expectedMessageOnboarded: string;
+        expectedMessageUpdated: string;
+      };
+    };
+    MyAPI: {
+      name: string;
+      description: string;
+      annotations: string[];
+      owner: string;
+    };
+  };
+
+  resource: {
+    resData: {
+      valid: {
+        kind: string;
+        resourceName: string;
+        description: string;
+        owner: string;
+        type: string;
+        environment: string;
+        gcpProjectID: string;
+      };
+      edit: {
+        updatedResourceName: string;
+        updatedDescription: string;
+        updatedOwner: string;
+        updatedType: string;
+        updatedTags: string;
+      };
+      successMessage: {
+        expectedMessageOnboarded: string;
+        expectedMessageUpdated: string;
+      };
     };
   };
 
@@ -67,7 +156,6 @@ export interface TestData {
       dbName: string;
       dbPassword: string;
     };
-
     infrastructure: {
       project: string;
     };
@@ -85,11 +173,13 @@ export interface TestData {
       status: string;
     };
   };
+
   cloudops: {
     resource: {
       name: string;
+      type: string;
     };
-    database?: {
+    database: {
       instanceName: string;
       version: string;
       dbName: string;
@@ -97,12 +187,31 @@ export interface TestData {
       password: string;
     };
   };
+
   finops: {
-      gcpprojectid: string;
-      gcpdatasetid: string;
-      gcptableid: string;
+    gcpprojectid: string;
+    gcpdatasetid: string;
+    gcptableid: string;
   };
-};
+
+  devops: {
+    compKind: string;
+    componentName: string;
+    description: string;
+    owner: string;
+    type: string;
+    environment: string;
+    providerOption: string;
+    repoUrl: string;
+    gcpProjectID: string;
+    expected: {
+      sonarMissingHeading: string;
+      sonarSetupInProgressHeading: string;
+      prTitlePrefix: string;
+      codeQualityCards: string[];
+    };
+  };
+}
 
 // Function to load YAML data from a file
 export default function loadYamlData(filePath: string): TestData {
@@ -112,6 +221,12 @@ export default function loadYamlData(filePath: string): TestData {
     return parsed as TestData;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    // Provide a concise, actionable hint for duplicate-key errors
+    if (/duplicated mapping key/i.test(message)) {
+      throw new Error(
+        `YAML error: duplicated mapping key. Ensure each key is unique at its indentation level in ${filePath}.`
+      );
+    }
     throw error;
-  };
+  }
 };
