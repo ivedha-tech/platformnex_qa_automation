@@ -32,26 +32,26 @@ application:
       - "tag1"
       - "tag2"
     owner: "Owner1"
- 
+
 component:
   compData:
     valid:
-      kind: "component"
+      compkind: "component"
       compName: "test-automation-comp"
-      description: "Sample Component"
-      owner: "guests"
-      type: "website"
-      environment: "development"
-      scOption: "Github"
+      compdescription: "Sample Component"
+      compowner: "guests"
+      comptype: "website"
+      compenvironment: "development"
+      compscOption: "Github"
       repoLink: "https://github.com/ivedha-tech/test-qa-f-15"
-      gcpProjectID: "prj-dev-platform-next"
+      compgcpProjectID: "prj-dev-platform-next"
     edit:
-      updatedDescription: "Edited Comn Description"
-      updatedType: "service"
-      updatedEnvironment: "production"
+      compupdatedDescription: "Edited Comn Description"
+      compupdatedType: "service"
+      compupdatedEnvironment: "production"
     successMessage:
-      expectedMessageOnboarded: "Component Onboarded Successfully!"
-      expectedMessageUpdated: "Component Updated Successfully!"
+      compexpectedMessageOnboarded: "Component Onboarded Successfully!"
+      compexpectedMessageUpdated: "Component Updated Successfully!"
   MyComponent:
     name: "MyComponent"
     description: "This is the description of MyComponent"
@@ -59,27 +59,27 @@ component:
       - "compTag1"
       - "compTag2"
     owner: "Owner1"
- 
+
 api:
   apiData:
     valid:
-      kind: "api"
+      apikind: "api"
       apiName: "TestAPI"
-      description: "Sample API"
-      owner: "guests"
-      type: "openapi"
-      environment: "development"
-      scOption: "Github"
-      repoLink: "https://github.com/ivedha-tech/test-qa-f-15"
+      apidescription: "Sample API"
+      apiowner: "guests"
+      apitype: "openapi"
+      apienvironment: "development"
+      apiscOption: "Github"
+      apirepoLink: "https://github.com/ivedha-tech/test-qa-f-15"
       apiDefinition: "Defining the api"
-      gcpProjectID: "prj-dev-platform-next"
+      apigcpProjectID: "prj-dev-platform-next"
     edit:
-      updatedDescription: "Edited API Description"
-      updatedType: "graphql"
-      updatedApiDefinition: "Edited API definition"
+      apiupdatedDescription: "Edited API Description"
+      apiupdatedType: "graphql"
+      apiupdatedApiDefinition: "Edited API definition"
     successMessage:
-      expectedMessageOnboarded: "API Onboarded Successfully!"
-      expectedMessageUpdated: "API Updated Successfully!"
+      apiexpectedMessageOnboarded: "API Onboarded Successfully!"
+      apiexpectedMessageUpdated: "API Updated Successfully!"
   MyAPI:
     name: "MyAPI"
     description: "This is the description of MyAPI"
@@ -91,22 +91,22 @@ api:
 resource:
   resData:
     valid:
-      kind: "resource"
+      reskind: "resource"
       resourceName: "TestRes"
-      description: "Sample Resource"
-      owner: "guests"
-      type: "Database"
-      environment: "development"
-      gcpProjectID: "prj-dev-platform-next"
+      resdescription: "Sample Resource"
+      resowner: "guests"
+      restype: "Database"
+      resenvironment: "development"
+      resgcpProjectID: "prj-dev-platform-next"
     edit:
-      updatedResourceName: "EditedRes"
-      updatedDescription: "Edited Resource Description"
-      updatedOwner: "admins"
-      updatedType: "Cache"
-      updatedTags: "ResTag1,ResTag2,ResTag3"
+      resupdatedResourceName: "EditedRes"
+      resupdatedDescription: "Edited Resource Description"
+      resupdatedOwner: "admins"
+      resupdatedType: "Cache"
+      resupdatedTags: "ResTag1,ResTag2,ResTag3"
     successMessage:
-      expectedMessageOnboarded: "Resource Onboarded Successfully!"
-      expectedMessageUpdated: "Resource Updated Successfully!"
+      resexpectedMessageOnboarded: "Resource Onboarded Successfully!"
+      resexpectedMessageUpdated: "Resource Updated Successfully!"
 
 quickstart:
   basicinfo:
@@ -142,11 +142,10 @@ jira:
     status: "All Status"
 
 cloudops:
- resource:
+  resource:
     name: "aimic1"
     type: "storage"
-
- database:
+  database:
     instanceName: "aicloudops1"
     version: "PostgreSQL 15"
     dbName: "tey230db1"
@@ -177,7 +176,6 @@ devops:
   providerOption: "Github"
   repoUrl: "https://github.com/ivedha-tech/test-qa-f-15"
   gcpProjectID: "prj-dev-platform-next"
-
   expected:
     sonarMissingHeading: "Missing Plugin SonarQube"
     sonarSetupInProgressHeading: "SonarQube Setup in Progress"
@@ -189,4 +187,3 @@ devops:
       - "Hotspots Reviewed"
       - "Coverage"
       - "Duplications"
-

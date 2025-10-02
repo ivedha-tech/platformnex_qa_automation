@@ -28,53 +28,54 @@ const {
 
 // Component
 const {
-  kind: componentKind,
+  compkind: componentKind,
   compName,
-  description: compDesc,
-  owner: compOwner,
-  type: compType,
-  environment: compEnv,
-  scOption: compSCOption,
+  compdescription: compDesc,
+  compowner: compOwner,
+  comptype: compType,
+  compenvironment: compEnv,
+  compscOption: compSCOption,
   repoLink,
-  gcpProjectID,
+  compgcpProjectID,
 } = testData.component.compData.valid;
 const {
-  updatedDescription: compUpdatedDesc,
-  updatedType: compUpdatedType,
-  updatedEnvironment: compUpdatedEnv,
+  compupdatedDescription: compUpdatedDesc,
+  compupdatedType: compUpdatedType,
+  compupdatedEnvironment: compUpdatedEnv,
 } = testData.component.compData.edit;
 const {
-  expectedMessageOnboarded: compExpectedMessageOnboarded,
-  expectedMessageUpdated: compExpectedMessageUpdated,
+  compexpectedMessageOnboarded: compExpectedMessageOnboarded,
+  compexpectedMessageUpdated: compExpectedMessageUpdated,
 } = testData.component.compData.successMessage;
 
 // API
 const {
-  kind: apiKind,
+  apikind: apiKind,
   apiName,
-  description: apiDesc,
-  owner: apiOwner,
+  apidescription: apiDesc,
+  apiowner: apiOwner,
   apiDefinition,
-  type: apiType,
-  environment: apiEnv,
-  scOption: apiSCOption,
-  repoLink: apiRepoLink,
+  apitype: apiType,
+  apienvironment: apiEnv,
+  apiscOption: apiSCOption,
+  apirepoLink: apiRepoLink,
 } = testData.api.apiData.valid;
 const {
-  expectedMessageOnboarded: apiExpectedMessageOnboarded,
+  apiexpectedMessageOnboarded: apiExpectedMessageOnboarded,
 } = testData.api.apiData.successMessage;
 
 // Resource
 const {
-  kind: resourceKind,
+  reskind: resourceKind,
   resourceName,
-  description: resDesc,
-  owner: resOwner,
-  type: resType,
-  environment: resourceEnv,
+  resdescription: resDesc,
+  resowner: resOwner,
+  restype: resType,
+  resenvironment: resourceEnv,
 } = testData.resource.resData.valid;
+
 const {
-  expectedMessageOnboarded: recExpectedMessageOnboarded,
+  resexpectedMessageOnboarded: recExpectedMessageOnboarded,
 } = testData.resource.resData.successMessage;
 
 test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
@@ -127,7 +128,7 @@ test.describe("Onboarding Suite", () => {
       compSCOption,
       repoLink,
       apiDefinition,
-      gcpProjectID
+      compgcpProjectID
     );
     
     await Asserts.validateSuccessMessage(
@@ -154,7 +155,7 @@ test.describe("Onboarding Suite", () => {
       apiSCOption,
       apiRepoLink,
       apiDefinition,
-      gcpProjectID
+      compgcpProjectID
     );
     
     await Asserts.validateSuccessMessage(
@@ -181,7 +182,7 @@ test.describe("Onboarding Suite", () => {
       compSCOption,
       "",
       "",
-      gcpProjectID
+      compgcpProjectID
     );
     
     await Asserts.validateSuccessMessage(
@@ -209,7 +210,7 @@ test.describe("Onboarding Suite", () => {
       compSCOption,
       repoLink,
       apiDefinition,
-      gcpProjectID
+      compgcpProjectID
     );
     await onboardingPage.waitForPageLoad();
 

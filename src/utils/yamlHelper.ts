@@ -48,24 +48,24 @@ export interface TestData {
   component: {
     compData: {
       valid: {
-        kind: string;
+        compkind: string;
         compName: string;
-        description: string;
-        owner: string;
-        type: string;
-        environment: string;
-        scOption: string;
+        compdescription: string;
+        compowner: string;
+        comptype: string;
+        compenvironment: string;
+        compscOption: string;
         repoLink: string;
-        gcpProjectID: string;
+        compgcpProjectID: string;
       };
       edit: {
-        updatedDescription: string;
-        updatedType: string;
-        updatedEnvironment: string; // Fixed: added 'd' to match your usage
+        compupdatedDescription: string;
+        compupdatedType: string;
+        compupdatedEnvironment: string;
       };
       successMessage: {
-        expectedMessageOnboarded: string;
-        expectedMessageUpdated: string;
+        compexpectedMessageOnboarded: string;
+        compexpectedMessageUpdated: string;
       };
     };
     MyComponent: {
@@ -79,25 +79,25 @@ export interface TestData {
   api: {
     apiData: {
       valid: {
-        kind: string;
+        apikind: string;
         apiName: string;
-        description: string;
-        owner: string;
-        type: string;
-        environment: string;
-        scOption: string;
-        repoLink: string;
+        apidescription: string;
+        apiowner: string;
+        apitype: string;
+        apienvironment: string;
+        apiscOption: string;
+        apirepoLink: string;
         apiDefinition: string;
-        gcpProjectID: string;
+        apigcpProjectID: string;
       };
       edit: {
-        updatedDescription: string;
-        updatedType: string;
-        updatedApiDefinition: string;
+        apiupdatedDescription: string;
+        apiupdatedType: string;
+        apiupdatedApiDefinition: string;
       };
       successMessage: {
-        expectedMessageOnboarded: string;
-        expectedMessageUpdated: string;
+        apiexpectedMessageOnboarded: string;
+        apiexpectedMessageUpdated: string;
       };
     };
     MyAPI: {
@@ -111,24 +111,24 @@ export interface TestData {
   resource: {
     resData: {
       valid: {
-        kind: string;
+        reskind: string;
         resourceName: string;
-        description: string;
-        owner: string;
-        type: string;
-        environment: string;
-        gcpProjectID: string;
+        resdescription: string;
+        resowner: string;
+        restype: string;
+        resenvironment: string;
+        resgcpProjectID: string;
       };
       edit: {
-        updatedResourceName: string;
-        updatedDescription: string;
-        updatedOwner: string;
-        updatedType: string;
-        updatedTags: string;
+        resupdatedResourceName: string;
+        resupdatedDescription: string;
+        resupdatedOwner: string;
+        resupdatedType: string;
+        resupdatedTags: string;
       };
       successMessage: {
-        expectedMessageOnboarded: string;
-        expectedMessageUpdated: string;
+        resexpectedMessageOnboarded: string;
+        resexpectedMessageUpdated: string;
       };
     };
   };
@@ -190,7 +190,7 @@ export interface TestData {
 
   gcp: {
     projectId: string;
-  }
+  };
 
   finops: {
     gcpprojectid: string;
@@ -203,8 +203,8 @@ export interface TestData {
       projectSlug: string;
       serviceName: string;
       location: string;
-    }
-  }
+    };
+  };
 
   devops: {
     compKind: string;
@@ -223,7 +223,7 @@ export interface TestData {
       codeQualityCards: string[];
     };
   };
-}
+};
 
 // Function to load YAML data from a file
 export default function loadYamlData(filePath: string): TestData {
@@ -241,4 +241,4 @@ export default function loadYamlData(filePath: string): TestData {
     }
     throw error;
   }
-};
+}
