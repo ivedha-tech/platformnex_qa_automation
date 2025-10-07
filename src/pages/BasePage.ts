@@ -1,7 +1,6 @@
 import { Page, Locator } from "@playwright/test";
 
 export class BasePage {
-  
   constructor(protected page: Page) {
     console.log("Initializing BasePage...");
     this.page = page;
@@ -10,14 +9,24 @@ export class BasePage {
   // ---------------------------
   // Tour Locators
   // ---------------------------
-  readonly primaryButtonSecond: Locator = this.page.locator("locator-for-primary-button-second");
-  readonly nextStepButton: Locator = this.page.locator("locator-for-next-step-button");
-  readonly finishButton: Locator = this.page.locator("locator-for-finish-button");
-  readonly skipTourButton: Locator = this.page.locator("locator-for-skip-tour-button");
+  readonly primaryButtonSecond: Locator = this.page.locator(
+    "locator-for-primary-button-second"
+  );
+  readonly nextStepButton: Locator = this.page.locator(
+    "locator-for-next-step-button"
+  );
+  readonly finishButton: Locator = this.page.locator(
+    "locator-for-finish-button"
+  );
+  readonly skipTourButton: Locator = this.page.locator(
+    "locator-for-skip-tour-button"
+  );
 
   //Feedback form locators
   readonly feedbackForm: Locator = this.page.getByLabel("Page Feedback");
-  readonly closeButton: Locator = this.page.getByRole("button", { name: "Cancel" });
+  readonly closeButton: Locator = this.page.getByRole("button", {
+    name: "Cancel",
+  });
 
   // ---------------------------
   // Pagination Handler
@@ -40,10 +49,12 @@ export class BasePage {
     try {
       while (!found) {
         console.log(`Checking for target on page ${pageNumber}`);
-        
-        if (await targetLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
+
+        if (
+          await targetLocator.isVisible({ timeout: 2000 }).catch(() => false)
+        ) {
           console.log(`Target element found on page ${pageNumber}`);
-          
+
           switch (action) {
             case "click":
               console.log("Clicking target element");
@@ -62,7 +73,11 @@ export class BasePage {
           console.log(`Target not found on page ${pageNumber}`);
         }
 
-        if (await nextButtonLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
+        if (
+          await nextButtonLocator
+            .isVisible({ timeout: 2000 })
+            .catch(() => false)
+        ) {
           console.log("Next page button found, clicking");
           await nextButtonLocator.click();
           await this.page.waitForLoadState("networkidle"); // wait for page load
@@ -89,9 +104,12 @@ export class BasePage {
   async completeTour(): Promise<void> {
     try {
       console.log("Starting tour completion process");
-      
+
       console.log("Waiting for primary button to be visible");
-      await this.primaryButtonSecond.waitFor({ state: "visible", timeout: 6000 });
+      await this.primaryButtonSecond.waitFor({
+        state: "visible",
+        timeout: 6000,
+      });
       console.log("Clicking primary button");
       await this.primaryButtonSecond.click();
 
@@ -104,7 +122,7 @@ export class BasePage {
       await this.finishButton.waitFor({ state: "visible", timeout: 6000 });
       console.log("Clicking finish button");
       await this.finishButton.click();
-      
+
       console.log("Tour completed successfully");
     } catch (error) {
       console.error("Error completing tour:", error);
@@ -143,16 +161,28 @@ export class BasePage {
     }
   }
 
-  async handleFeedbackPopup(): Promise<void> {
+  async startFeedbackWatcher(interval = 3000): Promise<void> {
+    console.log("Starting feedback watcher...");
 
-    const isVisible = await this.feedbackForm
-      .isVisible({ timeout: 2000 })
-      .catch(() => false);
-
-    if (isVisible) {
-      console.log("Feedback popup detected. Closing...");
-      await this.closeButton.click();
-      await this.page.waitForTimeout(500);
-    }
+    // Run asynchronously in background
+    (async () => {
+      while (true) {
+        try {
+          const isVisible = await this.feedbackForm
+            .isVisible({ timeout: 1000 })
+            .catch(() => false);
+          if (isVisible) {
+            console.log("Feedback popup detected. Closing...");
+            await this.closeButton
+              .click()
+              .catch(() => console.log("Close button click failed"));
+            await this.page.waitForTimeout(500);
+          }
+        } catch (err) {
+          console.log("Watcher error (ignored):", err);
+        }
+        await this.page.waitForTimeout(interval); // wait 3 seconds before next check
+      }
+    })();
   }
 }

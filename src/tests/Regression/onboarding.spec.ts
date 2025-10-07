@@ -96,7 +96,7 @@ test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
   await page.waitForLoadState("domcontentloaded");
 
   // Handle Feedback
-  await mainPage.handleFeedbackPopup();
+  await mainPage.startFeedbackWatcher();
 });
 
 test.describe("Onboarding Suite", () => {

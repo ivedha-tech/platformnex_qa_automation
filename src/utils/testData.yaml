@@ -1,7 +1,7 @@
 login:
   valid:
-    email: "subas.thayananthan@ivedha.com"
-    password: "@Subas2306"
+    email: "sanduni.gunawardhana@ivedha.com"
+    password: "Sanduni@1234"
   invalid:
     invalidusername: "invaliduser@email.com"
     invalidpassword: "wrong_password"
