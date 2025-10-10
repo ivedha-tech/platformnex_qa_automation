@@ -33,7 +33,7 @@ steps:
       - '-v'
       - '/workspace:/workspace'
       - '-w'
-      - '/workspace'
+      - '/app'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
     dir: '.'
 
