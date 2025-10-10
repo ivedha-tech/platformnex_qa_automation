@@ -1,59 +1,24 @@
 steps:
-  # Build Docker image for Playwright tests
-  - name: 'gcr.io/cloud-builders/docker'
-    args: 
-      - 'build'
-      - '-t'
-      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
-      - '.'
-    dir: '.'
-
-  # Push Docker image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: 
-      - 'push'
-      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
-    dir: '.'
-
-  # Create or Update Cloud Run Job
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  # Install dependencies and run Playwright tests
+  - name: 'node:18'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # Try to create the job, if it exists, update it
-        gcloud run jobs create platformnex-qa-tests \
-          --image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA} \
-          --region=${_REGION} \
-          --memory=4Gi \
-          --cpu=2 \
-          --max-retries=1 \
-          --parallelism=1 \
-          --task-timeout=1200 \
-          --set-env-vars=BASE_URL=${_BASE_URL},LOGIN_EMAIL=${_LOGIN_EMAIL},LOGIN_PASSWORD=${_LOGIN_PASSWORD},CI=true,HEADLESS=${_HEADLESS} \
-          --set-env-vars=REPORT_BUCKET=${_REPORT_BUCKET} \
-        || gcloud run jobs update platformnex-qa-tests \
-          --image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA} \
-          --region=${_REGION} \
-          --memory=4Gi \
-          --cpu=2 \
-          --max-retries=1 \
-          --parallelism=1 \
-          --task-timeout=1200 \
-          --set-env-vars=BASE_URL=${_BASE_URL},LOGIN_EMAIL=${_LOGIN_EMAIL},LOGIN_PASSWORD=${_LOGIN_PASSWORD},CI=true,HEADLESS=${_HEADLESS} \
-          --set-env-vars=REPORT_BUCKET=${_REPORT_BUCKET}
-    dir: '.'
-
-  # Execute the Cloud Run Job
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
-    args:
-      - 'run'
-      - 'jobs'
-      - 'execute'
-      - 'platformnex-qa-tests'
-      - '--region=${_REGION}'
-      - '--wait'
+        echo "Installing dependencies..."
+        npm ci
+        
+        echo "Installing Playwright browsers..."
+        npx playwright install --with-deps
+        
+        echo "Running Playwright tests..."
+        npx playwright test --reporter=html,json --workers=1
+    env:
+      - 'BASE_URL=${_BASE_URL}'
+      - 'LOGIN_EMAIL=${_LOGIN_EMAIL}'
+      - 'LOGIN_PASSWORD=${_LOGIN_PASSWORD}'
+      - 'CI=true'
+      - 'HEADLESS=${_HEADLESS}'
     dir: '.'
 
   # Upload test reports to Cloud Storage
@@ -63,17 +28,31 @@ steps:
       - '-c'
       - |
         # Create a timestamp for this build
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        TIMESTAMP=$$(date +%Y%m%d-%H%M%S)
         
-        # Try to copy reports from the job execution
-        # Note: This is a simplified approach - in practice, you might need to
-        # extract reports from the job execution logs or use a different method
-        echo "Test execution completed. Reports would be uploaded to:"
+        # Upload test reports if they exist
+        if [ -d "reports" ]; then
+          echo "Uploading test reports..."
+          gsutil -m cp -r reports/* gs://${_REPORT_BUCKET}/reports/$$TIMESTAMP/
+        fi
+        
+        if [ -d "test-results" ]; then
+          echo "Uploading test results..."
+          gsutil -m cp -r test-results/* gs://${_REPORT_BUCKET}/results/$$TIMESTAMP/
+        fi
+        
+        if [ -d "playwright-report" ]; then
+          echo "Uploading Playwright report..."
+          gsutil -m cp -r playwright-report/* gs://${_REPORT_BUCKET}/playwright-report/$$TIMESTAMP/
+        fi
+        
+        echo "Test execution completed. Reports uploaded to:"
         echo "gs://${_REPORT_BUCKET}/reports/$$TIMESTAMP/"
         echo "gs://${_REPORT_BUCKET}/results/$$TIMESTAMP/"
+        echo "gs://${_REPORT_BUCKET}/playwright-report/$$TIMESTAMP/"
     dir: '.'
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
-timeout: '1200s'
+timeout: '1800s'
