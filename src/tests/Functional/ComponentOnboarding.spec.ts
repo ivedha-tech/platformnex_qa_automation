@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
   // ---------- Navigate to Applications ----------
   await page.getByRole("complementary").getByRole("link", { name: "Applications" }).click();
-  await page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications");
+  await page.goto(`${process.env.BASE_URL}/applications`);
 
   // ---------- Select regression app ----------
   const appLink = page.getByText("dnsRegression-testOwned by:");

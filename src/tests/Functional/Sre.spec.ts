@@ -32,7 +32,7 @@ test.beforeEach(async ({ page }) => {
     .click();
 
   await page.goto(
-    "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications"
+    `${process.env.BASE_URL}/applications`
   );
 
   await page

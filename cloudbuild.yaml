@@ -1,0 +1,58 @@
+steps:
+  # Build Docker image for Playwright tests
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:latest'
+      - '.'
+    dir: '.'
+
+  # Push Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
+    dir: '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:latest'
+    dir: '.'
+
+  # Create Cloud Run Job
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'replace'
+      - 'platformnex-qa-tests'
+      - '--image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
+      - '--region=${_REGION}'
+      - '--memory=4Gi'
+      - '--cpu=2'
+      - '--max-retries=1'
+      - '--parallelism=1'
+      - '--task-count=1'
+      - '--task-timeout=1200'
+      - '--set-env-vars=BASE_URL=${_BASE_URL},LOGIN_EMAIL=${_LOGIN_EMAIL},LOGIN_PASSWORD=${_LOGIN_PASSWORD},CI=true,HEADLESS=${_HEADLESS}'
+      - '--set-env-vars=REPORT_BUCKET=${_REPORT_BUCKET}'
+    dir: '.'
+
+  # Execute the Cloud Run Job
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'jobs'
+      - 'execute'
+      - 'platformnex-qa-tests'
+      - '--region=${_REGION}'
+      - '--wait'
+    dir: '.'
+
+timeout: '1200s'

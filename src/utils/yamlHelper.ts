@@ -230,7 +230,17 @@ export default function loadYamlData(filePath: string): TestData {
   try {
     const fileContents = fs.readFileSync(filePath, "utf8");
     const parsed = yaml.load(fileContents) as unknown;
-    return parsed as TestData;
+    const data = parsed as TestData;
+
+    // Override with environment variables if available
+    if (process.env.LOGIN_EMAIL) {
+      data.login.valid.email = process.env.LOGIN_EMAIL;
+    }
+    if (process.env.LOGIN_PASSWORD) {
+      data.login.valid.password = process.env.LOGIN_PASSWORD;
+    }
+
+    return data;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     // Provide a concise, actionable hint for duplicate-key errors

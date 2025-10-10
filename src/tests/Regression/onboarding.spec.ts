@@ -91,7 +91,7 @@ test.beforeEach(async ({ page }: { page: Page }, testInfo: TestInfo) => {
 
   // Temporary navigation
   await page.goto(
-    "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
+    `${process.env.BASE_URL}/applications/Regression-test`
   );
   await page.waitForLoadState("domcontentloaded");
 

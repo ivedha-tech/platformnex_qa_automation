@@ -29,7 +29,7 @@ test.beforeEach(async ({ page }) => {
   );
 
   await page.getByRole('complementary').getByRole('link', { name: 'Applications' }).click();
-  await page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications");
+  await page.goto(`${process.env.BASE_URL}/applications`);
   await page.getByText('dnsRegression-testOwned by:').click();
   await page.waitForLoadState("networkidle")
 
@@ -52,7 +52,7 @@ test("Onboard component", async () => {
  // ---------- TC002: Configure FinOps & Validate Dashboard ----------
 test("Configure FinOps + Validate Dashboard + Usage Explorer", async () => {
   // navigate directly to FinOps page
-  await finopsPage.page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test/finops?environment=development&component=prod-test-qa");
+  await finopsPage.page.goto(`${process.env.BASE_URL}/applications/Regression-test/finops?environment=development&component=prod-test-qa`);
 
   // Step 2: Select the same component
   

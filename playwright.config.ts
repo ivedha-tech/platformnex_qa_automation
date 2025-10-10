@@ -18,8 +18,8 @@ export default defineConfig({
   ],
   use: {
     trace: 'on-first-retry',
-    headless: false,
-    baseURL: 'https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app', // Base URL for your application
+    headless: process.env.HEADLESS !== 'false', // Default to true, set to 'false' to run in headed mode
+    baseURL: process.env.BASE_URL, // Base URL for your application - must be set via environment variable
     screenshot: 'on',
     video: 'retain-on-failure',
   },

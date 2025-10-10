@@ -63,7 +63,7 @@ test.describe("DevOps CI/CD Flow", () => {
   }, testInfo) => {
     
     await page.goto(
-      "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
+      `${process.env.BASE_URL}/applications/Regression-test`
     );
     page.waitForLoadState("domcontentloaded");
 

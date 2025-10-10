@@ -60,7 +60,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
   // --- Precondition: Navigate directly to application ---
   await page.goto(
-    "https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications/Regression-test"
+    `${process.env.BASE_URL}/applications/Regression-test`
   );
   await page.waitForLoadState("domcontentloaded");
 

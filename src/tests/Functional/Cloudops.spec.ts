@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 
   // ---------- Navigate to Application ----------
   await page.getByRole("link", { name: "Applications" }).click();
-  await page.goto("https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app/applications");
+  await page.goto(`${process.env.BASE_URL}/applications`);
   await page.locator('[data-test-id="overlay"]').waitFor({ state: 'hidden', timeout: 30000 });
   await page.getByText('dnsRegression-testOwned by:').click();
 
