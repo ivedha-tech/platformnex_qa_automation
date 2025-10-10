@@ -4,8 +4,9 @@ import monocart from 'monocart-reporter';
 export default defineConfig({
   testDir: './src/tests',
   fullyParallel: true,
+  workers: 4,
   forbidOnly: !!process.env.CI,
-  timeout: 30000,
+  timeout: 120000, // 2 minutes timeout for SSO authentication
   retries: process.env.CI ? 2 : 0,
   reporter: [
     ['list'], // keep console output
@@ -22,5 +23,7 @@ export default defineConfig({
     baseURL: process.env.BASE_URL, // Base URL for your application - must be set via environment variable
     screenshot: 'on',
     video: 'retain-on-failure',
+    navigationTimeout: 60000, // 1 minute navigation timeout
+    actionTimeout: 30000, // 30 seconds for actions
   },
 });

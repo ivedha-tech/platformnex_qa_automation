@@ -35,6 +35,11 @@ steps:
       - '-w'
       - '/app'
       - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
+      - 'npx'
+      - 'playwright'
+      - 'test'
+      - '--reporter=html,json'
+      - '--workers=4'
     dir: '.'
 
   # Upload test reports to Cloud Storage

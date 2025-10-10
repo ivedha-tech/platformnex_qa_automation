@@ -20,4 +20,4 @@ RUN mkdir -p reports test-results playwright-report
 
 # Default command executes the Playwright test suite.
 # Environment variables such as BASE_URL, LOGIN_EMAIL, LOGIN_PASSWORD should be provided at runtime.
-CMD ["npx", "playwright", "test", "--reporter=html,json", "--workers=1"]
+CMD ["npx", "playwright", "test", "--reporter=html,json", "--workers=4"]

@@ -71,6 +71,8 @@ Notes:
 - Playwright report viewer (`playwright show-report`) can also be used.
 
 ### Running Tests
+
+#### Local Development
 ```bash
 # All tests
 npm test
@@ -79,6 +81,56 @@ npm test
 npx playwright test src/tests/Functional/Login.spec.ts
 npx playwright test -g "should login successfully"
 ```
+
+#### Docker Container Testing
+The project includes a Dockerfile for containerized testing, which is also used in Cloud Build.
+
+**Build the Docker image:**
+```bash
+docker build -t platformnex-qa-tests:latest .
+```
+
+**Run tests in the container:**
+```bash
+# Basic test run with environment variables
+docker run --rm \
+  -e BASE_URL=https://your-app-url.com \
+  -e LOGIN_EMAIL=your-email@domain.com \
+  -e LOGIN_PASSWORD=your-password \
+  -e CI=true \
+  -e HEADLESS=true \
+  platformnex-qa-tests:latest \
+  npx playwright test --reporter=line --workers=4
+
+# Run with specific test file
+docker run --rm \
+  -e BASE_URL=https://your-app-url.com \
+  -e LOGIN_EMAIL=your-email@domain.com \
+  -e LOGIN_PASSWORD=your-password \
+  -e CI=true \
+  -e HEADLESS=true \
+  platformnex-qa-tests:latest \
+  npx playwright test src/tests/Functional/Login.spec.ts
+
+# Run in headed mode (for debugging)
+docker run --rm \
+  -e BASE_URL=https://your-app-url.com \
+  -e LOGIN_EMAIL=your-email@domain.com \
+  -e LOGIN_PASSWORD=your-password \
+  -e CI=true \
+  -e HEADLESS=false \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -e DISPLAY=$DISPLAY \
+  platformnex-qa-tests:latest \
+  npx playwright test --reporter=line --workers=1
+```
+
+**Environment Variables:**
+- `BASE_URL`: The application URL to test against
+- `LOGIN_EMAIL`: Email for authentication
+- `LOGIN_PASSWORD`: Password for authentication
+- `CI=true`: Enables CI mode (retries, stricter timeouts)
+- `HEADLESS`: Set to `false` for headed mode (requires X11 forwarding)
 
 Environment-specific overrides can be passed via Playwright CLI flags or environment variables. Consider parameterizing `baseURL` via env if you need multiple environments.
 
