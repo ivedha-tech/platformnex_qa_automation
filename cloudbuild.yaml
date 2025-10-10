@@ -4,12 +4,19 @@ steps:
     args: 
       - 'build'
       - '-t'
-      - 'gcr.io/${PROJECT_ID}/platformnex-qa-tests:${SHORT_SHA}'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
       - '.'
     dir: '.'
 
+  # Push Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
+    dir: '.'
+
   # Run Playwright tests in the container
-  - name: 'gcr.io/${PROJECT_ID}/platformnex-qa-tests:${SHORT_SHA}'
+  - name: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
     env:
       - 'BASE_URL=${_BASE_URL}'
       - 'LOGIN_EMAIL=${_LOGIN_EMAIL}'
