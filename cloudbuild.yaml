@@ -69,8 +69,8 @@ steps:
         # Note: This is a simplified approach - in practice, you might need to
         # extract reports from the job execution logs or use a different method
         echo "Test execution completed. Reports would be uploaded to:"
-        echo "gs://${_REPORT_BUCKET}/reports/$TIMESTAMP/"
-        echo "gs://${_REPORT_BUCKET}/results/$TIMESTAMP/"
+        echo "gs://${_REPORT_BUCKET}/reports/$$TIMESTAMP/"
+        echo "gs://${_REPORT_BUCKET}/results/$$TIMESTAMP/"
     dir: '.'
 
 options:
