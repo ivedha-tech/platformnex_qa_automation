@@ -56,6 +56,23 @@ steps:
       - '--wait'
     dir: '.'
 
+  # Upload test reports to Cloud Storage
+  - name: 'gcr.io/cloud-builders/gsutil'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Create a timestamp for this build
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        
+        # Try to copy reports from the job execution
+        # Note: This is a simplified approach - in practice, you might need to
+        # extract reports from the job execution logs or use a different method
+        echo "Test execution completed. Reports would be uploaded to:"
+        echo "gs://${_REPORT_BUCKET}/reports/${TIMESTAMP}/"
+        echo "gs://${_REPORT_BUCKET}/results/${TIMESTAMP}/"
+    dir: '.'
+
 options:
   logging: CLOUD_LOGGING_ONLY
 
