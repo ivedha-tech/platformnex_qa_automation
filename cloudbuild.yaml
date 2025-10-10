@@ -1,18 +1,15 @@
 steps:
-  # Install dependencies and run Playwright tests
-  - name: 'node:18'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "Installing dependencies..."
-        npm ci
-        
-        echo "Installing Playwright browsers..."
-        npx playwright install --with-deps
-        
-        echo "Running Playwright tests..."
-        npx playwright test --reporter=html,json --workers=1
+  # Build Docker image for Playwright tests
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'gcr.io/${PROJECT_ID}/platformnex-qa-tests:${SHORT_SHA}'
+      - '.'
+    dir: '.'
+
+  # Run Playwright tests in the container
+  - name: 'gcr.io/${PROJECT_ID}/platformnex-qa-tests:${SHORT_SHA}'
     env:
       - 'BASE_URL=${_BASE_URL}'
       - 'LOGIN_EMAIL=${_LOGIN_EMAIL}'
@@ -27,8 +24,8 @@ steps:
     args:
       - '-c'
       - |
-        # Create a timestamp for this build
-        TIMESTAMP=$$(date +%Y%m%d-%H%M%S)
+        # Use build ID as timestamp
+        TIMESTAMP=${BUILD_ID}
         
         # Upload test reports if they exist
         if [ -d "reports" ]; then
