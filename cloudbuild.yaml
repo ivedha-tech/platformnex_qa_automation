@@ -16,13 +16,25 @@ steps:
     dir: '.'
 
   # Run Playwright tests in the container
-  - name: '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
-    env:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'run'
+      - '--rm'
+      - '-e'
       - 'BASE_URL=${_BASE_URL}'
+      - '-e'
       - 'LOGIN_EMAIL=${_LOGIN_EMAIL}'
+      - '-e'
       - 'LOGIN_PASSWORD=${_LOGIN_PASSWORD}'
+      - '-e'
       - 'CI=true'
+      - '-e'
       - 'HEADLESS=${_HEADLESS}'
+      - '-v'
+      - '/workspace:/workspace'
+      - '-w'
+      - '/workspace'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/platformnex/platformnex-qa-tests:${SHORT_SHA}'
     dir: '.'
 
   # Upload test reports to Cloud Storage
