@@ -29,7 +29,6 @@ steps:
           --cpu=2 \
           --max-retries=1 \
           --parallelism=1 \
-          --task-count=1 \
           --task-timeout=1200 \
           --set-env-vars=BASE_URL=${_BASE_URL},LOGIN_EMAIL=${_LOGIN_EMAIL},LOGIN_PASSWORD=${_LOGIN_PASSWORD},CI=true,HEADLESS=${_HEADLESS} \
           --set-env-vars=REPORT_BUCKET=${_REPORT_BUCKET} \
@@ -40,7 +39,6 @@ steps:
           --cpu=2 \
           --max-retries=1 \
           --parallelism=1 \
-          --task-count=1 \
           --task-timeout=1200 \
           --set-env-vars=BASE_URL=${_BASE_URL},LOGIN_EMAIL=${_LOGIN_EMAIL},LOGIN_PASSWORD=${_LOGIN_PASSWORD},CI=true,HEADLESS=${_HEADLESS} \
           --set-env-vars=REPORT_BUCKET=${_REPORT_BUCKET}
