@@ -17,7 +17,7 @@ steps:
   # Run Playwright tests in headless mode
   - name: 'node:18'
     entrypoint: 'npx'
-    args: ['playwright', 'test', '--reporter=html', '--reporter=list', '--headed=false']
+    args: ['playwright', 'test', '--reporter=html', '--reporter=list']
     dir: '.'
     id: 'run-tests'
     waitFor: ['install-playwright']
