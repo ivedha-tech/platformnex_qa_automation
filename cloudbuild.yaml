@@ -1,0 +1,119 @@
+steps:
+  # Install dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['install']
+    dir: '.'
+    id: 'install-deps'
+
+  # Install Playwright browsers
+  - name: 'node:18'
+    entrypoint: 'npx'
+    args: ['playwright', 'install', '--with-deps']
+    dir: '.'
+    id: 'install-playwright'
+    waitFor: ['install-deps']
+
+  # Run Playwright tests with HTML reporter
+  - name: 'node:18'
+    entrypoint: 'npx'
+    args: ['playwright', 'test', '--reporter=html', '--reporter=list']
+    dir: '.'
+    id: 'run-tests'
+    waitFor: ['install-playwright']
+    env:
+      - 'CI=true'
+      - 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1'
+
+  # Create timestamp for report organization
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Build ID: ${BUILD_ID}"
+        echo "Build timestamp: $(date)"
+        echo "Commit SHA: ${COMMIT_SHA}"
+        echo "Branch: ${BRANCH_NAME}"
+    id: 'build-info'
+
+  # Upload test results to GCS bucket
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [
+      'cp',
+      '-r',
+      'test-results',
+      'gs://${_BUCKET_NAME}/test-reports/${BUILD_ID}/test-results/'
+    ]
+    id: 'upload-test-results'
+    waitFor: ['run-tests']
+
+  # Upload HTML report to GCS bucket
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [
+      'cp',
+      '-r',
+      'reports',
+      'gs://${_BUCKET_NAME}/test-reports/${BUILD_ID}/reports/'
+    ]
+    id: 'upload-reports'
+    waitFor: ['run-tests']
+
+  # Create index file with build information
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cat > build-info.json << EOF
+        {
+          "buildId": "${BUILD_ID}",
+          "commitSha": "${COMMIT_SHA}",
+          "branchName": "${BRANCH_NAME}",
+          "buildTimestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "testReportUrl": "https://storage.googleapis.com/${_BUCKET_NAME}/test-reports/${BUILD_ID}/reports/test-report.html"
+        }
+        EOF
+    id: 'create-build-info'
+
+  # Upload build info
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [
+      'cp',
+      'build-info.json',
+      'gs://${_BUCKET_NAME}/test-reports/${BUILD_ID}/'
+    ]
+    id: 'upload-build-info'
+    waitFor: ['create-build-info']
+
+  # Make reports publicly accessible (optional)
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: [
+      'acl',
+      'ch',
+      '-r',
+      '-u',
+      'AllUsers:R',
+      'gs://${_BUCKET_NAME}/test-reports/${BUILD_ID}/'
+    ]
+    id: 'make-public'
+    waitFor: ['upload-test-results', 'upload-reports', 'upload-build-info']
+
+# Substitution variables
+substitutions:
+  _BUCKET_NAME: 'platformnex-qa-automation-reports'
+
+# Build options
+options:
+  machineType: 'E2_HIGHCPU_8'
+  diskSizeGb: 100
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for the entire build
+timeout: '1200s'
+
+# Store artifacts
+artifacts:
+  objects:
+    location: 'gs://${_BUCKET_NAME}/test-reports/${BUILD_ID}/'
+    paths: ['test-results/**/*', 'reports/**/*']
