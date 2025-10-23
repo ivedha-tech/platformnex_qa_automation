@@ -1,10 +1,11 @@
 steps:
-  # Install system dependencies first
-  - name: 'gcr.io/cloud-builders/apt'
+  # Install dependencies and system packages in one step
+  - name: 'node:18'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        # Install system dependencies
         apt-get update && apt-get install -y \
         libnss3 \
         libatk-bridge2.0-0 \
@@ -18,24 +19,37 @@ steps:
         libasound2 \
         libatspi2.0-0 \
         libgtk-3-0 \
+        libgdk-pixbuf2.0-0 \
+        libx11-6 \
+        libx11-xcb1 \
+        libxcb1 \
+        libxext6 \
+        libxfixes3 \
+        libxi6 \
+        libxrender1 \
+        libxtst6 \
+        libxrandr2 \
+        libxss1 \
+        libgconf-2-4 \
+        libnss3-dev \
+        libxss1 \
+        libgconf-2-4 \
+        libxtst6 \
+        libxrandr2 \
+        libasound2 \
+        libpangocairo-1.0-0 \
+        libatk1.0-0 \
+        libcairo-gobject2 \
+        libgtk-3-0 \
         libgdk-pixbuf2.0-0
-    id: 'install-system-deps'
-
-  # Install dependencies
-  - name: 'node:18'
-    entrypoint: 'npm'
-    args: ['install']
+        
+        # Install npm dependencies
+        npm install
+        
+        # Install Playwright browsers
+        npx playwright install chromium
     dir: '.'
-    id: 'install-deps'
-    waitFor: ['install-system-deps']
-
-  # Install Playwright browsers
-  - name: 'node:18'
-    entrypoint: 'npx'
-    args: ['playwright', 'install', 'chromium']
-    dir: '.'
-    id: 'install-playwright'
-    waitFor: ['install-deps']
+    id: 'install-all'
 
   # Run Playwright tests in headless mode
   - name: 'node:18'
@@ -43,7 +57,7 @@ steps:
     args: ['playwright', 'test', '--reporter=html', '--reporter=list']
     dir: '.'
     id: 'run-tests'
-    waitFor: ['install-playwright']
+    waitFor: ['install-all']
     env:
       - 'CI=true'
 
