@@ -1,15 +1,38 @@
 steps:
+  # Install system dependencies first
+  - name: 'gcr.io/cloud-builders/apt'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt-get update && apt-get install -y \
+        libnss3 \
+        libatk-bridge2.0-0 \
+        libdrm2 \
+        libxkbcommon0 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxrandr2 \
+        libgbm1 \
+        libxss1 \
+        libasound2 \
+        libatspi2.0-0 \
+        libgtk-3-0 \
+        libgdk-pixbuf2.0-0
+    id: 'install-system-deps'
+
   # Install dependencies
   - name: 'node:18'
     entrypoint: 'npm'
     args: ['install']
     dir: '.'
     id: 'install-deps'
+    waitFor: ['install-system-deps']
 
-  # Install Playwright browsers with system dependencies
+  # Install Playwright browsers
   - name: 'node:18'
     entrypoint: 'npx'
-    args: ['playwright', 'install', '--with-deps']
+    args: ['playwright', 'install', 'chromium']
     dir: '.'
     id: 'install-playwright'
     waitFor: ['install-deps']
@@ -23,7 +46,6 @@ steps:
     waitFor: ['install-playwright']
     env:
       - 'CI=true'
-      - 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1'
 
   # Create timestamp for report organization
   - name: 'gcr.io/cloud-builders/gcloud'
