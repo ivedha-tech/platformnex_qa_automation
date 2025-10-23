@@ -18,7 +18,7 @@ export default defineConfig({
   ],
   use: {
     trace: 'on-first-retry',
-    headless: false,
+    headless: process.env.CI ? true : false, // Headless in CI, headed locally
     baseURL: 'https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app', // Base URL for your application
     screenshot: 'on',
     video: 'retain-on-failure',
