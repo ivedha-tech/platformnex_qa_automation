@@ -137,7 +137,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 # Timeout for the entire build
-timeout: '1200s'
+timeout: '4000s'
 
 # Store artifacts
 artifacts:
