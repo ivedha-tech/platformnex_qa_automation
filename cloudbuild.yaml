@@ -1,65 +1,18 @@
 steps:
-  # Install dependencies and system packages in one step
+  # Install dependencies, playwright browsers, and run tests in one container so system packages persist
   - name: 'node:18'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # Install system dependencies
-        apt-get update && apt-get install -y \
-        libnss3 \
-        libatk-bridge2.0-0 \
-        libdrm2 \
-        libxkbcommon0 \
-        libxcomposite1 \
-        libxdamage1 \
-        libxrandr2 \
-        libgbm1 \
-        libxss1 \
-        libasound2 \
-        libatspi2.0-0 \
-        libgtk-3-0 \
-        libgdk-pixbuf2.0-0 \
-        libx11-6 \
-        libx11-xcb1 \
-        libxcb1 \
-        libxext6 \
-        libxfixes3 \
-        libxi6 \
-        libxrender1 \
-        libxtst6 \
-        libxrandr2 \
-        libxss1 \
-        libgconf-2-4 \
-        libnss3-dev \
-        libxss1 \
-        libgconf-2-4 \
-        libxtst6 \
-        libxrandr2 \
-        libasound2 \
-        libpangocairo-1.0-0 \
-        libatk1.0-0 \
-        libcairo-gobject2 \
-        libgtk-3-0 \
-        libgdk-pixbuf2.0-0
-        
-        # Install npm dependencies
-        npm install
-        
-        # Install Playwright browsers
-        npx playwright install chromium
-    dir: '.'
-    id: 'install-all'
-
-  # Run Playwright tests in headless mode
-  - name: 'node:18'
-    entrypoint: 'npx'
-    args: ['playwright', 'test', '--reporter=html', '--reporter=list']
+        set -euo pipefail
+        export CI=true
+        npm ci
+        # Install Chromium along with required system dependencies for headless execution.
+        npx playwright install --with-deps chromium
+        npx playwright test --reporter=html --reporter=list
     dir: '.'
     id: 'run-tests'
-    waitFor: ['install-all']
-    env:
-      - 'CI=true'
 
   # Create timestamp for report organization
   - name: 'gcr.io/cloud-builders/gcloud'
