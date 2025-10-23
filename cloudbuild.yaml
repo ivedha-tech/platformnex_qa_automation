@@ -6,51 +6,24 @@ steps:
     dir: '.'
     id: 'install-deps'
 
-  # Install system dependencies for headless browser support
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        apt-get update && apt-get install -y \
-        xvfb \
-        x11vnc \
-        fluxbox \
-        wmctrl \
-        && rm -rf /var/lib/apt/lists/*
-    id: 'install-system-deps'
-    waitFor: ['install-deps']
-
-  # Install Playwright browsers
+  # Install Playwright browsers with system dependencies
   - name: 'node:18'
     entrypoint: 'npx'
     args: ['playwright', 'install', '--with-deps']
     dir: '.'
     id: 'install-playwright'
-    waitFor: ['install-system-deps']
+    waitFor: ['install-deps']
 
-  # Start virtual display and run Playwright tests in headless mode
+  # Run Playwright tests in headless mode
   - name: 'node:18'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        # Start Xvfb virtual display
-        Xvfb :99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset &
-        export DISPLAY=:99
-        
-        # Wait for display to be ready
-        sleep 2
-        
-        # Run Playwright tests
-        npx playwright test --reporter=html --reporter=list --headed=false
+    entrypoint: 'npx'
+    args: ['playwright', 'test', '--reporter=html', '--reporter=list', '--headed=false']
     dir: '.'
     id: 'run-tests'
     waitFor: ['install-playwright']
     env:
       - 'CI=true'
       - 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1'
-      - 'DISPLAY=:99'
 
   # Create timestamp for report organization
   - name: 'gcr.io/cloud-builders/gcloud'
