@@ -97,6 +97,7 @@ resource:
       resowner: "guests"
       restype: "Database"
       resenvironment: "development"
+      resregion: "us-central1"
       resgcpProjectID: "prj-dev-platform-next"
     edit:
       resupdatedResourceName: "EditedRes"

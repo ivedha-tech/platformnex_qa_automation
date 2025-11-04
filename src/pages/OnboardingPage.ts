@@ -220,7 +220,6 @@ export class OnboardingPage extends BasePage {
 
       // Safe reload with error handling
       await this.safeReload();
-
     } catch (error) {
       console.error("Error viewing application:", error);
       throw error;
@@ -355,6 +354,7 @@ export class OnboardingPage extends BasePage {
     owner: string,
     type: string,
     environment: string,
+    region: string,
     option: string,
     repoLink: string,
     apiDefinitionPath: string,
@@ -393,7 +393,7 @@ export class OnboardingPage extends BasePage {
       // Region (only if type === "RESOURCE")
       if (kind.toLowerCase() === "resource") {
         await this.resourceRegionField.waitFor({ state: "visible" });
-        await this.resourceRegionField.fill(apiDefinitionPath);
+        await this.resourceRegionField.fill(region);
       }
 
       // Fill repository link (only in component and api)
@@ -467,7 +467,7 @@ export class OnboardingPage extends BasePage {
     nextButtonComponentTable: Locator
   ): Promise<Locator> {
     await this.page.waitForLoadState("domcontentloaded");
-    await this.safeReload(); 
+    await this.safeReload();
     try {
       console.log(`Viewing component: ${componentName}`);
       await this.handlePagination(
@@ -626,6 +626,12 @@ export class OnboardingPage extends BasePage {
     await this.page.waitForTimeout(1000);
     while (Date.now() - start < timeout) {
       try {
+        // 🔽 Scroll to bottom before looking for the button
+        await this.page.evaluate(() =>
+          window.scrollTo(0, document.body.scrollHeight)
+        );
+        await this.page.waitForTimeout(500);
+
         const nextBtn = this.nextButton;
         if ((await nextBtn.isVisible()) && (await nextBtn.isEnabled())) {
           console.log("Next button is visible and enabled, clicking");
@@ -653,29 +659,67 @@ export class OnboardingPage extends BasePage {
   }
 
   async clickNextSafelyV2() {
-    console.log("Clicking Next button (simple approach)");
+  console.log("Clicking Next button (improved version)");
 
-    try {
-      await this.page.waitForLoadState("domcontentloaded");
-      const nextBtn = this.nextButton;
+  try {
+    await this.page.waitForLoadState("domcontentloaded");
 
-      await nextBtn.waitFor({ state: "visible", timeout: 10000 });
-      console.log("Next button found and visible");
+    // 🔽 Step 1: Try to scroll the full page down
+    await this.page.evaluate(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+    await this.page.waitForTimeout(1000); // small pause for smooth scroll
 
-      await nextBtn.scrollIntoViewIfNeeded();
-      await nextBtn.click({ force: true });
+    const nextBtn = this.nextButton;
 
-      console.log("Next button clicked successfully");
-
-      // Don't wait for anything else - let the calling code handle what comes next
-    } catch (error) {
-      if (this.page.isClosed()) {
-        console.log("Page closed after Next click - this is likely expected");
-        return;
+    // 🔍 Step 2: If the button is inside a scrollable container, scroll that too
+    await nextBtn.evaluate((el: HTMLElement) => {
+      // Find nearest scrollable container
+      let parent = el.parentElement;
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        if (
+          (overflowY === "auto" || overflowY === "scroll") &&
+          parent.scrollHeight > parent.clientHeight
+        ) {
+          parent.scrollTo({
+            top: parent.scrollHeight,
+            behavior: "smooth",
+          });
+          break;
+        }
+        parent = parent.parentElement;
       }
-      throw error;
+
+      // Always ensure element is visible in viewport
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    await this.page.waitForTimeout(800); // give scroll some time to finish
+
+    // 🔎 Step 3: Wait until button is visible and clickable
+    await nextBtn.waitFor({ state: "visible", timeout: 10000 });
+    console.log("Next button found and visible");
+
+    // 🔘 Step 4: Click it safely
+    await nextBtn.scrollIntoViewIfNeeded();
+    await nextBtn.click({ force: true });
+
+    console.log("Next button clicked successfully!");
+  } catch (error) {
+    if (this.page.isClosed()) {
+      console.log("Page closed after Next click — likely expected.");
+      return;
     }
+
+    console.error("clickNextSafelyV2 failed:", error);
+    throw error;
   }
+}
   async safeReload(): Promise<void> {
     try {
       // Check if page is still available before reloading

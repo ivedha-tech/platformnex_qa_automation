@@ -82,9 +82,10 @@ test.describe("DevOps CI/CD Flow", () => {
       owner,
       type,
       environment,
+      "",                // region
       providerOption,
       repoUrl,
-      "",
+      "",               // apiDefinitionPath
       gcpProjectID
     );
 

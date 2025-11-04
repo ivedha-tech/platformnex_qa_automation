@@ -117,6 +117,7 @@ export interface TestData {
         resowner: string;
         restype: string;
         resenvironment: string;
+        resregion: string;
         resgcpProjectID: string;
       };
       edit: {
