@@ -220,7 +220,6 @@ export class OnboardingPage extends BasePage {
 
       // Safe reload with error handling
       await this.safeReload();
-
     } catch (error) {
       console.error("Error viewing application:", error);
       throw error;
@@ -355,6 +354,7 @@ export class OnboardingPage extends BasePage {
     owner: string,
     type: string,
     environment: string,
+    region: string,
     option: string,
     repoLink: string,
     apiDefinitionPath: string,
@@ -393,7 +393,7 @@ export class OnboardingPage extends BasePage {
       // Region (only if type === "RESOURCE")
       if (kind.toLowerCase() === "resource") {
         await this.resourceRegionField.waitFor({ state: "visible" });
-        await this.resourceRegionField.fill(apiDefinitionPath);
+        await this.resourceRegionField.fill(region);
       }
 
       // Fill repository link (only in component and api)
@@ -467,7 +467,7 @@ export class OnboardingPage extends BasePage {
     nextButtonComponentTable: Locator
   ): Promise<Locator> {
     await this.page.waitForLoadState("domcontentloaded");
-    await this.safeReload(); 
+    await this.safeReload();
     try {
       console.log(`Viewing component: ${componentName}`);
       await this.handlePagination(
@@ -626,6 +626,12 @@ export class OnboardingPage extends BasePage {
     await this.page.waitForTimeout(1000);
     while (Date.now() - start < timeout) {
       try {
+        // 🔽 Scroll to bottom before looking for the button
+        await this.page.evaluate(() =>
+          window.scrollTo(0, document.body.scrollHeight)
+        );
+        await this.page.waitForTimeout(500);
+
         const nextBtn = this.nextButton;
         if ((await nextBtn.isVisible()) && (await nextBtn.isEnabled())) {
           console.log("Next button is visible and enabled, clicking");
@@ -657,6 +663,11 @@ export class OnboardingPage extends BasePage {
 
     try {
       await this.page.waitForLoadState("domcontentloaded");
+
+      // 🔽 Scroll to bottom before looking for the button
+      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight-200));
+      await this.page.waitForTimeout(500);
+
       const nextBtn = this.nextButton;
 
       await nextBtn.waitFor({ state: "visible", timeout: 10000 });

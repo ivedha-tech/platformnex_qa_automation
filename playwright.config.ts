@@ -5,7 +5,10 @@ export default defineConfig({
   testDir: './src/tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  timeout: 30000,
+  timeout: 180000,
+  expect: {
+    timeout: 10000,
+  },
   retries: process.env.CI ? 2 : 0,
   reporter: [
     ['list'], // keep console output
@@ -22,5 +25,7 @@ export default defineConfig({
     baseURL: 'https://platformnex-v2-frontend-qa1-pyzx2jrmda-uc.a.run.app', // Base URL for your application
     screenshot: 'on',
     video: 'retain-on-failure',
+    actionTimeout: 30000,
+    navigationTimeout: 60000,
   },
 });

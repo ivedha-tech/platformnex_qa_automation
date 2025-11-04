@@ -72,6 +72,7 @@ const {
   resowner: resOwner,
   restype: resType,
   resenvironment: resourceEnv,
+  resregion: resRegion,
 } = testData.resource.resData.valid;
 
 const {
@@ -111,9 +112,9 @@ test.describe("Onboarding Suite", () => {
 
     // await onboardingPage.viewApplication();
     // await onboardingPage.waitForPageLoad();
-  });
+ 
 
-  test("Should onboard a new component successfully", async () => {
+  
     const newAppName = "Regression-test";
     const newCompName = `${compName}-${Date.now()}`;
     
@@ -125,6 +126,7 @@ test.describe("Onboarding Suite", () => {
       compOwner,
       compType,
       compEnv,
+      "",
       compSCOption,
       repoLink,
       apiDefinition,
@@ -138,10 +140,8 @@ test.describe("Onboarding Suite", () => {
 
     await onboardingPage.viewApplication();
     await onboardingPage.waitForPageLoad();
-  });
+  
 
-  test("Should onboard a new API successfully", async () => {
-    const newAppName = "Regression-test";
     const newApiName = `${apiName}-${Date.now()}`;
     
     await onboardingPage.onboardNewComponent(
@@ -152,6 +152,7 @@ test.describe("Onboarding Suite", () => {
       apiOwner,
       apiType,
       apiEnv,
+      "",
       apiSCOption,
       apiRepoLink,
       apiDefinition,
@@ -165,10 +166,7 @@ test.describe("Onboarding Suite", () => {
 
     await onboardingPage.viewApplication();
     await onboardingPage.waitForPageLoad();
-  });
-
-  test("Should onboard a new resource successfully", async () => {
-    const newAppName = "Regression-test";
+  
     const newResourceName = `${resourceName}-${Date.now()}`;
     
     await onboardingPage.onboardNewComponent(
@@ -179,7 +177,8 @@ test.describe("Onboarding Suite", () => {
       resOwner,
       resType,
       resourceEnv,
-      compSCOption,
+      resRegion,
+      "",
       "",
       "",
       compgcpProjectID
@@ -192,34 +191,11 @@ test.describe("Onboarding Suite", () => {
 
     await onboardingPage.viewApplication();
     await onboardingPage.waitForPageLoad();
-  });
-
-  test("Should edit an existing component successfully", async () => {
-    const newAppName = "Regression-test";
-    const newCompName = `${compName}-${Date.now()}`;
-    
-    // First onboard a component
-    await onboardingPage.onboardNewComponent(
-      componentKind,
-      newAppName,
-      newCompName,
-      compDesc,
-      compOwner,
-      compType,
-      compEnv,
-      compSCOption,
-      repoLink,
-      apiDefinition,
-      compgcpProjectID
-    );
-    await onboardingPage.waitForPageLoad();
-
-    await onboardingPage.viewApplication();
-    
-
-    await onboardingPage.waitForPageLoad();
-
-    // Edit the component
+  
+    // ---------------------------
+    // Edit Component
+    // ---------------------------
+  
     await onboardingPage.editComponentByName(
       componentKind,
       newCompName,
